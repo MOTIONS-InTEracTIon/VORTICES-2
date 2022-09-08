@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEngine.UI;
-using SimpleFileBrowser;
 using TMPro;
-using System;
 
 public class SpawnMenu : MonoBehaviour
 {
     // Spawn Panel Properties
-    [SerializeField] private Transform spawnPosition;
+    [SerializeField] private Transform spawnCenter;
+    private List<Vector3> spawnPositions;
     [SerializeField] private Transform spawnGroup;
     [SerializeField] private GameObject[] spawnPrefabs;
 
@@ -20,23 +19,17 @@ public class SpawnMenu : MonoBehaviour
     [SerializeField] private GameObject spawnPanel;
 
     // Spawn Panel Interactable UI Components
+    [SerializeField] private TextScrollView optionTexturePath;
     [SerializeField] private TextToggle optionGravity; 
     [SerializeField] private TextDropdown optionObjectType;
     [SerializeField] private TextSlider optionObjectSize;
-    [SerializeField] private TextInputField optionMaterialPath;
     [SerializeField] private Button spawnButton;
 
     // Auxiliary Task Class
     [SerializeField] private GameObject fileLoadManager; 
-    private List<Texture> retrievedTexture;
 
     // Coroutine status
     private bool spawnObjectRunning;
-
-    private void Start()
-    {
-        FileBrowser.SingleClickMode = true;
-    }
 
     public void ToggleSpawnPanel()
     {
@@ -49,13 +42,6 @@ public class SpawnMenu : MonoBehaviour
             spawnPanel.SetActive(false);
         }
 
-    }
-
-    public void OpenFileBrowser()
-    {
-        //CHANGE: Put success data into a variable, not just set it to text
-        FileBrowser.ShowLoadDialog((paths) => { optionMaterialPath.SetText(paths[0]); }, () => { Debug.Log("Canceled"); }, FileBrowser.PickMode.Files, false, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), null, "Load", "Select");
-        
     }
 
     public void StartSpawnOperation()
@@ -74,65 +60,75 @@ public class SpawnMenu : MonoBehaviour
     public IEnumerator SpawnObject()
     {
         spawnObjectRunning = true;
+        loadingSmall.StartLoading();
 
-        // Material retrieving is then launched, when it ends the configurations are applied including making the object visible
-        // Material path has to point correctly, otherwise show console error (CHANGE: Show error message in the panel)
-        string materialPath = optionMaterialPath.GetData();
-        if (System.IO.File.Exists(materialPath)) // (CHANGE: && its extension is compatible with application)
+        // Texture file searching is made
+        List<string> texturePaths = optionTexturePath.scrollViewPaths;
+
+        // Try retrieving texture with scrollview paths
+        List<Texture> retrievedTextures = null;
+        LoadLocalManager loadManager = Instantiate(fileLoadManager).GetComponent<LoadLocalManager>();
+        yield return StartCoroutine(loadManager.RetrieveTexture(texturePaths));
+        if(loadManager.result == Result.Success)
         {
-            retrievedTexture = null;
-            StartCoroutine(WaitForTexture(materialPath));
-            while(retrievedTexture == null)
+            Destroy(loadManager.gameObject);
+
+            retrievedTextures = loadManager.retrievedTextures;
+            // Generate list of positions CHANGE: For now, just add + 1 to x value, change this when implementing spatial placement
+            yield return StartCoroutine(GenerateObjectPlacement(retrievedTextures.Count));
+            // For each file create an object
+            for (int i = 0; i < retrievedTextures.Count; i++)
             {
-                yield return null;
+                // Spawning starts from instantiating the prefab
+                GameObject spawnPrefab = spawnPrefabs[optionObjectType.GetData()];
+                GameObject spawnObject = Instantiate(spawnPrefab, spawnPositions[i], spawnPrefab.transform.rotation, spawnGroup);
+
+                // Get the data from menu components
+                bool hasGravity = optionGravity.GetData();
+                float sizeMultiplier = optionObjectSize.GetData();
+
+                // Apply data
+                // Apply gravity toggle
+                if (!hasGravity)
+                {
+                    spawnObject.GetComponent<Rigidbody>().isKinematic = true;
+                }
+                // Apply size slider
+                spawnObject.transform.localScale *= sizeMultiplier;
+                // Apply material file
+                spawnObject.GetComponent<Renderer>().material.mainTexture = retrievedTextures[i];
             }
-            // (CHANGE: Foreach texture, a prefab is instantiated, batch load)
-            // Spawning starts from instantiating the prefab
-            GameObject spawnPrefab = spawnPrefabs[optionObjectType.GetData()];
-            GameObject spawnObject = Instantiate(spawnPrefab, spawnPosition.position, spawnPrefab.transform.rotation, spawnGroup);
-
-            // Get the data from menu components
-            bool hasGravity = optionGravity.GetData();
-            float sizeMultiplier = optionObjectSize.GetData();
-
-            // Apply data
-            // Apply gravity toggle
-            if (!hasGravity)
-            {
-                spawnObject.GetComponent<Rigidbody>().isKinematic = true;
-            }
-            // Apply size slider
-            spawnObject.transform.localScale *= sizeMultiplier;
-            // Apply material file
-            spawnObject.GetComponent<Renderer>().material.mainTexture = retrievedTexture[0];
-
-            loadingSmall.DoneLoading();
         }
         else
         {
-            Debug.Log("File does not exist");
-            //Debug.Log("File extension not supported, please try: .x/.x/.x/.x")
+            Destroy(loadManager.gameObject);
+
+            if (loadManager.result == Result.WebRequestError)
+            {
+                //CHANGE:TO SHOW IN UI
+                Debug.Log("Could not retrieve texture (Webrequest error)");
+            }
+            else if(loadManager.result == Result.TypeError)
+            {
+                //CHANGE:TO SHOW IN UI
+                // Supported extensions
+                Debug.Log("One or more files have unsupported extension, please try: .jpg, .png");
+            }
         }
 
+        loadingSmall.DoneLoading();
         spawnObjectRunning = false;
-        
-        yield return null;
     }
 
-    private IEnumerator WaitForTexture(string materialPath)
+    public IEnumerator GenerateObjectPlacement(int numberOfPlacements) //CHANGE: Take an option and split this function for each placement mode
     {
-        loadingSmall.StartLoading();
-
-        LoadLocalManager loadManager = Instantiate(fileLoadManager).GetComponent<LoadLocalManager>();
-        StartCoroutine(loadManager.RetrieveTexture(materialPath));
-        while (!loadManager.texturesRetrieved)
+        spawnPositions = new List<Vector3>();
+        for (int i = 0; i < numberOfPlacements; i++)
         {
+            Vector3 placementPosition = spawnCenter.position + Vector3.right * i;
+            spawnPositions.Add(placementPosition);
             yield return null;
         }
-        retrievedTexture = loadManager.retrievedTexture;
-        Destroy(loadManager.gameObject);
-
-        yield return null;
-    }
+    } 
 
 }
