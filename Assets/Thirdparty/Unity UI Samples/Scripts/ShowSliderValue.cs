@@ -2,13 +2,25 @@ using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Text))]
+using TMPro;
+
+[RequireComponent(typeof(TextMeshProUGUI))]
 public class ShowSliderValue : MonoBehaviour
 {
 	public void UpdateLabel (float value)
 	{
-		Text lbl = GetComponent<Text>();
+		TextMeshProUGUI lbl = GetComponent<TextMeshProUGUI>();
 		if (lbl != null)
-			lbl.text = Mathf.RoundToInt (value * 100) + "%";
+        {
+			if(value < 0.5)
+            {
+				lbl.text = "x" + System.Math.Round(0.5 + value, 1).ToString();
+			} 
+			else
+            {
+				lbl.text = "x" + System.Math.Round(value * 2, 1).ToString();
+			}
+		}
+
 	}
 }
