@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 997
   m_ShowMode: 4
-  m_Title: Project
+  m_Title: Game
   m_RootView: {fileID: 7}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -102,7 +102,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 100
+  controlID: 22
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -122,8 +122,8 @@ MonoBehaviour:
     y: 0
     width: 273
     height: 947
-  m_MinSize: {x: 276, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 14}
   m_Panes:
   - {fileID: 14}
@@ -251,7 +251,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 67
+  controlID: 147417
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -276,7 +276,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 68
+  controlID: 147418
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -385,23 +385,23 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Thirdparty/XRInteractionToolkit/ExampleAssets/Prefabs
+    - Assets/Fonts
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 46
   m_LastFolders:
-  - Assets/Thirdparty/XRInteractionToolkit/ExampleAssets/Prefabs
+  - Assets/Fonts
   m_LastFoldersGridSize: 46
   m_LastProjectPath: "C:\\Home\\Production\\Programa\\Unity\\Season 2\\Proyecto de
     titulaci\xF3n\\VORTICES-2"
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 343}
-    m_SelectedIDs: 26ef0000
-    m_LastClickedID: 61222
-    m_ExpandedIDs: 000000001cb6000024b600002ab600002cb600001cef00001eef0000
+    scrollPos: {x: 0, y: 63}
+    m_SelectedIDs: 026b0000
+    m_LastClickedID: 27394
+    m_ExpandedIDs: 00000000d66a0000d86a0000da6a0000dc6a0000de6a0000e06a0000e26a0000e46a0000e66a0000e86a0000ea6a0000ec6a0000ee6a0000f06a00000e6b0000286b0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -429,7 +429,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 
+    m_ExpandedIDs: 00000000d66a0000d86a0000da6a0000dc6a0000de6a0000e06a0000e26a0000e46a0000e66a0000e86a0000ea6a0000ec6a0000ee6a0000f06a0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -559,9 +559,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 8cb80000
+      m_SelectedIDs: c001f7ff
       m_LastClickedID: 0
-      m_ExpandedIDs: 4868ffff986bffff5e6fffff4c73ffffec77ffffa87bffff487fffffe485ffffa2b4ffffc2b5ffff5cb600006eb60000d2b60000e0b6000028b7000046b7000092d5000016d600005ed600007cd6000022d70000aad70000c4d70000b6db00002cdc00003adc000052dc000076dc000082dc0000a0dc0000
+      m_ExpandedIDs: 9230f8ff9a30f8ff9c30f8ff9e30f8ffa030f8ffa230f8ffa430f8ff7ae3faff94e3faff9ee3faffa8e3faffbae3faffc8e3faffd2e3faff2cfefaff3efefaff68fefaff6ea1fbff78a1fbff82a1fbff3c89fdff5689fdff6089fdff6a89fdff32ebffff3cebffff56ebffff60ebffff6aebffffd8f9ffffeaf9fffffcf9ffff0afaffff10faffffdafaffffdefaffff12fbffff2afbffff4c65000096650000ac650000b6650000ba650000c8650000d4650000ee650000f86500000466000022660000566600009466000098660000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -811,9 +811,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -3.4757035, y: 2.3712525, z: 9.567507}
+    m_Target: {x: -5.0061507, y: 1.1764327, z: 7.779333}
     speed: 2
-    m_Value: {x: -3.4757035, y: 2.3712525, z: 9.567507}
+    m_Value: {x: -5.0061507, y: 1.1764327, z: 7.779333}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -860,9 +860,9 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.00051272736, y: 0.998336, z: -0.056966715, w: 0.008984249}
+    m_Target: {x: 0.0039711157, y: 0.84829104, z: -0.006362296, w: 0.5294756}
     speed: 2
-    m_Value: {x: 0.0005127271, y: 0.99833554, z: -0.05696669, w: 0.008984244}
+    m_Value: {x: 0.003971119, y: 0.8482917, z: -0.0063623013, w: 0.52947605}
   m_Size:
     m_Target: 0.24681868
     speed: 2
@@ -914,7 +914,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 842
-    width: 1646
+    width: 1566
     height: 157
   m_ViewDataDictionary: {fileID: 0}
   m_OverlayCanvas:

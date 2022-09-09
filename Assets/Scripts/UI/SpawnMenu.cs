@@ -20,13 +20,13 @@ public class SpawnMenu : MonoBehaviour
 
     // Spawn Panel Interactable UI Components
     [SerializeField] private TextScrollView optionTexturePath;
-    [SerializeField] private TextToggle optionGravity; 
+    [SerializeField] private TextToggle optionGravity;
     [SerializeField] private TextDropdown optionObjectType;
     [SerializeField] private TextSlider optionObjectSize;
     [SerializeField] private Button spawnButton;
 
     // Auxiliary Task Class
-    [SerializeField] private GameObject fileLoadManager; 
+    [SerializeField] private GameObject fileLoadManager;
 
     // Coroutine status
     private bool spawnObjectRunning;
@@ -69,50 +69,51 @@ public class SpawnMenu : MonoBehaviour
         List<Texture> retrievedTextures = null;
         LoadLocalManager loadManager = Instantiate(fileLoadManager).GetComponent<LoadLocalManager>();
         yield return StartCoroutine(loadManager.RetrieveTexture(texturePaths));
+        if (loadManager.result == Result.Success)
+        {
+            Destroy(loadManager.gameObject);
 
-        //loadManager error handling
-        if (loadManager.result == Result.TypeError)
-        {
-            //CHANGE:TO SHOW IN UI
-            // Supported extensions
-            Debug.Log("One or more files have unsupported extension, these will be ommited. Please try: .jpg, .png");
-        }
-        if (loadManager.result == Result.WebRequestError)
-        {
-            //CHANGE:TO SHOW IN UI
-            Debug.Log("One or more files could not be retrieved via WebRequest");
-        }
-        if (loadManager.result == Result.WebRequestTypeError)
-        {
-            //CHANGE:TO SHOW IN UI
-            Debug.Log("Some of the selected files could not be retrieved via WebRequest and have an unsupported extension. Please try: .jpg, .png");
-        }
-        Destroy(loadManager.gameObject);
-
-        retrievedTextures = loadManager.retrievedTextures;
-        // Generate list of positions CHANGE: For now, just add + 1 to x value, change this when implementing spatial placement
-        yield return StartCoroutine(GenerateObjectPlacement(retrievedTextures.Count));
-        // For each file create an object
-        for (int i = 0; i < retrievedTextures.Count; i++)
-        {
-            // Spawning starts from instantiating the prefab
-            GameObject spawnPrefab = spawnPrefabs[optionObjectType.GetData()];
-            GameObject spawnObject = Instantiate(spawnPrefab, spawnPositions[i], spawnPrefab.transform.rotation, spawnGroup);
-
-            // Get the data from menu components
-            bool hasGravity = optionGravity.GetData();
-            float sizeMultiplier = optionObjectSize.GetData();
-            
-            // Apply data
-            // Apply gravity toggle
-            if (!hasGravity)
+            retrievedTextures = loadManager.retrievedTextures;
+            // Generate list of positions CHANGE: For now, just add + 1 to x value, change this when implementing spatial placement
+            yield return StartCoroutine(GenerateObjectPlacement(retrievedTextures.Count));
+            // For each file create an object
+            for (int i = 0; i < retrievedTextures.Count; i++)
             {
-                spawnObject.GetComponent<Rigidbody>().isKinematic = true;
+                // Spawning starts from instantiating the prefab
+                GameObject spawnPrefab = spawnPrefabs[optionObjectType.GetData()];
+                GameObject spawnObject = Instantiate(spawnPrefab, spawnPositions[i], spawnPrefab.transform.rotation, spawnGroup);
+
+                // Get the data from menu components
+                bool hasGravity = optionGravity.GetData();
+                float sizeMultiplier = optionObjectSize.GetData();
+
+                // Apply data
+                // Apply gravity toggle
+                if (!hasGravity)
+                {
+                    spawnObject.GetComponent<Rigidbody>().isKinematic = true;
+                }
+                // Apply size slider
+                spawnObject.transform.localScale *= sizeMultiplier;
+                // Apply material file
+                spawnObject.GetComponent<Renderer>().material.mainTexture = retrievedTextures[i];
             }
-            // Apply size slider
-            spawnObject.transform.localScale *= sizeMultiplier;
-            // Apply material file
-            spawnObject.GetComponent<Renderer>().material.mainTexture = retrievedTextures[i];
+        }
+        else
+        {
+            Destroy(loadManager.gameObject);
+
+            if (loadManager.result == Result.WebRequestError)
+            {
+                //CHANGE:TO SHOW IN UI
+                Debug.Log("Could not retrieve texture (Webrequest error)");
+            }
+            else if (loadManager.result == Result.TypeError)
+            {
+                //CHANGE:TO SHOW IN UI
+                // Supported extensions
+                Debug.Log("One or more files have unsupported extension, please try: .jpg, .png");
+            }
         }
 
         loadingSmall.DoneLoading();
@@ -128,6 +129,6 @@ public class SpawnMenu : MonoBehaviour
             spawnPositions.Add(placementPosition);
             yield return null;
         }
-    } 
+    }
 
 }
