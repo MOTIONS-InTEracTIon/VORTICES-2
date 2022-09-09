@@ -20,13 +20,13 @@ public class SpawnMenu : MonoBehaviour
 
     // Spawn Panel Interactable UI Components
     [SerializeField] private TextScrollView optionTexturePath;
-    [SerializeField] private TextToggle optionGravity;
+    [SerializeField] private TextToggle optionGravity; 
     [SerializeField] private TextDropdown optionObjectType;
     [SerializeField] private TextSlider optionObjectSize;
     [SerializeField] private Button spawnButton;
 
     // Auxiliary Task Class
-    [SerializeField] private GameObject fileLoadManager;
+    [SerializeField] private GameObject fileLoadManager; 
 
     // Coroutine status
     private bool spawnObjectRunning;
@@ -69,7 +69,7 @@ public class SpawnMenu : MonoBehaviour
         List<Texture> retrievedTextures = null;
         LoadLocalManager loadManager = Instantiate(fileLoadManager).GetComponent<LoadLocalManager>();
         yield return StartCoroutine(loadManager.RetrieveTexture(texturePaths));
-        if (loadManager.result == Result.Success)
+        if(loadManager.result == Result.Success)
         {
             Destroy(loadManager.gameObject);
 
@@ -108,7 +108,7 @@ public class SpawnMenu : MonoBehaviour
                 //CHANGE:TO SHOW IN UI
                 Debug.Log("Could not retrieve texture (Webrequest error)");
             }
-            else if (loadManager.result == Result.TypeError)
+            else if(loadManager.result == Result.TypeError)
             {
                 //CHANGE:TO SHOW IN UI
                 // Supported extensions
@@ -129,6 +129,6 @@ public class SpawnMenu : MonoBehaviour
             spawnPositions.Add(placementPosition);
             yield return null;
         }
-    }
+    } 
 
 }
