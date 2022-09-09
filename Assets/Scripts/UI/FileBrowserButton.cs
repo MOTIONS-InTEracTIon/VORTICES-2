@@ -4,10 +4,13 @@ using UnityEngine;
 
 using SimpleFileBrowser;
 using System;
+using System.IO;
 
 public class FileBrowserButton : MonoBehaviour
 {
     [SerializeField] private TextScrollView texturePathScrollView;
+
+    private List<string> filePaths;
 
     private void Start()
     {
@@ -16,11 +19,31 @@ public class FileBrowserButton : MonoBehaviour
 
     public void OpenFileBrowser()
     {
-        //CHANGE: Put success data into a variable, not just set it to text
-        FileBrowser.ShowLoadDialog((paths) => { texturePathScrollView.ClearPaths();
-                                                texturePathScrollView.AddPaths(paths); },
-                                        () => { Debug.Log("Canceled"); }, 
-                                   FileBrowser.PickMode.Files, true, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), null, "Load", "Select");
+        FileBrowser.ShowLoadDialog((paths) => 
+        {
+            texturePathScrollView.ClearPaths();
+            filePaths = new List<string>();
+            GetFilePaths(paths);
+            texturePathScrollView.AddPaths(filePaths);
+        },
+        () => { Debug.Log("Canceled"); },FileBrowser.PickMode.FilesAndFolders, true, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), null, "Load", "Select");
 
+    }
+
+    // Recursion to get files outside or inside folders
+    private void GetFilePaths(string[] originPaths)
+    {
+        foreach (string path in originPaths)
+        {
+            if (Directory.Exists(path))
+            {
+                filePaths.AddRange(Directory.GetFiles(path, "*.*", SearchOption.AllDirectories));
+            }
+            else
+            {
+                filePaths.Add(path);
+            }
+
+        }
     }
 }

@@ -5,19 +5,23 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.IO;
+using System.Linq;
 
 public enum Result
 {
 	Success,
 	OnGoing,
 	WebRequestError,
-	TypeError
+	TypeError,
+	WebRequestTypeError
 }
 
 public class LoadLocalManager : MonoBehaviour
 {
 	// This class manages loading from disk then converting into texture for shape, eventually will support multiple extensions and batch loading
 	public List<Texture> retrievedTextures;
+
+	private List<string> fileUrls;
 
 	public Result result;
 
@@ -26,73 +30,62 @@ public class LoadLocalManager : MonoBehaviour
 		result = Result.OnGoing;
     }
 
-    public IEnumerator RetrieveTexture(List<string> fileUrls)
+    public IEnumerator RetrieveTexture(List<string> urlsToRetrieve)
 	{
+		fileUrls = urlsToRetrieve;
 		// Type check
-		IsTypeCorrect(fileUrls);
+		yield return StartCoroutine(IsTypeCorrect());
+
+		// Web retrieving
+		// CHANGE: Handle different for more type support
+		foreach (string url in fileUrls)
+        {
+			string newurl = url.Replace(@"\", "/");
+			UnityWebRequest www = UnityWebRequestTexture.GetTexture(@"file:///" + newurl);
+			yield return www.SendWebRequest();
+
+			if (www.result != UnityWebRequest.Result.Success)
+			{
+				if (result != Result.WebRequestTypeError && result != Result.WebRequestError)
+				{
+					if (result == Result.TypeError)
+					{
+						result = Result.WebRequestTypeError;
+					}
+					result = Result.WebRequestError;
+				}
+			}
+			else
+			{
+				Texture texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+				retrievedTextures.Add(texture);
+			}
+			yield return null;
+		}
+
 		if(result == Result.OnGoing)
         {
-			// Web retrieving
-
-			bool doneRetrieving = false;
-			int index = 0;
-			while (!doneRetrieving)
-			{
-				// CHANGE: Handle different for more type support
-				string url = fileUrls[index];
-				string newurl = url.Replace(@"\", "/");
-				UnityWebRequest www = UnityWebRequestTexture.GetTexture(@"file:///" + newurl);
-				yield return www.SendWebRequest();
-
-				if (www.result != UnityWebRequest.Result.Success)
-				{
-					result = Result.WebRequestError;
-					doneRetrieving = true;
-                }
-                else
-                {
-					Texture texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-					retrievedTextures.Add(texture);
-				}
-
-				if (index == fileUrls.Count - 1)
-				{
-					result = Result.Success;
-					doneRetrieving = true;
-				}
-				else
-				{
-					index++;
-				}
-				yield return null;
-			}
-		}
+			result = Result.Success;
+        }
 	}
 
-	private IEnumerator IsTypeCorrect(List<string> urlsToTest)
+	private IEnumerator IsTypeCorrect()
     {
-		bool doneChecking = false;
-		while(!doneChecking)
+		foreach (string url in fileUrls.ToList())
         {
-			int index = 0;
-			string url = urlsToTest[index];
 			string urlextension = Path.GetExtension(url);
 			// Supported extensions
-			if (urlextension != ".jpg" || 
+			if (urlextension != ".jpg" &&
 				urlextension != ".png")
-            {
-				result = Result.TypeError;
-				doneChecking = true;
-            }
+			{
+				if(result != Result.TypeError)
+                {
+					result = Result.TypeError;
+				}
 
-			if(index == urlsToTest.Count - 1)
-            {
-				doneChecking = true;
-            } 
-			else
-            {
-				index++;
+				fileUrls.Remove(url);
 			}
+
 			yield return null;
 		}
     }

@@ -13,9 +13,9 @@ public class TextScrollView : MonoBehaviour
 
     public List<string> scrollViewPaths { get; private set;} 
 
-    public void AddPaths(string[] stringArray)
+    public void AddPaths(List<string> stringList)
     {
-        scrollViewPaths = new List<string>(stringArray);
+        scrollViewPaths = stringList;
 
         foreach (string path in scrollViewPaths)
         {
@@ -32,7 +32,6 @@ public class TextScrollView : MonoBehaviour
     {
         foreach (Transform child in scrollViewContent.transform)
         {
-            child.gameObject.SetActive(false);
             Destroy(child.gameObject);
         }
     }

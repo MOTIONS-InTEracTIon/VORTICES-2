@@ -2075,27 +2075,27 @@ PrefabInstance:
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 596.1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 298.05
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -16.666666
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3945409545654605932, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
@@ -4961,7 +4961,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh25970
+  m_Name: pb_Mesh56306
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -8018,7 +8018,7 @@ PrefabInstance:
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
@@ -8028,7 +8028,7 @@ PrefabInstance:
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
@@ -8038,12 +8038,12 @@ PrefabInstance:
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -7.6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3193418260378781948, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -16.666666
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3301208469445631330, guid: 6fda66c60afd2d640856bdf5ce5c89fc,
         type: 3}
