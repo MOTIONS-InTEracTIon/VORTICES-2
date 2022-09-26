@@ -12,6 +12,10 @@ public class TextInputField : MonoBehaviour
     {
         return inputfield.text;
     }
+    public int GetDataInt()
+    {
+        return int.Parse(inputfield.text);
+    }
 
     public void SetText(string text)
     {

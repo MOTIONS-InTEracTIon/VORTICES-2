@@ -9,7 +9,7 @@ public class SpawnMenu : MonoBehaviour
 {
     // Spawn Panel Properties
     [SerializeField] private Transform spawnCenter;
-    private List<Vector3> spawnPositions;
+    private List<GameObject> spawnPositionObjects;
     [SerializeField] private Transform spawnGroup;
     [SerializeField] private GameObject[] spawnPrefabs;
 
@@ -18,38 +18,29 @@ public class SpawnMenu : MonoBehaviour
     [SerializeField] private LoadingSmall loadingSmall;
     [SerializeField] private GameObject spawnPanel;
 
-    // Spawn Panel Interactable UI Components
-    [SerializeField] private TextScrollView optionTexturePath;
-    [SerializeField] private TextToggle optionGravity; 
+    // Spawn Panel Data Components
+    [SerializeField] private FilePath optionFilePath;
+    [SerializeField] private TextToggle optionGravity;
     [SerializeField] private TextDropdown optionObjectType;
     [SerializeField] private TextSlider optionObjectSize;
+    [SerializeField] private TextInputField optionVisibleNumber;
     [SerializeField] private Button spawnButton;
 
     // Auxiliary Task Class
-    [SerializeField] private GameObject fileLoadManager; 
+    [SerializeField] private GameObject renderManager;
+
+    // Spawn Panel Properties
+    public List<string> retrievedTextures { get; private set; }
 
     // Coroutine status
     private bool spawnObjectRunning;
-
-    public void ToggleSpawnPanel()
-    {
-        if (togglePanel.isOn)
-        {
-            spawnPanel.SetActive(true);
-        }
-        else
-        {
-            spawnPanel.SetActive(false);
-        }
-
-    }
 
     public void StartSpawnOperation()
     {
         // Spawn operation has to end before initiating another one (CHANGE: Show error message in the panel)
         if (!spawnObjectRunning)
         {
-            StartCoroutine("SpawnObject");
+            StartCoroutine(SpawnInitialObject());
         }
         else
         {
@@ -57,63 +48,38 @@ public class SpawnMenu : MonoBehaviour
         }
     }
 
-    public IEnumerator SpawnObject()
+    // Spawns initial files in front, and enables controls to cycle through the rest of files
+    private IEnumerator SpawnInitialObject()
     {
         spawnObjectRunning = true;
         loadingSmall.StartLoading();
 
-        // Texture file searching is made
-        List<string> texturePaths = optionTexturePath.scrollViewPaths;
-
-        // Try retrieving texture with scrollview paths
-        List<Texture> retrievedTextures = null;
-        LoadLocalManager loadManager = Instantiate(fileLoadManager).GetComponent<LoadLocalManager>();
-        yield return StartCoroutine(loadManager.RetrieveTexture(texturePaths));
-
-        //loadManager error handling
-        if (loadManager.result == Result.TypeError)
+        // Initial files path
+        List<string> imagePaths = optionFilePath.filePaths;
+        List<string> visiblePaths = new List<string>();
+        // CHANGE: Make the search double the size, so the next batch is ready when you switch to the next
+        int index = 0;
+        while (index < optionVisibleNumber.GetDataInt())
         {
-            //CHANGE:TO SHOW IN UI
-            // Supported extensions
-            Debug.Log("One or more files have unsupported extension, these will be ommited. Please try: .jpg, .png");
+            visiblePaths.Add(CircularList.GetElement<string>(imagePaths, index));
+            index++;
         }
-        if (loadManager.result == Result.WebRequestError)
-        {
-            //CHANGE:TO SHOW IN UI
-            Debug.Log("One or more files could not be retrieved via WebRequest");
-        }
-        if (loadManager.result == Result.WebRequestTypeError)
-        {
-            //CHANGE:TO SHOW IN UI
-            Debug.Log("Some of the selected files could not be retrieved via WebRequest and have an unsupported extension. Please try: .jpg, .png");
-        }
-        Destroy(loadManager.gameObject);
 
-        retrievedTextures = loadManager.retrievedTextures;
-        // Generate list of positions CHANGE: For now, just add + 1 to x value, change this when implementing spatial placement
-        yield return StartCoroutine(GenerateObjectPlacement(retrievedTextures.Count));
-        // For each file create an object
-        for (int i = 0; i < retrievedTextures.Count; i++)
-        {
-            // Spawning starts from instantiating the prefab
-            GameObject spawnPrefab = spawnPrefabs[optionObjectType.GetData()];
-            GameObject spawnObject = Instantiate(spawnPrefab, spawnPositions[i], spawnPrefab.transform.rotation, spawnGroup);
+        // Generate positions to make them appear
 
-            // Get the data from menu components
-            bool hasGravity = optionGravity.GetData();
-            float sizeMultiplier = optionObjectSize.GetData();
-            
-            // Apply data
-            // Apply gravity toggle
-            if (!hasGravity)
-            {
-                spawnObject.GetComponent<Rigidbody>().isKinematic = true;
-            }
-            // Apply size slider
-            spawnObject.transform.localScale *= sizeMultiplier;
-            // Apply material file
-            spawnObject.GetComponent<Renderer>().material.mainTexture = retrievedTextures[i];
-        }
+        yield return StartCoroutine(GenerateObjectPlacement(optionVisibleNumber.GetDataInt()));
+
+        // Make them appear in the scene
+
+        RenderManager render = Instantiate(renderManager).GetComponent<RenderManager>();
+        yield return StartCoroutine(render.PlaceMultimedia(visiblePaths,
+                                                           spawnPrefabs[optionObjectType.GetData()],
+                                                           false, false, false,
+                                                           spawnPositionObjects,
+                                                           optionGravity.GetData(),
+                                                           optionObjectSize.GetData()));
+
+
 
         loadingSmall.DoneLoading();
         spawnObjectRunning = false;
@@ -121,13 +87,19 @@ public class SpawnMenu : MonoBehaviour
 
     public IEnumerator GenerateObjectPlacement(int numberOfPlacements) //CHANGE: Take an option and split this function for each placement mode
     {
-        spawnPositions = new List<Vector3>();
+        spawnPositionObjects = new List<GameObject>();
+
+        loadingSmall.UpdateText(0, numberOfPlacements, "Positioning");
         for (int i = 0; i < numberOfPlacements; i++)
         {
+            GameObject positionObject = new GameObject(); 
             Vector3 placementPosition = spawnCenter.position + Vector3.right * i;
-            spawnPositions.Add(placementPosition);
+
+            positionObject.transform.position = placementPosition;
+            spawnPositionObjects.Add(positionObject);
+            loadingSmall.UpdateText(i + 1, numberOfPlacements, "Positioning");
             yield return null;
         }
-    } 
+    }
 
 }
