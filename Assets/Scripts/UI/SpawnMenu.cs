@@ -14,9 +14,12 @@ public class SpawnMenu : MonoBehaviour
     [SerializeField] private GameObject[] spawnPrefabs;
 
     // Spawn Panel UI Components
-    [SerializeField] private Toggle togglePanel;
     [SerializeField] private LoadingSmall loadingSmall;
     [SerializeField] private GameObject spawnPanel;
+    [SerializeField] private GameObject controls;
+
+// Spawn Panel Interactable Components
+[SerializeField] private Toggle togglePanel;
 
     // Spawn Panel Data Components
     [SerializeField] private FilePath optionFilePath;
@@ -30,7 +33,10 @@ public class SpawnMenu : MonoBehaviour
     [SerializeField] private GameObject renderManager;
 
     // Spawn Panel Properties
-    public List<string> retrievedTextures { get; private set; }
+
+    public int globalIndex;
+    public bool lastLoadForward;
+    private List<string> selectionPaths;
 
     // Coroutine status
     private bool spawnObjectRunning;
@@ -40,7 +46,47 @@ public class SpawnMenu : MonoBehaviour
         // Spawn operation has to end before initiating another one (CHANGE: Show error message in the panel)
         if (!spawnObjectRunning)
         {
-            StartCoroutine(SpawnInitialObject());
+            // Startup
+            globalIndex = -1;
+            lastLoadForward = true;
+            selectionPaths = new List<string>();
+            // Execution
+            StartCoroutine(ObjectSpawn(true));
+            // Finishing
+            controls.SetActive(true);
+            spawnPanel.SetActive(false);
+        }
+        else
+        {
+            Debug.Log("There is an object spawning operation at the moment, please wait");
+        }
+    }
+
+    public void SpawnForwards()
+    {
+        // Spawn operation has to end before initiating another one (CHANGE: Show error message in the panel)
+        if (!spawnObjectRunning)
+        {
+            // Startup
+            selectionPaths = new List<string>();
+            // Execution
+            StartCoroutine(ObjectSpawn(true));
+        }
+        else
+        {
+            Debug.Log("There is an object spawning operation at the moment, please wait");
+        }
+    }
+
+    public void SpawnBackwards()
+    {
+        // Spawn operation has to end before initiating another one (CHANGE: Show error message in the panel)
+        if (!spawnObjectRunning)
+        {
+            // Startup
+            selectionPaths = new List<string>();
+            // Execution
+            StartCoroutine(ObjectSpawn(false));
         }
         else
         {
@@ -49,40 +95,75 @@ public class SpawnMenu : MonoBehaviour
     }
 
     // Spawns initial files in front, and enables controls to cycle through the rest of files
-    private IEnumerator SpawnInitialObject()
+    private IEnumerator ObjectSpawn(bool forwards)
     {
         spawnObjectRunning = true;
         loadingSmall.StartLoading();
 
-        // Initial files path
-        List<string> imagePaths = optionFilePath.filePaths;
-        List<string> visiblePaths = new List<string>();
-        // CHANGE: Make the search double the size, so the next batch is ready when you switch to the next
-        int index = 0;
-        while (index < optionVisibleNumber.GetDataInt())
+        // Get rid of old objects
+        // CHANGE: Could reuse this instead of destroying all
+        foreach (Transform child in spawnGroup)
         {
-            visiblePaths.Add(CircularList.GetElement<string>(imagePaths, index));
-            index++;
+            Destroy(child.gameObject);
         }
 
-        // Generate positions to make them appear
+        // Generate selection path to get via render
+        yield return StartCoroutine(GenerateSelectionPaths(forwards));
 
+        // Generate positions to make them appear
         yield return StartCoroutine(GenerateObjectPlacement(optionVisibleNumber.GetDataInt()));
 
         // Make them appear in the scene
-
         RenderManager render = Instantiate(renderManager).GetComponent<RenderManager>();
-        yield return StartCoroutine(render.PlaceMultimedia(visiblePaths,
+        yield return StartCoroutine(render.PlaceMultimedia(selectionPaths,
                                                            spawnPrefabs[optionObjectType.GetData()],
                                                            false, false, false,
                                                            spawnPositionObjects,
                                                            optionGravity.GetData(),
                                                            optionObjectSize.GetData()));
-
-
+        Destroy(render.gameObject);
 
         loadingSmall.DoneLoading();
         spawnObjectRunning = false;
+    }
+
+    private IEnumerator GenerateSelectionPaths(bool forwards)
+    {
+        // CHANGE: Make the search double the size, so the next batch is ready when you switch to the next
+        int index = 0;
+
+        if (forwards)
+        {
+            if (!lastLoadForward)
+            {
+                globalIndex += optionVisibleNumber.GetDataInt() - 1;
+            }
+            lastLoadForward = true;
+        }
+        else
+        {
+            if (lastLoadForward)
+            {
+                globalIndex -= optionVisibleNumber.GetDataInt() - 1;
+            }
+            lastLoadForward = false;
+        }
+
+        while (index < optionVisibleNumber.GetDataInt())
+        {
+            if(forwards)
+            {
+                globalIndex++;
+                selectionPaths.Add(CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex));
+            }
+            else
+            {
+                globalIndex--;
+                selectionPaths.Add(CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex));
+            }
+            index++;
+            yield return null;  
+        }
     }
 
     public IEnumerator GenerateObjectPlacement(int numberOfPlacements) //CHANGE: Take an option and split this function for each placement mode
@@ -92,8 +173,9 @@ public class SpawnMenu : MonoBehaviour
         loadingSmall.UpdateText(0, numberOfPlacements, "Positioning");
         for (int i = 0; i < numberOfPlacements; i++)
         {
-            GameObject positionObject = new GameObject(); 
-            Vector3 placementPosition = spawnCenter.position + Vector3.right * i;
+            GameObject positionObject = new GameObject();
+            positionObject.transform.parent = spawnGroup;
+            Vector3 placementPosition = spawnCenter.position + Vector3.left * (numberOfPlacements / 2) + Vector3.right * i;
 
             positionObject.transform.position = placementPosition;
             spawnPositionObjects.Add(positionObject);
