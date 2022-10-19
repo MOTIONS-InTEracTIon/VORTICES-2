@@ -81,36 +81,35 @@ public class RenderManager : MonoBehaviour
             {
                 spawnObject.GetComponent<Rigidbody>().isKinematic = true;
             }
+            // Fit into object while conserving aspect ratio
+            SizeToParent(spawnObject, texture);
             // Apply size slider
             spawnObject.transform.localScale *= sizeMultiplier;
             // Apply material file
             spawnObject.GetComponent<Renderer>().material.mainTexture = texture;
+
             yield return null;
         }
     }
 
-    /*private void SizeToParent(SpriteRenderer image, GameObject fitObject)
+    private void SizeToParent(GameObject spawnObject, Texture2D texture)
     {
-        RectTransform imageRect = image.GetComponent<RectTransform>();
-        RectTransform objectRect = fitObject.GetComponent<RectTransform>();
-        float childAspectRatio = image.bounds.size.x / image.bounds.size.y;
-        float objectAspectRatio = objectRect.rect.width / objectRect.rect.height;
-        Bounds imageBounds = image.sprite.bounds;
+        RectTransform objectRect = spawnObject.GetComponent<RectTransform>();
 
-        if (childAspectRatio > objectAspectRatio)
+        float boundX = objectRect.localScale.x;
+
+        float finalScaleY = objectRect.localScale.y;
+        float finalScaleX = texture.width * finalScaleY / texture.height;
+
+        objectRect.localScale = new Vector3 (finalScaleX, 1 , finalScaleY);
+
+        if(objectRect.localScale.x > boundX)
         {
-            float factor = (objectRect.rect.height / imageBounds.size.y);
-            image.transform.localScale = new Vector3(factor, factor, factor);
-            factor = (objectRect.rect.width / imageBounds.size.x);
-            image.transform.localScale = new Vector3(factor, factor, factor);
+            finalScaleX = boundX;
+            finalScaleY = texture.height * finalScaleX / texture.width;
+
+            objectRect.localScale = new Vector3(finalScaleX, 1, finalScaleY);
         }
-        else
-        {
-            float factor = (objectRect.rect.width / imageBounds.size.x);
-            image.transform.localScale = new Vector3(factor, factor, factor);
-            factor = (objectRect.rect.height / imageBounds.size.y);
-            image.transform.localScale = new Vector3(factor, factor, factor);
-        }
-    }*/
+    }
 
 }

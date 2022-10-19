@@ -13,6 +13,7 @@ public class FilePath : MonoBehaviour
     [SerializeField] private TextMeshProUGUI selectionText;
 
 
+
     public List<string> filePaths { get; private set; }
     public int numberOfFolders { get; private set; }
 
@@ -24,8 +25,12 @@ public class FilePath : MonoBehaviour
             ClearPaths();
             GetFilePaths(paths);
             SetSelectionText();
+            GameObject.Find("Circular Panel").GetComponent<CircularPanel>().ChangeVisibleComponent(8);
         },
-        () => { Debug.Log("Canceled"); }, FileBrowser.PickMode.FilesAndFolders, true, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), null, "Load", "Select");
+        () => {/* Handle closing*/
+            GameObject.Find("Circular Panel").GetComponent<CircularPanel>().ChangeVisibleComponent(8);
+        },
+                                  FileBrowser.PickMode.FilesAndFolders, true, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), null, "Load", "Select");
 
     }
 

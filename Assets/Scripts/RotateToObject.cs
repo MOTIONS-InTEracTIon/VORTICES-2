@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RotateToObject : MonoBehaviour
 {
-    Transform followObject;
+    [SerializeField] private Transform followObject;
 
     public Vector3 offset;
 
@@ -12,12 +12,13 @@ public class RotateToObject : MonoBehaviour
     private bool follow;
 
     private void Start()
-    {
-        if(GetComponent<Rigidbody>().isKinematic)
+    {//TIENE QUE SEGUIR UN PUNTO NO MI CAMARA
+        follow = true;
+        if(followObject == null)
         {
-            follow = true;
             followObject = Camera.main.gameObject.transform;
         }
+
     }
 
     private void Update()

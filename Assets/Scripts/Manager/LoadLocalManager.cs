@@ -86,8 +86,8 @@ public class LoadLocalManager : MonoBehaviour
 		{
 			Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
 
-			convertTextureThumbnail(texture);
-			convertTexturePOT(texture);
+			ConvertTextureThumbnail(texture);
+			ConvertTexturePOT(texture);
 			texture.Compress(true);
 			texture.Apply(false, true);
 
@@ -105,12 +105,9 @@ public class LoadLocalManager : MonoBehaviour
 		return $"{bytes / Mathf.Pow(unit, exp):F2} {("KMGTPE")[exp - 1]}B";
 	}
 
-	private void convertTextureThumbnail(Texture2D textureToConvert)
+	private void ConvertTextureThumbnail(Texture2D textureToConvert)
 	{
 		Rect thumbnailRect = new Rect(0, 0, 250, 250);
-
-		float childAspectRatio = textureToConvert.width / textureToConvert.height;
-		float objectAspectRatio = thumbnailRect.width / thumbnailRect.height;
 
 		if (textureToConvert.height > thumbnailRect.height)
 		{
@@ -127,7 +124,7 @@ public class LoadLocalManager : MonoBehaviour
 		}
 	}
 
-	private void convertTexturePOT(Texture2D textureToConvert)
+	private void ConvertTexturePOT(Texture2D textureToConvert)
 	{
 		if (textureToConvert.height % 4 != 0 || textureToConvert.width % 4 != 0)
 		{

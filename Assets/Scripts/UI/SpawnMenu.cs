@@ -18,9 +18,6 @@ public class SpawnMenu : MonoBehaviour
     [SerializeField] private GameObject spawnPanel;
     [SerializeField] private GameObject controls;
 
-// Spawn Panel Interactable Components
-[SerializeField] private Toggle togglePanel;
-
     // Spawn Panel Data Components
     [SerializeField] private FilePath optionFilePath;
     [SerializeField] private TextToggle optionGravity;
@@ -53,8 +50,7 @@ public class SpawnMenu : MonoBehaviour
             // Execution
             StartCoroutine(ObjectSpawn(true));
             // Finishing
-            controls.SetActive(true);
-            spawnPanel.SetActive(false);
+            controls.GetComponent<FadeUI>().FadeIn();
         }
         else
         {
@@ -183,5 +179,7 @@ public class SpawnMenu : MonoBehaviour
             yield return null;
         }
     }
+
+    //private IEnumerator Get
 
 }

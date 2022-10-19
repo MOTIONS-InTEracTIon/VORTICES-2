@@ -375,6 +375,12 @@ namespace SimpleFileBrowser
 		private float narrowScreenWidth = 380f;
 
 		[SerializeField]
+		private bool worldView;
+
+		[SerializeField]
+		private string parentNameWorldView;
+
+		[SerializeField]
 		private float quickLinksMaxWidthPercentage = 0.4f;
 
 		[SerializeField]
@@ -810,8 +816,29 @@ namespace SimpleFileBrowser
 			windowTR = (RectTransform) window.transform;
 			canvas = GetComponent<Canvas>();
 
-			canvas.worldCamera = FindObjectOfType<Camera>();
-			transform.SetParent(canvas.worldCamera.transform);
+			if(worldView)
+            {
+				canvas.worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+				var children = GetComponentsInChildren<Transform>(includeInactive: true);
+				foreach (var child in children)
+				{
+					child.gameObject.layer = LayerMask.NameToLayer("World UI"); ;
+				}
+				transform.SetParent(GameObject.Find(parentNameWorldView).transform, false);
+				RectTransform rect = GetComponent<RectTransform>();
+				rect.pivot = new Vector2(0.5f, 0.5f);
+				rect.anchorMax = new Vector2(0.5f, 0.5f);
+				rect.anchorMin = new Vector2(0.5f, 0.5f);
+				rect.sizeDelta = new Vector2(750f, 700f);
+				rect.localScale = new Vector3(1.60f, 1.60f, 1.60f);
+				GetComponent<Canvas>().overrideSorting = true;
+			}
+            else
+            {
+				canvas.worldCamera = GameObject.Find("UI Camera").GetComponent<Camera>();
+				gameObject.layer = LayerMask.NameToLayer("UI");
+				transform.SetParent(canvas.worldCamera.transform);
+			}
 
 			middleViewOriginalPosition = middleView.anchoredPosition;
 			middleViewOriginalSize = middleView.sizeDelta;
@@ -2013,8 +2040,6 @@ namespace SimpleFileBrowser
 			backButton.interactable = false;
 			forwardButton.interactable = false;
 			upButton.interactable = false;
-
-			gameObject.SetActive( false );
 		}
 
 		public void RefreshFiles( bool pathChanged )
