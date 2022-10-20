@@ -19,12 +19,9 @@ public class RenderManager : MonoBehaviour
     // invisible = Places the prefab as invisible
     // asFirstSibling = Places the prefab as first sibling of placementObject
     // placementObject = List of locations to be filled by multimedia objects
-    // OBJECT PROPERTIES
-    // hasGravity = Enables rigidbody component in prefab making it fall
-    // sizeMultiplier = Makes prefab smaller or larger
 
 
-    public IEnumerator PlaceMultimedia(List<string> texturePaths, GameObject prefabObject, bool asThumbnail, bool invisible, bool asFirstSibling, List<GameObject> placementObjects, bool hasGravity, float sizeMultiplier)
+    public IEnumerator PlaceMultimedia(List<string> texturePaths, GameObject prefabObject, bool asThumbnail, bool invisible, bool asFirstSibling, List<GameObject> placementObjects)
     {
         result = Result.OnGoing;
         // X images will be placed inside X gameobjects
@@ -38,11 +35,11 @@ public class RenderManager : MonoBehaviour
             {
                 if (placementObjects.Count == 1)
                 {
-                    yield return StartCoroutine(PlaceFitObject(textures[i], prefabObject, placementObjects[0], invisible, asFirstSibling, hasGravity, sizeMultiplier));
+                    yield return StartCoroutine(PlaceFitObject(textures[i], prefabObject, placementObjects[0], invisible, asFirstSibling));
                 }
                 else
                 {
-                    yield return StartCoroutine(PlaceFitObject(textures[i], prefabObject, placementObjects[i], invisible, asFirstSibling, hasGravity, sizeMultiplier));
+                    yield return StartCoroutine(PlaceFitObject(textures[i], prefabObject, placementObjects[i], invisible, asFirstSibling));
                 }
             }
 
@@ -60,7 +57,7 @@ public class RenderManager : MonoBehaviour
 
     }
 
-    private IEnumerator PlaceFitObject(Texture2D texture, GameObject prefabObject, GameObject fitObject, bool invisible, bool asFirstSibling, bool hasGravity, float sizeMultiplier)
+    private IEnumerator PlaceFitObject(Texture2D texture, GameObject prefabObject, GameObject fitObject, bool invisible, bool asFirstSibling)
     {
         // For each file create an object
         for (int i = 0; i < 1; i++)
@@ -76,15 +73,8 @@ public class RenderManager : MonoBehaviour
                 spawnObject.transform.SetAsFirstSibling();
             }
             // Apply properties
-            // Apply gravity toggle
-            if (!hasGravity)
-            {
-                spawnObject.GetComponent<Rigidbody>().isKinematic = true;
-            }
             // Fit into object while conserving aspect ratio
             SizeToParent(spawnObject, texture);
-            // Apply size slider
-            spawnObject.transform.localScale *= sizeMultiplier;
             // Apply material file
             spawnObject.GetComponent<Renderer>().material.mainTexture = texture;
 

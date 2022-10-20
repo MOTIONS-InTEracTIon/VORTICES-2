@@ -4,12 +4,11 @@ using UnityEngine;
 
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
 
 public class CircularPanel : MonoBehaviour
 {
     #region Variables and properties
-    // Circular Panel Properties
-
     // Circular Panel UI Components
     [SerializeField] private List<GameObject> uiComponents;
 
@@ -21,13 +20,16 @@ public class CircularPanel : MonoBehaviour
     public int actualComponentId { get; set; }
     public int mode { get; set; }
     public bool volumetric { get; set; }
-    public Vector3 dimension;
+    public Vector3Int dimension;
 
     // (Display)
+    [SerializeField] List<GameObject> placementBasePrefabs;
+    private GameObject placementBase;
+    [SerializeField] GameObject elementPrefab;
+
     [SerializeField] private Transform spawnCenter;
     private List<GameObject> spawnPositionObjects;
     [SerializeField] private Transform spawnGroup;
-    [SerializeField] private GameObject[] spawnPrefabs;
     public int globalIndex;
     public bool lastLoadForward;
     private List<string> selectionPaths;
@@ -238,17 +240,22 @@ public class CircularPanel : MonoBehaviour
         }
     }
     #endregion
-/*
+
     #region Display Multimedia
     public void StartSpawnOperation()
     {
-        // Spawn operation has to end before initiating another one (CHANGE: Show error message in the panel)
         // Startup
         globalIndex = -1;
         lastLoadForward = true;
         selectionPaths = new List<string>();
         // Execution
-        StartCoroutine(ObjectSpawn(true));
+        // First time has to fill every slot so it uses width * height * layer
+        int startingLoad = dimension.x * dimension.y;
+        if (dimension.z != 0)
+        {
+            startingLoad *= dimension.z;
+        }
+        StartCoroutine(ObjectSpawn(startingLoad, true));
     }
 
     public void SpawnForwards(int loadNumber)
@@ -281,20 +288,19 @@ public class CircularPanel : MonoBehaviour
         }
 
         // Generate selection path to get via render
-        yield return StartCoroutine(GenerateSelectionPaths(forwards));
+        yield return StartCoroutine(GenerateSelectionPaths(loadNumber, forwards));
 
         // Generate positions to make them appear
-        yield return StartCoroutine(GenerateObjectPlacement(optionVisibleNumber.GetDataInt()));
+        yield return StartCoroutine(GenerateObjectPlacement(loadNumber));
 
         // Make them appear in the scene
         RenderManager render = Instantiate(renderManager).GetComponent<RenderManager>();
         yield return StartCoroutine(render.PlaceMultimedia(selectionPaths,
-                                                           spawnPrefabs[optionObjectType.GetData()],
+                                                           elementPrefab,
                                                            false, false, false,
-                                                           spawnPositionObjects,
-                                                           optionGravity.GetData(),
-                                                           optionObjectSize.GetData()));
+                                                           spawnPositionObjects));
         Destroy(render.gameObject);
+
     }
 
     private IEnumerator GenerateSelectionPaths(int loadNumber, bool forwards)
@@ -324,12 +330,54 @@ public class CircularPanel : MonoBehaviour
             if (forwards)
             {
                 globalIndex++;
-                selectionPaths.Add(CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex));
+                bool search = true;
+                int attempts = 200;
+                int attempt = 0;
+                string actualPath;
+                string pathExtension;
+                while(search && attempt < attempts)
+                {
+                    actualPath = CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex);
+                    pathExtension = Path.GetExtension(actualPath);
+                    if (pathExtension == ".png" ||
+                        pathExtension == ".jpg" ||
+                        pathExtension == ".jpge")
+                    {
+                        selectionPaths.Add(CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex));
+                        search = false;
+                    }
+                    else
+                    {
+                        globalIndex++;
+                        attempt++;
+                    }
+                }
             }
             else
             {
                 globalIndex--;
-                selectionPaths.Add(CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex));
+                bool search = true;
+                int attempts = 200;
+                int attempt = 0;
+                string actualPath;
+                string pathExtension;
+                while (search && attempt < attempts)
+                {
+                    actualPath = CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex);
+                    pathExtension = Path.GetExtension(actualPath);
+                    if (pathExtension == ".png" ||
+                        pathExtension == ".jpg" ||
+                        pathExtension == ".jpge")
+                    {
+                        selectionPaths.Add(CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex));
+                        search = false;
+                    }
+                    else
+                    {
+                        globalIndex--;
+                        attempt++;
+                    }
+                }
             }
             index++;
             yield return null;
@@ -340,8 +388,31 @@ public class CircularPanel : MonoBehaviour
     {
         spawnPositionObjects = new List<GameObject>();
 
-        loadingSmall.UpdateText(0, numberOfPlacements, "Positioning");
-        for (int i = 0; i < numberOfPlacements; i++)
+        // Plane mode
+        if(mode == 0)
+        {
+            if (volumetric)
+            {
+                
+            }
+            else
+            {
+                yield return StartCoroutine(GetPlacementPlane(numberOfPlacements, false));
+            }
+        }
+        else if (mode == 0)
+        {
+            if(volumetric)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+
+        /*for (int i = 0; i < numberOfPlacements; i++)
         {
             GameObject positionObject = new GameObject();
             positionObject.transform.parent = spawnGroup;
@@ -349,11 +420,59 @@ public class CircularPanel : MonoBehaviour
 
             positionObject.transform.position = placementPosition;
             spawnPositionObjects.Add(positionObject);
-            loadingSmall.UpdateText(i + 1, numberOfPlacements, "Positioning");
             yield return null;
-        }
+        }*/
     }
 
-    //private IEnumerator Get
-    #endregion*/
+    private IEnumerator GetPlacementPlane(int numberOfPlacements, bool volumetric)
+    {
+        // Initial setup
+        if (volumetric)
+        {
+
+        }
+        else
+        {
+            placementBase = Instantiate(placementBasePrefabs[0], spawnGroup.transform, false);
+
+            LayoutGroup3D layoutGroup = placementBase.GetComponent<LayoutGroup3D>();
+            layoutGroup.GridConstraintCount = dimension.y;
+
+            for(int i = 0; i < numberOfPlacements; i++)
+            {
+                GameObject positionObject = new GameObject();
+                spawnPositionObjects.Add(positionObject);
+                positionObject.transform.parent = placementBase.transform;
+
+                if(i > 0)
+                {
+                    Vector3 distance = spawnPositionObjects[i - 1].transform.localPosition - spawnPositionObjects[i].transform.localPosition;
+                    Debug.Log(distance);
+                    Debug.Log(distance.magnitude);
+                }
+
+
+                yield return null;
+            }
+
+            // Generate Collider Box
+            BoxCollider boxCollider = placementBase.GetComponent<BoxCollider>();
+            boxCollider.center = Vector3.zero;
+            boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
+
+        }
+        // Fill
+    }
+
+    #endregion
+
+    #region Debug
+    public void DebugStart()
+    {
+        dimension = new Vector3Int(4, 4, 4);
+        mode = 0;
+        StartSpawnOperation();
+        ChangeVisibleComponent(3);
+    }
+    #endregion
 }
