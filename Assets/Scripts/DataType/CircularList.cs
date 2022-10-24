@@ -14,8 +14,16 @@ public static class CircularList
             element = list[newindex];
         } else if(index < 0)
         {
-            int newindex = list.Count - (Mathf.Abs(index) % list.Count);
-            element = list[newindex];
+            int newindex = (index + list.Count) % list.Count;
+            if(newindex < 0)
+            {
+                newindex *= -1;
+                element = list[list.Count - newindex]; 
+            }
+            else
+            {
+                element = list[newindex];
+            }
         }
         else
         {

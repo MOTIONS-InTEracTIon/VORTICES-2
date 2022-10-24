@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEngine.Networking;
-
+using System.Linq;
 public enum Result
 {
 	Success,
@@ -25,7 +25,7 @@ public class LoadLocalManager : MonoBehaviour
 		result = Result.OnGoing;
 		textureBuffer = new List<Texture2D>();
 
-		foreach (string url in imageList)
+		foreach (string url in imageList.ToList())
 		{
 			if (asThumbnail)
 			{

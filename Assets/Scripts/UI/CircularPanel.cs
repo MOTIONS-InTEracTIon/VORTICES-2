@@ -53,7 +53,7 @@ public class CircularPanel : MonoBehaviour
         FadeUI actualComponentFader = uiComponents[actualComponentId].GetComponent<FadeUI>();
         yield return StartCoroutine(actualComponentFader.FadeOut());
         // Disable actual component
-            uiComponents[actualComponentId].SetActive(false);
+        uiComponents[actualComponentId].SetActive(false);
         // Enable new component
         uiComponents[componentId].SetActive(true);
         // Block button if necessary
@@ -242,237 +242,26 @@ public class CircularPanel : MonoBehaviour
     #endregion
 
     #region Display Multimedia
-    public void StartSpawnOperation()
+    public void GenerateBase()
     {
-        // Startup
-        globalIndex = -1;
-        lastLoadForward = true;
-        selectionPaths = new List<string>();
-        // Execution
-        // First time has to fill every slot so it uses width * height * layer
-        int startingLoad = dimension.x * dimension.y;
-        if (dimension.z != 0)
-        {
-            startingLoad *= dimension.z;
-        }
-        StartCoroutine(ObjectSpawn(startingLoad, true));
-    }
-
-    public void SpawnForwards(int loadNumber)
-    {
-        // Spawn operation has to end before initiating another one (CHANGE: Show error message in the panel)
-        // Startup
-        selectionPaths = new List<string>();
-        // Execution
-        StartCoroutine(ObjectSpawn(loadNumber, true));
-
-    }
-
-    public void SpawnBackwards(int loadNumber)
-    {
-        // Spawn operation has to end before initiating another one (CHANGE: Show error message in the panel)
-        // Startup
-        selectionPaths = new List<string>();
-        // Execution
-        StartCoroutine(ObjectSpawn(loadNumber, false));
-    }
-
-    // Spawns initial files in front, and enables controls to cycle through the rest of files
-    private IEnumerator ObjectSpawn(int loadNumber, bool forwards)
-    {
-        // Get rid of old objects
-        // CHANGE: Could reuse this instead of destroying all
-        foreach (Transform child in spawnGroup)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // Generate selection path to get via render
-        yield return StartCoroutine(GenerateSelectionPaths(loadNumber, forwards));
-
-        // Generate positions to make them appear
-        yield return StartCoroutine(GenerateObjectPlacement(loadNumber));
-
-        // Make them appear in the scene
-        RenderManager render = Instantiate(renderManager).GetComponent<RenderManager>();
-        yield return StartCoroutine(render.PlaceMultimedia(selectionPaths,
-                                                           elementPrefab,
-                                                           false, false, false,
-                                                           spawnPositionObjects));
-        Destroy(render.gameObject);
-
-    }
-
-    private IEnumerator GenerateSelectionPaths(int loadNumber, bool forwards)
-    {
-        // CHANGE: Make the search double the size, so the next batch is ready when you switch to the next
-        int index = 0;
-
-        if (forwards)
-        {
-            if (!lastLoadForward)
-            {
-                globalIndex += loadNumber - 1;
-            }
-            lastLoadForward = true;
-        }
-        else
-        {
-            if (lastLoadForward)
-            {
-                globalIndex -= loadNumber - 1;
-            }
-            lastLoadForward = false;
-        }
-
-        while (index < loadNumber)
-        {
-            if (forwards)
-            {
-                globalIndex++;
-                bool search = true;
-                int attempts = 200;
-                int attempt = 0;
-                string actualPath;
-                string pathExtension;
-                while(search && attempt < attempts)
-                {
-                    actualPath = CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex);
-                    pathExtension = Path.GetExtension(actualPath);
-                    if (pathExtension == ".png" ||
-                        pathExtension == ".jpg" ||
-                        pathExtension == ".jpge")
-                    {
-                        selectionPaths.Add(CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex));
-                        search = false;
-                    }
-                    else
-                    {
-                        globalIndex++;
-                        attempt++;
-                    }
-                }
-            }
-            else
-            {
-                globalIndex--;
-                bool search = true;
-                int attempts = 200;
-                int attempt = 0;
-                string actualPath;
-                string pathExtension;
-                while (search && attempt < attempts)
-                {
-                    actualPath = CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex);
-                    pathExtension = Path.GetExtension(actualPath);
-                    if (pathExtension == ".png" ||
-                        pathExtension == ".jpg" ||
-                        pathExtension == ".jpge")
-                    {
-                        selectionPaths.Add(CircularList.GetElement<string>(optionFilePath.filePaths, globalIndex));
-                        search = false;
-                    }
-                    else
-                    {
-                        globalIndex--;
-                        attempt++;
-                    }
-                }
-            }
-            index++;
-            yield return null;
-        }
-    }
-
-    public IEnumerator GenerateObjectPlacement(int numberOfPlacements) //CHANGE: Take an option and split this function for each placement mode
-    {
-        spawnPositionObjects = new List<GameObject>();
-
         // Plane mode
-        if(mode == 0)
+        if (mode == 0)
         {
-            if (volumetric)
-            {
-                
-            }
-            else
-            {
-                yield return StartCoroutine(GetPlacementPlane(numberOfPlacements, false));
-            }
+            Vector3 positionOffset = new Vector3(0, 0, 1f); ;
+            placementBase = Instantiate(placementBasePrefabs[0], spawnGroup.transform.position + positionOffset, spawnGroup.transform.rotation, spawnGroup);
+            PlaneBase planeBase = placementBase.GetComponent<PlaneBase>();
+            placementBase.transform.localEulerAngles = new Vector3(0, 180.0f, 0);
+            planeBase.optionFilePath = optionFilePath;
+            planeBase.spawnCenter = spawnCenter;
+            planeBase.volumetric = volumetric;
+            planeBase.dimension = dimension;
+            planeBase.renderManager = renderManager;
+            planeBase.StartSpawnOperation();
         }
-        else if (mode == 0)
-        {
-            if(volumetric)
-            {
-
-            }
-            else
-            {
-
-            }
-        }
-
-        /*for (int i = 0; i < numberOfPlacements; i++)
-        {
-            GameObject positionObject = new GameObject();
-            positionObject.transform.parent = spawnGroup;
-            Vector3 placementPosition = spawnCenter.position + Vector3.left * (numberOfPlacements / 2) + Vector3.right * i;
-
-            positionObject.transform.position = placementPosition;
-            spawnPositionObjects.Add(positionObject);
-            yield return null;
-        }*/
-    }
-
-    private IEnumerator GetPlacementPlane(int numberOfPlacements, bool volumetric)
-    {
-        // Initial setup
-        if (volumetric)
+        else if (mode == 1)
         {
 
         }
-        else
-        {
-            placementBase = Instantiate(placementBasePrefabs[0], spawnGroup.transform, false);
-
-            LayoutGroup3D layoutGroup = placementBase.GetComponent<LayoutGroup3D>();
-            layoutGroup.GridConstraintCount = dimension.y;
-
-            for(int i = 0; i < numberOfPlacements; i++)
-            {
-                GameObject positionObject = new GameObject();
-                spawnPositionObjects.Add(positionObject);
-                positionObject.transform.parent = placementBase.transform;
-
-                if(i > 0)
-                {
-                    Vector3 distance = spawnPositionObjects[i - 1].transform.localPosition - spawnPositionObjects[i].transform.localPosition;
-                    Debug.Log(distance);
-                    Debug.Log(distance.magnitude);
-                }
-
-
-                yield return null;
-            }
-
-            // Generate Collider Box
-            BoxCollider boxCollider = placementBase.GetComponent<BoxCollider>();
-            boxCollider.center = Vector3.zero;
-            boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
-
-        }
-        // Fill
-    }
-
-    #endregion
-
-    #region Debug
-    public void DebugStart()
-    {
-        dimension = new Vector3Int(4, 4, 4);
-        mode = 0;
-        StartSpawnOperation();
-        ChangeVisibleComponent(3);
     }
     #endregion
 }

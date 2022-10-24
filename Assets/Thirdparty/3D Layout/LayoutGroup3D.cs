@@ -80,6 +80,9 @@ public class LayoutGroup3D : MonoBehaviour
     [HideInInspector]
     public bool NeedsRebuild = false;
 
+    public float timeElapsed = 0;
+    public float lerpTime = 1.0f;
+
     [Tooltip("Forces the layoutgroup to rebuild every frame while in Play mode.  WARNING: This may have performance implications for very large / complex layouts, use with caution")]
     public bool ForceContinuousRebuild = false;
     [Tooltip("If true, child gameobjects that are not activeSelf will be ignored for the layout.  Otherwise, inactive child gameobjects will be included in the layout.")]
@@ -203,7 +206,9 @@ public class LayoutGroup3D : MonoBehaviour
                     pos.x = GridLayoutAxis == LayoutAxis2D.X ? pOffset : sOffset;
                     pos.y = GridLayoutAxis == LayoutAxis2D.X ? sOffset : pOffset;
 
-                    LayoutElements[i++].localPosition = pos + StartPositionOffset + alignmentOffset;
+                    StartCoroutine(LerpToPosition(LayoutElements[i], pos + StartPositionOffset + alignmentOffset));
+                    i++;
+                    //LayoutElements[i++].localPosition = pos + StartPositionOffset + alignmentOffset;
                 }
             }
         }
@@ -413,6 +418,23 @@ public class LayoutGroup3D : MonoBehaviour
         }
     }
 
+    private IEnumerator LerpToPosition(Transform element, Vector3 position)
+    {
+        if(element != null)
+        {
+            float timeElapsed = 0;
+            while (timeElapsed < lerpTime)
+            {
+                timeElapsed += Time.deltaTime;
+                if (element != null)
+                {
+                    element.localPosition = Vector3.Lerp(element.localPosition, position, timeElapsed / lerpTime);
+                }
+                yield return null;
+            }
+        }
+    }
+
     public void PopulateElementsFromChildren()
     {
         if(LayoutElements == null)
@@ -456,7 +478,10 @@ public class LayoutGroup3D : MonoBehaviour
 
         for (int i = 0; i < LayoutElements.Count; i++)
         {
-            ElementRotations.Add(LayoutElements[i].localRotation);
+            if (LayoutElements[i] != null)
+            {
+                ElementRotations.Add(LayoutElements[i].localRotation);
+            }
         }
     }
 
@@ -541,6 +566,11 @@ public class LayoutGroup3D : MonoBehaviour
 
     public void Update()
     {
+        if(timeElapsed < lerpTime)
+        {
+            timeElapsed += Time.deltaTime;
+        }
+
         if(NeedsRebuild || HasChildCountChanged())
         {
             RebuildLayout();
@@ -554,7 +584,7 @@ public class LayoutGroup3D : MonoBehaviour
     public void OnTransformChildrenChanged()
     {
         NeedsRebuild = true;
-        Debug.Log("Transform children changed");
+        //Debug.Log("Transform children changed");
     }
 
 }

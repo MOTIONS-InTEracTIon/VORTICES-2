@@ -21,7 +21,7 @@ public class RenderManager : MonoBehaviour
     // placementObject = List of locations to be filled by multimedia objects
 
 
-    public IEnumerator PlaceMultimedia(List<string> texturePaths, GameObject prefabObject, bool asThumbnail, bool invisible, bool asFirstSibling, List<GameObject> placementObjects)
+    public IEnumerator PlaceMultimedia(List<string> texturePaths, GameObject prefabObject, bool asThumbnail, bool invisible, List<GameObject> placementObjects)
     {
         result = Result.OnGoing;
         // X images will be placed inside X gameobjects
@@ -35,11 +35,11 @@ public class RenderManager : MonoBehaviour
             {
                 if (placementObjects.Count == 1)
                 {
-                    yield return StartCoroutine(PlaceFitObject(textures[i], prefabObject, placementObjects[0], invisible, asFirstSibling));
+                    PlaceFitObject(textures[i], prefabObject, placementObjects[0], invisible);
                 }
                 else
                 {
-                    yield return StartCoroutine(PlaceFitObject(textures[i], prefabObject, placementObjects[i], invisible, asFirstSibling));
+                    PlaceFitObject(textures[i], prefabObject, placementObjects[i], invisible);
                 }
             }
 
@@ -57,29 +57,24 @@ public class RenderManager : MonoBehaviour
 
     }
 
-    private IEnumerator PlaceFitObject(Texture2D texture, GameObject prefabObject, GameObject fitObject, bool invisible, bool asFirstSibling)
+    private void PlaceFitObject(Texture2D texture, GameObject prefabObject, GameObject fitObject, bool invisible)
     {
-        // For each file create an object
-        for (int i = 0; i < 1; i++)
+        // Spawning starts from instantiating the prefab (Destroying if fitobject has already a child)
+        if(fitObject.transform.childCount > 0)
         {
-            // Spawning starts from instantiating the prefab
-            GameObject spawnObject = Instantiate(prefabObject, fitObject.transform.position, prefabObject.transform.rotation, fitObject.transform);
-            if (invisible)
-            {
-                spawnObject.SetActive(false);
-            }
-            if (asFirstSibling)
-            {
-                spawnObject.transform.SetAsFirstSibling();
-            }
-            // Apply properties
-            // Fit into object while conserving aspect ratio
-            SizeToParent(spawnObject, texture);
-            // Apply material file
-            spawnObject.GetComponent<Renderer>().material.mainTexture = texture;
-
-            yield return null;
+            Destroy(fitObject.transform.GetChild(0).gameObject);
         }
+        GameObject spawnObject = Instantiate(prefabObject, fitObject.transform.position, prefabObject.transform.rotation, fitObject.transform);
+
+        if (invisible)
+        {
+            spawnObject.SetActive(false);
+        }
+        // Apply properties
+        // Fit into object while conserving aspect ratio
+        SizeToParent(spawnObject, texture);
+        // Apply material file
+        spawnObject.GetComponent<Renderer>().material.mainTexture = texture;
     }
 
     private void SizeToParent(GameObject spawnObject, Texture2D texture)
