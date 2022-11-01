@@ -1,24 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using UnityEngine.UI;
 
-public class ToggleGroup2 : MonoBehaviour
+namespace Vortices
 {
-    public List<Toggle> ribbonToggles; // Add all the [toggles] in the same group to this list
-
-    public void SelectRibbonButton(Toggle but) // Call this functin with the toggle and pass the toggle itself as the parameter
+    public class ToggleGroup2 : MonoBehaviour
     {
-        foreach (Toggle b in ribbonToggles)
+        public List<Toggle> ribbonToggles; // Add all the [toggles] in the same group to this list
+
+        public void SelectRibbonButton(Toggle but) // Call this functin with the toggle and pass the toggle itself as the parameter
         {
-            if (b == but)
+            foreach (Toggle b in ribbonToggles)
             {
-                b.interactable = false;
-            }
-            else
-            {
-                b.interactable = true;
+                if (b == but)
+                {
+                    b.interactable = false;
+                }
+                else
+                {
+                    b.interactable = true;
+                }
             }
         }
     }

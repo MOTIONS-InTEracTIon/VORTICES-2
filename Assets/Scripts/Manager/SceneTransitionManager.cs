@@ -1,41 +1,42 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 using UnityEngine.SceneManagement;
 
-public class SceneTransitionManager : MonoBehaviour
+namespace Vortices
 {
-    public FadeScreen fadeScreen;
-    private float blackScreenDuration = 2.0f;
-    public int sceneTarget { get; set; }
-
-    public void GoToScene()
+    public class SceneTransitionManager : MonoBehaviour
     {
-        StartCoroutine(GoToSceneRoutine());
-    }
+        public FadeScreen fadeScreen;
+        private float blackScreenDuration = 2.0f;
+        public int sceneTarget { get; set; }
 
-    IEnumerator GoToSceneRoutine()
-    {
-        fadeScreen.FadeOut();
-
-        //Launch new scene
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneTarget);
-        operation.allowSceneActivation = false;
-
-        float timer = 0;
-        while(timer <= fadeScreen.fadeDuration)
+        public void GoToScene()
         {
-            timer += Time.deltaTime;
-            yield return null;
-        }
-        timer = 0;
-        while(timer <= blackScreenDuration && !operation.isDone)
-        {
-            timer += Time.deltaTime;
-            yield return null;
+            StartCoroutine(GoToSceneRoutine());
         }
 
-        operation.allowSceneActivation = true;
+        IEnumerator GoToSceneRoutine()
+        {
+            fadeScreen.FadeOut();
+
+            //Launch new scene
+            AsyncOperation operation = SceneManager.LoadSceneAsync(sceneTarget);
+            operation.allowSceneActivation = false;
+
+            float timer = 0;
+            while(timer <= fadeScreen.fadeDuration)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            timer = 0;
+            while(timer <= blackScreenDuration && !operation.isDone)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            operation.allowSceneActivation = true;
+        }
     }
 }

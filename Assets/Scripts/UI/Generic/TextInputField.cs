@@ -1,32 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
-using TMPro;
-
-public class TextInputField : MonoBehaviour
+namespace Vortices
 {
-    [SerializeField] private TMP_InputField inputfield;
+    public class TextInputField : MonoBehaviour
+    {
+        [SerializeField] private TMP_InputField inputfield;
 
-    public string GetData()
-    {
-        return inputfield.text;
-    }
-    public int GetDataInt()
-    {
-        try
+        public string GetData()
         {
-            return int.Parse(inputfield.text);
+            return inputfield.text;
         }
-        catch
+        public int GetDataInt()
         {
-            return 0;
-        }
+            try
+            {
+                return int.Parse(inputfield.text);
+            }
+            catch
+            {
+                return 0;
+            }
         
-    }
+        }
 
-    public void SetText(string text)
-    {
-        inputfield.text = text;
+        public void SetText(string text)
+        {
+            inputfield.text = text;
+        }
     }
 }

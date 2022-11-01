@@ -1,60 +1,62 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CanvasGroup))]
-public class FadeUI : MonoBehaviour
+namespace Vortices
 {
-    public bool fadeOnStart = true;
-    public float fadeDuration = 1.0f;
-
-    private CanvasGroup canvasGroup;
-
-    void Start()
+    [RequireComponent(typeof(CanvasGroup))]
+    public class FadeUI : MonoBehaviour
     {
-        if (fadeOnStart)
+        public bool fadeOnStart = true;
+        public float fadeDuration = 1.0f;
+
+        private CanvasGroup canvasGroup;
+
+        void Start()
         {
-            StartCoroutine(FadeIn());
-        }
-    }
-
-    public IEnumerator FadeIn()
-    {
-        yield return StartCoroutine(FadeRoutine(0, 1));
-    }
-
-    public IEnumerator FadeOut()
-    {
-        yield return StartCoroutine(FadeRoutine(1, 0));
-    }
-
-    public IEnumerator FadeRoutine(float alphaIn, float alphaOut)
-    {
-        if(canvasGroup == null)
-        {
-            canvasGroup = GetComponent<CanvasGroup>();
+            if (fadeOnStart)
+            {
+                StartCoroutine(FadeIn());
+            }
         }
 
-        float timer = 0;
-
-        while (timer <= fadeDuration)
+        public IEnumerator FadeIn()
         {
-            float newAlpha = Mathf.Lerp(alphaIn, alphaOut, timer / fadeDuration);
-            canvasGroup.alpha = newAlpha;
-
-            timer += Time.deltaTime;
-            yield return null;
+            yield return StartCoroutine(FadeRoutine(0, 1));
         }
 
-        canvasGroup.alpha = alphaOut;
-
-        if (alphaOut == 0)
+        public IEnumerator FadeOut()
         {
-            canvasGroup.blocksRaycasts = false;
+            yield return StartCoroutine(FadeRoutine(1, 0));
         }
-        else
+
+        public IEnumerator FadeRoutine(float alphaIn, float alphaOut)
         {
-            canvasGroup.blocksRaycasts = true;
+            if(canvasGroup == null)
+            {
+                canvasGroup = GetComponent<CanvasGroup>();
+            }
+
+            float timer = 0;
+
+            while (timer <= fadeDuration)
+            {
+                float newAlpha = Mathf.Lerp(alphaIn, alphaOut, timer / fadeDuration);
+                canvasGroup.alpha = newAlpha;
+
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            canvasGroup.alpha = alphaOut;
+
+            if (alphaOut == 0)
+            {
+                canvasGroup.blocksRaycasts = false;
+            }
+            else
+            {
+                canvasGroup.blocksRaycasts = true;
+            }
         }
     }
 }

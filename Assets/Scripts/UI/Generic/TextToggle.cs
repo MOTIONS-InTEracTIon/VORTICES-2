@@ -1,21 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 using UnityEngine.UI;
 
-public class TextToggle : MonoBehaviour
+namespace Vortices
 {
-    [SerializeField] private Toggle toggle;
-
-    private void OnEnable()
+    public class TextToggle : MonoBehaviour
     {
-        toggle.isOn = false;
-        toggle.interactable = true;
-    }
+        [SerializeField] private Toggle toggle;
 
-    public bool GetData()
-    {
-        return toggle.isOn;
+        private void OnEnable()
+        {
+            toggle.isOn = false;
+            toggle.interactable = true;
+        }
+
+        public bool GetData()
+        {
+            return toggle.isOn;
+        }
     }
 }

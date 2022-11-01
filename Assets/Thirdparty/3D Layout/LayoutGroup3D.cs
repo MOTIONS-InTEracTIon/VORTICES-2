@@ -149,7 +149,8 @@ public class LayoutGroup3D : MonoBehaviour
                     pos.z = (float)i * (dimensions.z + Spacing);
                     break;
             }
-            LayoutElements[i].localPosition = pos + StartPositionOffset + alignmentOffset;
+            //LayoutElements[i].localPosition = pos + StartPositionOffset + alignmentOffset;
+            StartCoroutine(LerpToPosition(LayoutElements[i], pos + StartPositionOffset + alignmentOffset));
         }
     }
 
@@ -566,11 +567,6 @@ public class LayoutGroup3D : MonoBehaviour
 
     public void Update()
     {
-        if(timeElapsed < lerpTime)
-        {
-            timeElapsed += Time.deltaTime;
-        }
-
         if(NeedsRebuild || HasChildCountChanged())
         {
             RebuildLayout();

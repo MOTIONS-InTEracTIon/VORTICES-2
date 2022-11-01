@@ -2286,8 +2286,8 @@ GameObject:
   - component: {fileID: 114000010865040046}
   - component: {fileID: 114000013689746302}
   - component: {fileID: 7665895432570801659}
-  - component: {fileID: 6140474747379616150}
   - component: {fileID: 7731184441739286720}
+  - component: {fileID: -8934851802310591664}
   m_Layer: 6
   m_Name: SimpleFileBrowserCanvas
   m_TagString: Untagged
@@ -2488,20 +2488,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
---- !u!114 &6140474747379616150
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000011817404238}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84efae2fc39644840a6885376a3268a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fadeOnStart: 0
-  fadeDuration: 1
 --- !u!114 &7731184441739286720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2522,6 +2508,20 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &-8934851802310591664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000011817404238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84efae2fc39644840a6885376a3268a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeOnStart: 0
+  fadeDuration: 1
 --- !u!1 &1000011827953324
 GameObject:
   m_ObjectHideFlags: 0

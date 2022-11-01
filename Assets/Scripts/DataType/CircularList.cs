@@ -1,35 +1,36 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public static class CircularList
+namespace Vortices
 {
-    public static T GetElement<T>(List<T> list, int index)
+    public static class CircularList
     {
-        T element;
+        public static T GetElement<T>(List<T> list, int index)
+        {
+            T element;
         
-        if(index >= list.Count)
-        {
-            int newindex = index % list.Count;
-            element = list[newindex];
-        } else if(index < 0)
-        {
-            int newindex = (index + list.Count) % list.Count;
-            if(newindex < 0)
+            if(index >= list.Count)
             {
-                newindex *= -1;
-                element = list[list.Count - newindex]; 
+                int newindex = index % list.Count;
+                element = list[newindex];
+            } else if(index < 0)
+            {
+                int newindex = (index + list.Count) % list.Count;
+                if(newindex < 0)
+                {
+                    newindex *= -1;
+                    element = list[list.Count - newindex]; 
+                }
+                else
+                {
+                    element = list[newindex];
+                }
             }
             else
             {
-                element = list[newindex];
+                element = list[index];
             }
-        }
-        else
-        {
-            element = list[index];
-        }
 
-        return element;
-    } 
+            return element;
+        } 
+    }
 }

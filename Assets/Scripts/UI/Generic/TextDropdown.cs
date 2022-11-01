@@ -1,16 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
-using TMPro;
-
-public class TextDropdown : MonoBehaviour
+namespace Vortices
 {
-    [SerializeField] private TMP_Dropdown dropdown;
-
-    public int GetData()
+    public class TextDropdown : MonoBehaviour
     {
-        return dropdown.value;
-    }
+        [SerializeField] private TMP_Dropdown dropdown;
 
+        public int GetData()
+        {
+            return dropdown.value;
+        }
+
+    }
 }

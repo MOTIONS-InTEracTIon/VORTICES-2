@@ -1,336 +1,470 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using UnityEngine.XR.Interaction.Toolkit;
-using System;
 
-public class PlaneBase : SpawnBase
+namespace Vortices
 {
-    #region Variables and properties
-    // Movement variables
-    List<XRRayInteractor> rayInteractors;
-    Rigidbody rb;
-
-    private XRRayInteractor currentlySelecting;
-    private Vector3 initialDragPos;
-    private bool hasAxis;
-    public string dragDir;
-    private bool lerpToPositionRunning;
-    private bool drag;
-    private bool spring;
-    Vector3 offset = Vector3.zero;
-
-    // Bounds
-    private LayoutGroup3D layoutGroup;
-    private BoxCollider boxCollider;
-    public Vector3 centerPosition;
-    public Vector4 bounds; //PRIVATE
-    private float boxBoundsize = 0.0001f;
-    private float boundOffset = 0.001f;
-
-    // Settings
-    public float afterSpawnTime = 0;
-    public float spawnCooldown = 1.0f;
-    public float moveSpeed = 1.0f;
-
-    #endregion
-
-    private void Start()
+    public class PlaneBase : MonoBehaviour
     {
-        rayInteractors = new List<XRRayInteractor>();
-        rayInteractors.Add(GameObject.Find("Ray Interactor Left").GetComponent<XRRayInteractor>());
-        rayInteractors.Add(GameObject.Find("Ray Interactor Right").GetComponent<XRRayInteractor>());
-        rb = GetComponent<Rigidbody>();
+        // Other references
+        private List<GameObject> planeList;
+        [SerializeField] private GameObject linearRail;
+        public GameObject planeGroupPrefab;
+        List<XRRayInteractor> rayInteractors;
+        Rigidbody rb;
 
-        // Starting layout settings
-        layoutGroup = GetComponent<LayoutGroup3D>();
-        if(volumetric)
+        // SpawnBase Data Components
+        [HideInInspector] public List<string> filePaths;
+
+        // Movement variables
+        private XRRayInteractor currentlySelecting;
+        private Vector3 initialDragPos;
+        private Vector3 initialDragDist;
+        private bool hasAxis;
+        public string dragDir;
+        private bool lerpToPositionRunning;
+        private bool drag;
+        Vector3 offset = Vector3.zero;
+        private int globalIndex;
+        private bool lastLoadForward;
+
+        // Bounds
+        private LayoutGroup3D layoutGroup;
+        private BoxCollider boxCollider;
+        public Vector3 centerPosition;
+        public Vector4 bounds; //PRIVATE
+        private float boxBoundsize = 0.0001f;
+        private float boundZOffset = 0.001f;
+        public float movementOffset = 0.1f;
+
+        // Settings
+        public bool volumetric { get; set; }
+        [HideInInspector] public Vector3Int dimension;
+        public float afterSpawnTime;
+        public float spawnCooldownX = 1.0f;
+        public float spawnCooldownZ = 3f;
+        public float timeLerp = 1f;
+        public GameObject frontPlane;
+
+        // Coroutine
+        protected Queue<IEnumerator> coroutineQueue;
+        private int spawnCoroutinesRunning;
+        protected bool coordinatorWorking;
+        private bool movingOperationRunning;
+
+        private void Start()
         {
+            rayInteractors = new List<XRRayInteractor>();
+            rayInteractors.Add(GameObject.Find("Ray Interactor Left").GetComponent<XRRayInteractor>());
+            rayInteractors.Add(GameObject.Find("Ray Interactor Right").GetComponent<XRRayInteractor>());
+            rb = GetComponent<Rigidbody>();
 
+            //Start Coroutine Coordinator
+            coroutineQueue = new Queue<IEnumerator>();
+            StartCoroutine(CoroutineCoordinator());
         }
-        else
+
+        #region Group Spawn
+        public void StartGenerateSpawnGroup()
         {
-            layoutGroup.Style = LayoutStyle.Grid;
-            layoutGroup.GridConstraintCount = dimension.y;
-        }
-
-        // Generates Collider Box for moving
-        boxCollider = GetComponent<BoxCollider>();
-        boxCollider.center = Vector3.zero;
-        boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
-        // Generates bounds using dimension given (Box from the left side to its down side)
-        centerPosition = transform.position;
-        bounds.w = -boxBoundsize;
-        bounds.x = centerPosition.y + (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
-        bounds.y = boxBoundsize;
-        bounds.z = centerPosition.y - (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
-        //Start Coroutine Coordinator
-        coroutineQueue = new Queue<IEnumerator>();
-        StartCoroutine(CoroutineCoordinator());
-    }
-
-    #region Movement
-
-    private void Update()
-    {
-        // If spawn is done, this makes sure the cooldown applies
-        if (afterSpawnTime < spawnCooldown)
-        {
-            afterSpawnTime += Time.deltaTime;
-        }
-
-        // This makes sure elements only move in bounds even if user is not dragging
-        if ((CheckBounds()) || drag)
-        {
-            if (drag)
+            globalIndex = -1;
+            lastLoadForward = true;
+            // Rail Generation
+            linearRail = Instantiate(linearRail, transform.position, transform.rotation, transform);
+            // Plane Generation
+            planeList = new List<GameObject>();
+            for(int i = 0; i < dimension.z; i++)
             {
-                Vector3 position; Vector3 normal; int positionInLine; bool isValidTarget;
-                if (currentlySelecting.TryGetHitInfo(out position, out normal, out positionInLine, out isValidTarget))
+                GameObject gameObject = Instantiate(planeGroupPrefab, transform.position, transform.rotation, linearRail.transform);
+                planeList.Add(gameObject);
+                if (i == 0)
                 {
-                    // This makes sure the dragging of elements is in one axis only
-                    if (!hasAxis)
+                    frontPlane = gameObject;
+                }
+                else
+                {
+                    MoveGlobalIndex(true);
+                }
+                PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
+                spawnGroup.filePaths = filePaths;
+                spawnGroup.dimension = dimension;
+                StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex));
+            }
+
+            SetMovementBoundBox();
+        }
+
+        private void SetMovementBoundBox()
+        {
+            // Uses first plane layout to set bound box
+            layoutGroup = frontPlane.GetComponent<LayoutGroup3D>();
+            // Generates Collider Box for moving
+            boxCollider = GetComponent<BoxCollider>();
+            boxCollider.center = Vector3.zero;
+            boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
+            // Generates bounds using dimension given (Box from the left side to its down side)
+            centerPosition = transform.position;
+            bounds.w = -boxBoundsize;
+            bounds.x = centerPosition.y + (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
+            bounds.y = boxBoundsize;
+            bounds.z = centerPosition.y - (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
+        }
+
+        public IEnumerator StopSpawn()
+        {
+            Fade planeFader = GetComponent<Fade>();
+            yield return StartCoroutine(planeFader.FadeOutCoroutine());
+            Destroy(gameObject);
+        }
+
+        #endregion
+
+        #region Movement
+
+        private void Update()
+        {
+            // If spawn is done, this makes sure the cooldown applies
+            if (afterSpawnTime < spawnCooldownZ)
+            {
+                afterSpawnTime += Time.deltaTime;
+            }
+
+            // This makes sure elements only move in bounds even if user is not dragging
+            if ((frontPlane != null && CheckBounds()) || drag)
+            {
+                if (drag)
+                {
+                    Vector3 position; Vector3 normal; int positionInLine; bool isValidTarget;
+                    if (currentlySelecting.TryGetHitInfo(out position, out normal, out positionInLine, out isValidTarget))
                     {
-                        Vector3 distance = initialDragPos - position;
-                        if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
+                        // This makes sure the dragging of elements is in one axis only
+                        if (!hasAxis)
                         {
-                            rb.constraints = RigidbodyConstraints.FreezePositionY;
-                            hasAxis = true;
-                            if(distance.x > 0)
+                            Vector3 distanceXY = position - initialDragPos;
+                            Vector3 distanceZ = position - currentlySelecting.rayOriginTransform.position;
+
+                            if (distanceZ.magnitude > (initialDragDist.magnitude + movementOffset))
                             {
-                                dragDir = "Left";
+                                hasAxis = true;
+                                dragDir = "Pull";
                             }
-                            else
+                            else if (distanceZ.magnitude < (initialDragDist.magnitude - movementOffset))
                             {
-                                dragDir = "Right";
+                                hasAxis = true;
+                                dragDir = "Push";
                             }
-                        }
-                        else if (Mathf.Abs(distance.x) < Mathf.Abs(distance.y))
-                        {
-                            rb.constraints = RigidbodyConstraints.FreezePositionX;
-                            hasAxis = true;
-                            if (distance.y > 0)
+                            else if (Mathf.Abs(distanceXY.x) > Mathf.Abs(distanceXY.y))
                             {
-                                dragDir = "Down";
+                                if (distanceXY.x < -movementOffset)
+                                {
+                                    dragDir = "Left";
+                                    hasAxis = true;
+                                }
+                                else if (distanceXY.x > movementOffset)
+                                {
+                                    dragDir = "Right";
+                                    hasAxis = true;
+                                }
                             }
-                            else
+                            else if (Mathf.Abs(distanceXY.x) < Mathf.Abs(distanceXY.y))
                             {
-                                dragDir = "Up";
+                                if (distanceXY.y < -movementOffset)
+                                {
+                                    dragDir = "Down";
+                                    hasAxis = true;
+                                }
+                                else if (distanceXY.y > movementOffset)
+                                {
+                                    dragDir = "Up";
+                                    hasAxis = true;
+                                }
                             }
                         }
                     }
                 }
-                // This makes sure the elements only move in bounds
-                if (dragDir == "Left" || dragDir == "Right")
-                {
-                    position.z = transform.position.z;
-                    position.y = transform.position.y;
-                    rb.MovePosition(position + offset);
-                }
-
             }
         }
-    }
-    
-    // Checks if the multimedia bas has touched any bounds so it can stop it or spawn a new set of multimedia, returns true if movement is permitted
-    private bool CheckBounds(Vector3 nextPosition)
-    {
-        bool canMove = false;
-        Vector3 center = transform.position;
-        // Sides have to be evaluated first
-        if((rb.constraints & RigidbodyConstraints.FreezePositionY) != RigidbodyConstraints.None)
+
+        // Checks even when user is not dragging and eliminates chance of re-dragging (As there is no drag)
+        private bool CheckBounds()
         {
-            // This means the base has touched the left bound and will spawn
-            if (center.x <= bounds.w)
+            bool canMove = false;
+            Vector3 center = frontPlane.transform.position;
+            // This means the base has been pulled and will spawn inwards
+            if(volumetric && drag && dragDir == "Pull")
             {
-                rb.velocity = Vector3.zero;
-                Vector3 newPosition = new Vector3(bounds.w, transform.position.y, transform.position.z);
-                transform.position = newPosition;
+                if (afterSpawnTime >= spawnCooldownZ && drag && !movingOperationRunning)
+                {
+                    afterSpawnTime = 0;
+                    coroutineQueue.Enqueue(GroupSpawnPull());
+                }
+            }
+            // This means the base has been pushed and will spawn outwards
+            else if (volumetric && drag && dragDir == "Push")
+            {
+                if (afterSpawnTime >= spawnCooldownZ && drag && !movingOperationRunning)
+                {
+                    afterSpawnTime = 0;
+                    coroutineQueue.Enqueue(GroupSpawnPush());
+                }
+            }
+            // This means the base has touched the left bound and will spawn
+            else if (drag && dragDir == "Left")
+            {
+                if (afterSpawnTime >= spawnCooldownX && drag && !movingOperationRunning)
+                {
+                    afterSpawnTime = 0;
+                    coroutineQueue.Enqueue(GroupSpawnForwards());
+                }
             }
             // This means the base has touched the right bound and will spawn
-            else if (center.x >= bounds.y)
+            else if (drag && dragDir == "Right")
             {
-                rb.velocity = Vector3.zero;
-                Vector3 newPosition = new Vector3(bounds.y, transform.position.y, transform.position.z);
-                transform.position = newPosition;
+                if (afterSpawnTime >= spawnCooldownX && drag && !movingOperationRunning)
+                {
+                    afterSpawnTime = 0;
+                    coroutineQueue.Enqueue(GroupSpawnBackwards());
+                }
+            }
+            else if (drag && dragDir == "Up" && ((center.y + boundZOffset) < bounds.x && (center.y - boundZOffset) < bounds.x))
+            {
+                if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
+                {
+                    afterSpawnTime = 0;
+                    StartCoroutine(LerpToPosition(dragDir));
+                }
+            }
+            else if (drag && dragDir == "Down" && ((center.y + boundZOffset) > bounds.z && (center.y - boundZOffset) > bounds.z))
+            {
+                if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
+                {
+                    afterSpawnTime = 0;
+                    StartCoroutine(LerpToPosition(dragDir));
+                }
             }
             else
             {
                 canMove = true;
             }
-        }
-        else if ((rb.constraints & RigidbodyConstraints.FreezePositionX) != RigidbodyConstraints.None)
-        {
-            // This means the base has touched the upper bound and will stop
-            if (center.y >= bounds.x)
-            {
-                rb.velocity = Vector3.zero;
-                Vector3 newPosition = new Vector3(transform.position.x, bounds.x, transform.position.z);
-                transform.position = newPosition;
 
-            }
-            // This means the base has touched the lower bound and will stop
-            else if (center.y <= bounds.z)
-            {
-                rb.velocity = Vector3.zero;
-                Vector3 newPosition = new Vector3(transform.position.x, bounds.z, transform.position.z);
-                transform.position = newPosition;
-            }
-            else
-            {
-                canMove = true;
-            }
+            return canMove;
         }
 
-        return canMove;
-    }
-    // Checks even when user is not dragging and eliminates chance of re-dragging (As there is no drag)
-    private bool CheckBounds()
-    {
-        bool canMove = false;
-        Vector3 center = transform.position;
-        // This means the base has touched the left bound and will spawn
-        if (center.x <= bounds.w)
+        // Enables movement on a currently selected plane
+        public void MoveToCursor()
         {
-            rb.velocity = Vector3.zero;
-            transform.position = centerPosition;
-            if (afterSpawnTime >= spawnCooldown)
+            if (rayInteractors[0].isSelectActive)
             {
-                afterSpawnTime = 0;
-                coroutineQueue.Enqueue(SpawnForwards(dimension.y));
+                currentlySelecting = rayInteractors[0];
+            }
+            else if (rayInteractors[1].isSelectActive)
+            {
+                currentlySelecting = rayInteractors[1];
+            }
+
+            Vector3 position;
+            Vector3 normal;
+            int positionInLine;
+            bool isValidTarget;
+            if (currentlySelecting.TryGetHitInfo(out position, out normal, out positionInLine, out isValidTarget))
+            {
+                initialDragPos = position;
+                initialDragDist = currentlySelecting.rayOriginTransform.position - position;
+                position.z = transform.position.z;
+                offset = transform.position - position;
+                drag = true;
             }
         }
-        // This means the base has touched the right bound and will spawn
-        else if (center.x >= bounds.y)
+
+        // Executes a lerp order for every multimedia element in a panel
+        public IEnumerator LerpToPosition(string moveDir)
         {
-            rb.velocity = Vector3.zero;
-            transform.position = centerPosition;
-            if (afterSpawnTime >= spawnCooldown && drag)
+            if (frontPlane != null)
             {
-                afterSpawnTime = 0;
-                coroutineQueue.Enqueue(SpawnBackwards(dimension.y));
+                lerpToPositionRunning = true;
+                Vector3 position = Vector3.zero;
+                if (moveDir == "Up")
+                {
+                    position = new Vector3(frontPlane.transform.position.x, frontPlane.transform.position.y + layoutGroup.ElementDimensions.y + layoutGroup.Spacing, frontPlane.transform.position.z);
+                }
+                else if (moveDir == "Down")
+                {
+                    position = new Vector3(frontPlane.transform.position.x, frontPlane.transform.position.y - layoutGroup.ElementDimensions.y - layoutGroup.Spacing, frontPlane.transform.position.z);
+                }
+
+                float timeElapsed = 0;
+                while (timeElapsed < spawnCooldownX)
+                {
+                    timeElapsed += Time.deltaTime;
+                    frontPlane.transform.position = Vector3.Lerp(frontPlane.transform.position, position, timeElapsed / timeLerp);
+                    centerPosition.y = frontPlane.transform.position.y;
+                    boxCollider.center = frontPlane.transform.localPosition;
+                    yield return null;
+                }
+                lerpToPositionRunning = false;
             }
         }
-        else if (drag && dragDir == "Up" && ((center.y + boundOffset) < bounds.x && (center.y - boundOffset) < bounds.x))
+
+        // Resets variables for the next drag operation
+        public void StopMoveToCursor()
         {
-            if (afterSpawnTime >= spawnCooldown && !lerpToPositionRunning)
+            currentlySelecting = null;
+            drag = false;
+            offset = Vector3.zero;
+            hasAxis = false;
+            dragDir = "";
+            //rb.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationX;
+        }
+
+        private IEnumerator CoroutineCoordinator()
+        {
+            while (true)
             {
-                afterSpawnTime = 0;
-                coroutineQueue.Enqueue(LerpToPosition(dragDir));
+                while (coroutineQueue.Count > 0)
+                {
+                    coordinatorWorking = true;
+                    Debug.Log(coordinatorWorking);
+                    yield return StartCoroutine(coroutineQueue.Dequeue());
+                    coordinatorWorking = false;
+                    Debug.Log(coordinatorWorking);
+                }
+                yield return null;
+
             }
         }
-        else if (drag && dragDir == "Down" && ((center.y + boundOffset) > bounds.z && (center.y - boundOffset) > bounds.z))
-            {
-            if (afterSpawnTime >= spawnCooldown && !lerpToPositionRunning)
-            {
-                afterSpawnTime = 0;
-                coroutineQueue.Enqueue(LerpToPosition(dragDir));
-            }
-        }
-        else
-        {
-            canMove = true;
-        }
+        #endregion
 
-        return canMove;
-    }
+        #region Multimedia Spawn
 
-    public void MoveToCursor()
-    {
-        if (rayInteractors[0].isSelectActive)
-        {
-            currentlySelecting = rayInteractors[0];
-        } 
-        else if (rayInteractors[1].isSelectActive)
-        {
-            currentlySelecting = rayInteractors[1];
-        }
-
-        Vector3 position;
-        Vector3 normal;
-        int positionInLine;
-        bool isValidTarget;
-        if (currentlySelecting.TryGetHitInfo(out position, out normal, out positionInLine, out isValidTarget))
-        {
-            initialDragPos = position;
-            position.z = transform.position.z;
-            offset = transform.position - position;
-            drag = true;
-        }
-    }
-
-    public IEnumerator LerpToPosition(string moveDir)
-    {
-        lerpToPositionRunning = true;
-        Vector3 position = Vector3.zero;
-        if(moveDir == "Up")
-        {
-            position = new Vector3(transform.position.x, transform.position.y + layoutGroup.ElementDimensions.y + layoutGroup.Spacing, transform.position.z);
-        }
-        else if (moveDir == "Down")
-        {
-            position = new Vector3(transform.position.x, transform.position.y - layoutGroup.ElementDimensions.y - layoutGroup.Spacing, transform.position.z);
-        }
-
-        float timeElapsed = 0;
-        while (timeElapsed < spawnCooldown)
-        {
-            timeElapsed += Time.deltaTime;
-            transform.position = Vector3.Lerp(transform.position, position, timeElapsed / spawnCooldown);
-            yield return null;
-        }
-        centerPosition.y = transform.position.y;
-        lerpToPositionRunning = false;
-    }
-
-    public void StopMoveToCursor()
-    {
-        currentlySelecting = null;
-        drag = false;
-        offset = Vector3.zero;
-        hasAxis = false;
-        dragDir = "";
-        rb.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationX;
-    }
-    #endregion
-
-    #region Multimedia Spawn
-    public override void GenerateObjectPlacement(int loadNumber, bool forwards)
-    {
-        loadObjects = new List<GameObject>();
-
-        for (int i = 0; i < loadNumber; i++)
-        {
-            GameObject positionObject = new GameObject();
-            loadObjects.Add(positionObject);
-            if (forwards)
-            {
-                positionObject.transform.parent = transform;
-                positionObject.transform.SetAsFirstSibling();
-            }
-            else
-            {
-                positionObject.transform.parent = transform;
-            }
-        }
-    }
-
-    public override void GenerateDestroyObjects(int unloadNumber, bool forwards)
-    {
-        for(int i = 0; i < unloadNumber; i++)
+        private void MoveGlobalIndex(bool forwards)
         {
             if (forwards)
             {
-                unloadObjects.Add(transform.GetChild(i).gameObject);
+                if (!lastLoadForward)
+                {
+                    globalIndex += dimension.x * dimension.y * dimension.z;
+                }
+                else
+                {
+                    globalIndex += dimension.x * dimension.y;
+                }
+                lastLoadForward = true;
             }
             else
             {
-                unloadObjects.Add(transform.GetChild(transform.childCount - i - 1).gameObject);
+                if (lastLoadForward)
+                {
+                    globalIndex -= dimension.x * dimension.y * dimension.z;
+                }
+                else
+                {
+                    globalIndex -= dimension.x * dimension.y;
+                }
+                lastLoadForward = false;
             }
         }
 
+        private IEnumerator GroupSpawnForwards()
+        {
+            movingOperationRunning = true;
+            int spawnCoroutinesRunning = 0;
+
+            for (int i = 0; i < dimension.z; i++)
+            {
+                PlaneGroup planeGroup = planeList[i].GetComponent<PlaneGroup>();
+                Task spawnCoroutine = new Task(planeGroup.SpawnForwards(dimension.y));
+                spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
+                spawnCoroutinesRunning++;
+            }
+            globalIndex += dimension.y;
+
+            while (spawnCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
+
+            movingOperationRunning = false;
+        }
+
+        private IEnumerator GroupSpawnBackwards()
+        {
+            movingOperationRunning = true;
+            int spawnCoroutinesRunning = 0;
+
+            for (int i = 0; i < dimension.z; i++)
+            {
+                PlaneGroup planeGroup = planeList[i].GetComponent<PlaneGroup>();
+                Task spawnCoroutine = new Task(planeGroup.SpawnBackwards(dimension.y));
+                spawnCoroutine.Finished += delegate(bool manual) { spawnCoroutinesRunning--; };
+                spawnCoroutinesRunning++;
+            }
+
+            globalIndex -= dimension.y;
+            
+            while (spawnCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
+
+            movingOperationRunning = false;
+        }
+
+        private IEnumerator GroupSpawnPull()
+        {
+            movingOperationRunning = true;
+            // Destroy group in front
+            GameObject planeInFront = planeList[0];
+            planeList.Remove(planeInFront);
+            Destroy(planeInFront.transform.gameObject);
+            planeInFront.transform.parent = null;
+            // Change global Index
+            MoveGlobalIndex(true);
+            // Spawn group in back
+            GameObject gameObject = Instantiate(planeGroupPrefab, transform.position, transform.rotation, linearRail.transform);
+            planeList.Add(gameObject);
+            PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
+            spawnGroup.filePaths = filePaths;
+            spawnGroup.dimension = dimension;
+            yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex));
+        
+            frontPlane = planeList[0];
+            SetMovementBoundBox();
+
+            yield return new WaitForSeconds(spawnCooldownZ);
+
+            movingOperationRunning = false;
+        }
+
+        private IEnumerator GroupSpawnPush()
+        {
+            movingOperationRunning = true;
+            // Change global Index
+            MoveGlobalIndex(false);
+            // Spawn group in front
+            GameObject gameObject = Instantiate(planeGroupPrefab, transform.position - new Vector3(0, 0, 1f), transform.rotation, linearRail.transform);
+            gameObject.transform.SetSiblingIndex(0);
+            planeList.Insert(0, gameObject);
+            PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
+            spawnGroup.filePaths = filePaths;
+            spawnGroup.dimension = dimension;
+            yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex));
+
+            frontPlane = gameObject;
+            SetMovementBoundBox();
+
+            // Destroy group in back
+            GameObject planeInBack = planeList[planeList.Count - 1];
+            planeList.Remove(planeInBack);
+            Destroy(planeInBack.transform.gameObject);
+            planeInBack.transform.parent = null;
+
+            yield return new WaitForSeconds(spawnCooldownZ);
+            
+            movingOperationRunning = false;
+        }
+
+        #endregion
+
     }
-
-    #endregion
-
 }

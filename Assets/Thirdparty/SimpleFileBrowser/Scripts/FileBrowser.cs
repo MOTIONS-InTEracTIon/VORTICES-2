@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using UnityEditor;
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
 using UnityEngine.InputSystem;
 #endif
@@ -19,7 +20,7 @@ namespace SimpleFileBrowser
 	{
 		public enum Permission { Denied = 0, Granted = 1, ShouldAsk = 2 };
 		public enum PickMode { Files = 0, Folders = 1, FilesAndFolders = 2 };
-
+		
 		#region Structs
 #pragma warning disable 0649
 		[Serializable]
@@ -153,8 +154,7 @@ namespace SimpleFileBrowser
 
 		public static bool Success { get; private set; }
 		public static string[] Result { get; private set; }
-
-		[SerializeField]
+        [SerializeField]
 		private UISkin m_skin;
 #if UNITY_EDITOR
 		private UISkin prevSkin;
