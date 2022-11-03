@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2350696912613660619}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.2540503, y: -7.446744, z: 27.700377}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -48,21 +48,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cba93c7665fd5240b8762c81606862e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  linearRail: {fileID: 3843819322707068528, guid: 0dd84dbb5bcc7da4abe8d441b6517cd4,
-    type: 3}
-  planeGroupPrefab: {fileID: 1538197498843886103, guid: fdf106f3deaf72445a9a0f2aee647944,
-    type: 3}
   filePaths: []
   dragDir: 
   centerPosition: {x: 0, y: 0, z: 0}
   bounds: {x: 0, y: 0, z: 0, w: 0}
-  movementOffset: 0.1
   dimension: {x: 0, y: 0, z: 0}
+  frontGroup: {fileID: 0}
   afterSpawnTime: 0
   spawnCooldownX: 1
   spawnCooldownZ: 1
   timeLerp: 1
-  frontPlane: {fileID: 0}
+  linearRailPrefab: {fileID: 3843819322707068528, guid: 0dd84dbb5bcc7da4abe8d441b6517cd4,
+    type: 3}
+  planeGroupPrefab: {fileID: 1538197498843886103, guid: fdf106f3deaf72445a9a0f2aee647944,
+    type: 3}
 --- !u!65 &5757340239468818246
 BoxCollider:
   m_ObjectHideFlags: 0

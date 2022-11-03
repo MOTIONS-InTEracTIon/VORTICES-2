@@ -21,6 +21,7 @@ public class LayoutGroup3DEditor : Editor
     private float StartAngleOffset;
     private bool AlignToRadius;
     private float SpiralFactor;
+    private bool NoCurve;
     private LayoutAxis3D LayoutAxis;
     private LayoutAxis3D SecondaryLayoutAxis;
     private LayoutAxis2D GridLayoutAxis;
@@ -156,6 +157,7 @@ public class LayoutGroup3DEditor : Editor
             StartAngleOffset = EditorGUILayout.FloatField("Start Angle Offset", LayoutGroup.StartAngleOffset);
             SpiralFactor = EditorGUILayout.FloatField("Spiral Factor", LayoutGroup.SpiralFactor);
             AlignToRadius = EditorGUILayout.Toggle("Align To Radius", LayoutGroup.AlignToRadius);
+            NoCurve = EditorGUILayout.Toggle("Turn into line", LayoutGroup.NoCurve);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -166,6 +168,7 @@ public class LayoutGroup3DEditor : Editor
                 LayoutGroup.StartAngleOffset = StartAngleOffset;
                 LayoutGroup.SpiralFactor = SpiralFactor;
                 LayoutGroup.AlignToRadius = AlignToRadius;
+                LayoutGroup.NoCurve = NoCurve;
                 shouldRebuild = true;
             }
         }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,22 +6,33 @@ namespace Vortices
 {
     public class PlaneGroup : SpawnGroup
     {
-        #region Variables and properties
-
-        private LayoutGroup3D layoutGroup;
-
-        #endregion
-
         private void Start()
         {
             // Starting layout settings
             layoutGroup = GetComponent<LayoutGroup3D>();
-            layoutGroup.Style = LayoutStyle.Grid;
             layoutGroup.GridConstraintCount = dimension.y;
-
         }
 
         #region Multimedia Spawn
+
+        public override IEnumerator StartSpawnOperation(int offsetGlobalIndex, bool softFadeIn)
+        {
+            // Startup
+            globalIndex = offsetGlobalIndex;
+            lastLoadForward = true;
+            loadPaths = new List<string>();
+            loadObjects = new List<GameObject>();
+            unloadObjects = new List<GameObject>();
+            groupFader = GetComponent<Fade>();
+
+            // First time has to fill every slot so it uses width * height
+            int startingLoad = dimension.x * dimension.y;
+
+            // Execution
+            yield return StartCoroutine(ObjectSpawn(0, startingLoad, true, softFadeIn));
+
+        }
+
         public override void GenerateObjectPlacement(int loadNumber, bool forwards)
         {
             loadObjects = new List<GameObject>();
@@ -44,7 +56,9 @@ namespace Vortices
 
         public override void GenerateDestroyObjects(int unloadNumber, bool forwards)
         {
-            for(int i = 0; i < unloadNumber; i++)
+            unloadObjects = new List<GameObject>();
+
+            for (int i = 0; i < unloadNumber; i++)
             {
                 if (forwards)
                 {
@@ -55,10 +69,7 @@ namespace Vortices
                     unloadObjects.Add(transform.GetChild(transform.childCount - i - 1).gameObject);
                 }
             }
-
         }
-
         #endregion
-
     }
 }

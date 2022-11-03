@@ -9,6 +9,7 @@ namespace Vortices
         public bool fadeOnStart = false;
         public float fadeDuration = 1.0f;
         public float lowerAlpha {get; set;}
+        public float upperAlpha {get; set;}
         public bool isRunning;
         public int fadeOps;
 
@@ -17,11 +18,13 @@ namespace Vortices
 
         void Start()
         {
+            // Default limits, you can change these before doing FadeInOut methods by modifying them as properties
+            lowerAlpha = 0;
+            upperAlpha = 1;
             if (fadeOnStart)
             {
                 FadeIn();
             }
-            lowerAlpha = 0;
         }
 
         private void GetObjects()
@@ -35,11 +38,11 @@ namespace Vortices
             GetObjects();
             for (int i = 0; i < objectRenderer.Length; i++)
             {
-                StartCoroutine(FadeRoutine(lowerAlpha, 1, objectRenderer[i], null));
+                StartCoroutine(FadeRoutine(lowerAlpha, upperAlpha, objectRenderer[i], null));
             }
             for (int i = 0; i < canvasGroups.Length; i++)
             {
-                StartCoroutine(FadeRoutine(lowerAlpha, 1, null, canvasGroups[i]));
+                StartCoroutine(FadeRoutine(lowerAlpha, upperAlpha, null, canvasGroups[i]));
             }
 
         }
@@ -49,11 +52,11 @@ namespace Vortices
             GetObjects();
             for (int i = 0; i < objectRenderer.Length; i++)
             {
-                StartCoroutine(FadeRoutine(1, lowerAlpha, objectRenderer[i], null));
+                StartCoroutine(FadeRoutine(upperAlpha, lowerAlpha, objectRenderer[i], null));
             }
             for (int i = 0; i < canvasGroups.Length; i++)
             {
-                StartCoroutine(FadeRoutine(1, lowerAlpha, null, canvasGroups[i]));
+                StartCoroutine(FadeRoutine(upperAlpha, lowerAlpha, null, canvasGroups[i]));
             }
         }
 
@@ -64,11 +67,11 @@ namespace Vortices
             GetObjects();
             for (int i = 0; i < objectRenderer.Length; i++)
             {
-                StartCoroutine(FadeRoutine(lowerAlpha, 1, objectRenderer[i], null));
+                StartCoroutine(FadeRoutine(lowerAlpha, upperAlpha, objectRenderer[i], null));
             }
             for (int i = 0; i < canvasGroups.Length; i++)
             {
-                StartCoroutine(FadeRoutine(lowerAlpha, 1, null, canvasGroups[i]));
+                StartCoroutine(FadeRoutine(lowerAlpha, upperAlpha, null, canvasGroups[i]));
             }
 
             while (fadeOps > 0)
@@ -86,11 +89,11 @@ namespace Vortices
             GetObjects();
             for (int i = 0; i < objectRenderer.Length; i++)
             {
-                StartCoroutine(FadeRoutine(1, lowerAlpha, objectRenderer[i], null));
+                StartCoroutine(FadeRoutine(upperAlpha, lowerAlpha, objectRenderer[i], null));
             }
             for (int i = 0; i < canvasGroups.Length; i++)
             {
-                StartCoroutine(FadeRoutine(1, lowerAlpha, null, canvasGroups[i]));
+                StartCoroutine(FadeRoutine(upperAlpha, lowerAlpha, null, canvasGroups[i]));
             }
 
             while (fadeOps > 0)

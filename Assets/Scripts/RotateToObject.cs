@@ -6,15 +6,23 @@ namespace Vortices
     {
         [SerializeField] private Transform followObject;
 
-        public Vector3 offset;
-
-        private float rotationSpeed = 3.0f;
+        private float rotationSpeed = 10.0f;
         private bool follow;
+
+        // Settings
+        public Vector3 offset;
+        public string followName = "";
+
 
         private void Start()
         {//TIENE QUE SEGUIR UN PUNTO NO MI CAMARA
             follow = true;
-            if(followObject == null)
+
+            if (followName != "")
+            {
+                followObject = GameObject.Find(followName).transform;
+            }
+            else if (followObject == null)
             {
                 followObject = Camera.main.gameObject.transform;
             }
@@ -27,8 +35,7 @@ namespace Vortices
             {
                 Quaternion lookRotation = Quaternion.LookRotation(followObject.position - transform.position);
                 Quaternion lookDirection = lookRotation * Quaternion.Euler(offset.x, offset.y, offset.z);
-
-                transform.rotation = Quaternion.Slerp(transform.rotation, lookDirection, Time.deltaTime * rotationSpeed);
+                transform.rotation = lookDirection;
             }
         }
     }

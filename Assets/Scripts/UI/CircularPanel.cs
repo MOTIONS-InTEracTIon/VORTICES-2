@@ -242,28 +242,29 @@ namespace Vortices
             {
                 Vector3 positionOffset = new Vector3(0, 0, 1f); ;
                 placementBase = Instantiate(placementBasePrefabs[0], spawnGroup.transform.position + positionOffset, spawnGroup.transform.rotation, spawnGroup);
-                PlaneBase planeBase = placementBase.GetComponent<PlaneBase>();
-                planeBase.filePaths = optionFilePath.filePaths;
-                planeBase.volumetric = volumetric;
-                if(dimension.z == 0)
-                {
-                    dimension.z = 1;
-                }
-                planeBase.dimension = dimension;
-                planeBase.StartGenerateSpawnGroup();
-                mapFade.lowerAlpha = 0.1f;
-                mapFade.FadeOut();
+
             }
             else if (mode == 1)
             {
-
+                placementBase = Instantiate(placementBasePrefabs[1], spawnGroup.transform.position, placementBasePrefabs[1].transform.rotation, spawnGroup);
             }
+            SpawnBase spawnBase = placementBase.GetComponent<SpawnBase>();
+            spawnBase.filePaths = optionFilePath.filePaths;
+            spawnBase.volumetric = volumetric;
+            if (volumetric == false || dimension.z == 0)
+            {
+                dimension.z = 1;
+            }
+            spawnBase.dimension = dimension;
+            spawnBase.StartGenerateSpawnGroup();
+            mapFade.lowerAlpha = 0.1f;
+            mapFade.FadeOut();
         }
 
         public void DestroyBase()
         {
-            PlaneBase planeBase = placementBase.GetComponent<PlaneBase>();
-            StartCoroutine(planeBase.StopSpawn());
+            SpawnBase spawnBase = placementBase.GetComponent<SpawnBase>();
+            StartCoroutine(spawnBase.StopSpawn());
         }
         #endregion
     }

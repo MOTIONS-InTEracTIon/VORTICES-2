@@ -1,95 +1,59 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Vortices
 {
-    public class PlaneBase : MonoBehaviour
+    public class PlaneBase : SpawnBase
     {
         // Other references
-        private List<GameObject> planeList;
-        [SerializeField] private GameObject linearRail;
+        [SerializeField] private GameObject linearRailPrefab;
+        private GameObject linearRail;
         public GameObject planeGroupPrefab;
-        List<XRRayInteractor> rayInteractors;
-        Rigidbody rb;
-
-        // SpawnBase Data Components
-        [HideInInspector] public List<string> filePaths;
 
         // Movement variables
-        private XRRayInteractor currentlySelecting;
-        private Vector3 initialDragPos;
-        private Vector3 initialDragDist;
-        private bool hasAxis;
-        public string dragDir;
         private bool lerpToPositionRunning;
-        private bool drag;
-        Vector3 offset = Vector3.zero;
-        private int globalIndex;
-        private bool lastLoadForward;
 
         // Bounds
-        private LayoutGroup3D layoutGroup;
         private BoxCollider boxCollider;
+        private float boxBoundsize = 0.0001f;
+        protected LayoutGroup3D layoutGroup;
         public Vector3 centerPosition;
         public Vector4 bounds; //PRIVATE
-        private float boxBoundsize = 0.0001f;
-        private float boundZOffset = 0.001f;
-        public float movementOffset = 0.1f;
-
-        // Settings
-        public bool volumetric { get; set; }
-        [HideInInspector] public Vector3Int dimension;
-        public float afterSpawnTime;
-        public float spawnCooldownX = 1.0f;
-        public float spawnCooldownZ = 3f;
-        public float timeLerp = 1f;
-        public GameObject frontPlane;
-
-        // Coroutine
-        protected Queue<IEnumerator> coroutineQueue;
-        private int spawnCoroutinesRunning;
-        protected bool coordinatorWorking;
-        private bool movingOperationRunning;
-
-        private void Start()
-        {
-            rayInteractors = new List<XRRayInteractor>();
-            rayInteractors.Add(GameObject.Find("Ray Interactor Left").GetComponent<XRRayInteractor>());
-            rayInteractors.Add(GameObject.Find("Ray Interactor Right").GetComponent<XRRayInteractor>());
-            rb = GetComponent<Rigidbody>();
-
-            //Start Coroutine Coordinator
-            coroutineQueue = new Queue<IEnumerator>();
-            StartCoroutine(CoroutineCoordinator());
-        }
+        protected float boundZOffset = 0.001f;
 
         #region Group Spawn
-        public void StartGenerateSpawnGroup()
+        public override void StartGenerateSpawnGroup()
         {
             globalIndex = -1;
             lastLoadForward = true;
-            // Rail Generation
-            linearRail = Instantiate(linearRail, transform.position, transform.rotation, transform);
-            // Plane Generation
-            planeList = new List<GameObject>();
+            // Linear Rail Generation
+            linearRail = Instantiate(linearRailPrefab, transform.position, transform.rotation, transform);
+            LayoutGroup3D railLayout = linearRail.GetComponent<LayoutGroup3D>();
+            railLayout.PrimaryAlignment = Alignment.Min;
+            railLayout.LayoutAxis = LayoutAxis3D.Z;
+            // Plane Group Generation
+            groupList = new List<GameObject>();
             for(int i = 0; i < dimension.z; i++)
             {
                 GameObject gameObject = Instantiate(planeGroupPrefab, transform.position, transform.rotation, linearRail.transform);
-                planeList.Add(gameObject);
+                groupList.Add(gameObject);
+                PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
+                spawnGroup.filePaths = filePaths;
+                spawnGroup.dimension = dimension;
+                spawnGroup.softFadeUpperAlpha = softFadeUpperAlpha;
+                bool softFadeIn = true;
                 if (i == 0)
                 {
-                    frontPlane = gameObject;
+                    // Front Group Operations
+                    frontGroup = gameObject;
+                    softFadeIn = false;
                 }
                 else
                 {
                     MoveGlobalIndex(true);
                 }
-                PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
-                spawnGroup.filePaths = filePaths;
-                spawnGroup.dimension = dimension;
-                StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex));
+                StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, softFadeIn));
             }
 
             SetMovementBoundBox();
@@ -98,7 +62,7 @@ namespace Vortices
         private void SetMovementBoundBox()
         {
             // Uses first plane layout to set bound box
-            layoutGroup = frontPlane.GetComponent<LayoutGroup3D>();
+            layoutGroup = frontGroup.GetComponent<LayoutGroup3D>();
             // Generates Collider Box for moving
             boxCollider = GetComponent<BoxCollider>();
             boxCollider.center = Vector3.zero;
@@ -111,269 +75,117 @@ namespace Vortices
             bounds.z = centerPosition.y - (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
         }
 
-        public IEnumerator StopSpawn()
-        {
-            Fade planeFader = GetComponent<Fade>();
-            yield return StartCoroutine(planeFader.FadeOutCoroutine());
-            Destroy(gameObject);
-        }
-
         #endregion
 
         #region Movement
-
-        private void Update()
+        protected override void PerformAction()
         {
-            // If spawn is done, this makes sure the cooldown applies
-            if (afterSpawnTime < spawnCooldownZ)
+            if (drag)
             {
-                afterSpawnTime += Time.deltaTime;
-            }
-
-            // This makes sure elements only move in bounds even if user is not dragging
-            if ((frontPlane != null && CheckBounds()) || drag)
-            {
-                if (drag)
+                Vector3 center = frontGroup.transform.position;
+                // This means the base has been pulled and will spawn inwards
+                if (volumetric && dragDir == "Pull")
                 {
-                    Vector3 position; Vector3 normal; int positionInLine; bool isValidTarget;
-                    if (currentlySelecting.TryGetHitInfo(out position, out normal, out positionInLine, out isValidTarget))
+                    if (afterSpawnTime >= spawnCooldownZ && !movingOperationRunning)
                     {
-                        // This makes sure the dragging of elements is in one axis only
-                        if (!hasAxis)
-                        {
-                            Vector3 distanceXY = position - initialDragPos;
-                            Vector3 distanceZ = position - currentlySelecting.rayOriginTransform.position;
-
-                            if (distanceZ.magnitude > (initialDragDist.magnitude + movementOffset))
-                            {
-                                hasAxis = true;
-                                dragDir = "Pull";
-                            }
-                            else if (distanceZ.magnitude < (initialDragDist.magnitude - movementOffset))
-                            {
-                                hasAxis = true;
-                                dragDir = "Push";
-                            }
-                            else if (Mathf.Abs(distanceXY.x) > Mathf.Abs(distanceXY.y))
-                            {
-                                if (distanceXY.x < -movementOffset)
-                                {
-                                    dragDir = "Left";
-                                    hasAxis = true;
-                                }
-                                else if (distanceXY.x > movementOffset)
-                                {
-                                    dragDir = "Right";
-                                    hasAxis = true;
-                                }
-                            }
-                            else if (Mathf.Abs(distanceXY.x) < Mathf.Abs(distanceXY.y))
-                            {
-                                if (distanceXY.y < -movementOffset)
-                                {
-                                    dragDir = "Down";
-                                    hasAxis = true;
-                                }
-                                else if (distanceXY.y > movementOffset)
-                                {
-                                    dragDir = "Up";
-                                    hasAxis = true;
-                                }
-                            }
-                        }
+                        afterSpawnTime = 0;
+                        coroutineQueue.Enqueue(GroupSpawnPull());
+                    }
+                }
+                // This means the base has been pushed and will spawn outwards
+                else if (volumetric && dragDir == "Push")
+                {
+                    if (afterSpawnTime >= spawnCooldownZ && drag && !movingOperationRunning)
+                    {
+                        afterSpawnTime = 0;
+                        coroutineQueue.Enqueue(GroupSpawnPush());
+                    }
+                }
+                // This means the base has touched the left bound and will spawn
+                else if (dragDir == "Left")
+                {
+                    if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
+                    {
+                        afterSpawnTime = 0;
+                        coroutineQueue.Enqueue(GroupSpawnForwards());
+                    }
+                }
+                // This means the base has touched the right bound and will spawn
+                else if (dragDir == "Right")
+                {
+                    if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
+                    {
+                        afterSpawnTime = 0;
+                        coroutineQueue.Enqueue(GroupSpawnBackwards());
+                    }
+                }
+                else if (dragDir == "Up" &&
+                         ((center.y + boundZOffset) < bounds.x && (center.y - boundZOffset) < bounds.x))
+                {
+                    if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
+                    {
+                        afterSpawnTime = 0;
+                        StartCoroutine(LerpToPosition(dragDir));
+                    }
+                }
+                else if (dragDir == "Down" &&
+                         ((center.y + boundZOffset) > bounds.z && (center.y - boundZOffset) > bounds.z))
+                {
+                    if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
+                    {
+                        afterSpawnTime = 0;
+                        StartCoroutine(LerpToPosition(dragDir));
                     }
                 }
             }
         }
 
-        // Checks even when user is not dragging and eliminates chance of re-dragging (As there is no drag)
-        private bool CheckBounds()
-        {
-            bool canMove = false;
-            Vector3 center = frontPlane.transform.position;
-            // This means the base has been pulled and will spawn inwards
-            if(volumetric && drag && dragDir == "Pull")
-            {
-                if (afterSpawnTime >= spawnCooldownZ && drag && !movingOperationRunning)
-                {
-                    afterSpawnTime = 0;
-                    coroutineQueue.Enqueue(GroupSpawnPull());
-                }
-            }
-            // This means the base has been pushed and will spawn outwards
-            else if (volumetric && drag && dragDir == "Push")
-            {
-                if (afterSpawnTime >= spawnCooldownZ && drag && !movingOperationRunning)
-                {
-                    afterSpawnTime = 0;
-                    coroutineQueue.Enqueue(GroupSpawnPush());
-                }
-            }
-            // This means the base has touched the left bound and will spawn
-            else if (drag && dragDir == "Left")
-            {
-                if (afterSpawnTime >= spawnCooldownX && drag && !movingOperationRunning)
-                {
-                    afterSpawnTime = 0;
-                    coroutineQueue.Enqueue(GroupSpawnForwards());
-                }
-            }
-            // This means the base has touched the right bound and will spawn
-            else if (drag && dragDir == "Right")
-            {
-                if (afterSpawnTime >= spawnCooldownX && drag && !movingOperationRunning)
-                {
-                    afterSpawnTime = 0;
-                    coroutineQueue.Enqueue(GroupSpawnBackwards());
-                }
-            }
-            else if (drag && dragDir == "Up" && ((center.y + boundZOffset) < bounds.x && (center.y - boundZOffset) < bounds.x))
-            {
-                if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
-                {
-                    afterSpawnTime = 0;
-                    StartCoroutine(LerpToPosition(dragDir));
-                }
-            }
-            else if (drag && dragDir == "Down" && ((center.y + boundZOffset) > bounds.z && (center.y - boundZOffset) > bounds.z))
-            {
-                if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
-                {
-                    afterSpawnTime = 0;
-                    StartCoroutine(LerpToPosition(dragDir));
-                }
-            }
-            else
-            {
-                canMove = true;
-            }
-
-            return canMove;
-        }
-
-        // Enables movement on a currently selected plane
-        public void MoveToCursor()
-        {
-            if (rayInteractors[0].isSelectActive)
-            {
-                currentlySelecting = rayInteractors[0];
-            }
-            else if (rayInteractors[1].isSelectActive)
-            {
-                currentlySelecting = rayInteractors[1];
-            }
-
-            Vector3 position;
-            Vector3 normal;
-            int positionInLine;
-            bool isValidTarget;
-            if (currentlySelecting.TryGetHitInfo(out position, out normal, out positionInLine, out isValidTarget))
-            {
-                initialDragPos = position;
-                initialDragDist = currentlySelecting.rayOriginTransform.position - position;
-                position.z = transform.position.z;
-                offset = transform.position - position;
-                drag = true;
-            }
-        }
-
-        // Executes a lerp order for every multimedia element in a panel
+        // Not Spawning movement
         public IEnumerator LerpToPosition(string moveDir)
         {
-            if (frontPlane != null)
+            if(frontGroup != null)
             {
                 lerpToPositionRunning = true;
                 Vector3 position = Vector3.zero;
                 if (moveDir == "Up")
                 {
-                    position = new Vector3(frontPlane.transform.position.x, frontPlane.transform.position.y + layoutGroup.ElementDimensions.y + layoutGroup.Spacing, frontPlane.transform.position.z);
+                    position = new Vector3(frontGroup.transform.position.x, frontGroup.transform.position.y + layoutGroup.ElementDimensions.y + layoutGroup.Spacing, frontGroup.transform.position.z);
                 }
                 else if (moveDir == "Down")
                 {
-                    position = new Vector3(frontPlane.transform.position.x, frontPlane.transform.position.y - layoutGroup.ElementDimensions.y - layoutGroup.Spacing, frontPlane.transform.position.z);
+                    position = new Vector3(frontGroup.transform.position.x, frontGroup.transform.position.y - layoutGroup.ElementDimensions.y - layoutGroup.Spacing, frontGroup.transform.position.z);
                 }
 
                 float timeElapsed = 0;
-                while (timeElapsed < spawnCooldownX)
+                while (timeElapsed < timeLerp)
                 {
                     timeElapsed += Time.deltaTime;
-                    frontPlane.transform.position = Vector3.Lerp(frontPlane.transform.position, position, timeElapsed / timeLerp);
-                    centerPosition.y = frontPlane.transform.position.y;
-                    boxCollider.center = frontPlane.transform.localPosition;
+                    frontGroup.transform.position = Vector3.Lerp(frontGroup.transform.position, position, timeElapsed / timeLerp);
+                    centerPosition.y = frontGroup.transform.position.y;
+                    boxCollider.center = frontGroup.transform.localPosition;
                     yield return null;
                 }
                 lerpToPositionRunning = false;
             }
         }
-
-        // Resets variables for the next drag operation
-        public void StopMoveToCursor()
-        {
-            currentlySelecting = null;
-            drag = false;
-            offset = Vector3.zero;
-            hasAxis = false;
-            dragDir = "";
-            //rb.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationX;
-        }
-
-        private IEnumerator CoroutineCoordinator()
-        {
-            while (true)
-            {
-                while (coroutineQueue.Count > 0)
-                {
-                    coordinatorWorking = true;
-                    Debug.Log(coordinatorWorking);
-                    yield return StartCoroutine(coroutineQueue.Dequeue());
-                    coordinatorWorking = false;
-                    Debug.Log(coordinatorWorking);
-                }
-                yield return null;
-
-            }
-        }
+        
         #endregion
 
         #region Multimedia Spawn
-
-        private void MoveGlobalIndex(bool forwards)
-        {
-            if (forwards)
-            {
-                if (!lastLoadForward)
-                {
-                    globalIndex += dimension.x * dimension.y * dimension.z;
-                }
-                else
-                {
-                    globalIndex += dimension.x * dimension.y;
-                }
-                lastLoadForward = true;
-            }
-            else
-            {
-                if (lastLoadForward)
-                {
-                    globalIndex -= dimension.x * dimension.y * dimension.z;
-                }
-                else
-                {
-                    globalIndex -= dimension.x * dimension.y;
-                }
-                lastLoadForward = false;
-            }
-        }
-
-        private IEnumerator GroupSpawnForwards()
+        protected override IEnumerator GroupSpawnForwards()
         {
             movingOperationRunning = true;
             int spawnCoroutinesRunning = 0;
 
             for (int i = 0; i < dimension.z; i++)
             {
-                PlaneGroup planeGroup = planeList[i].GetComponent<PlaneGroup>();
-                Task spawnCoroutine = new Task(planeGroup.SpawnForwards(dimension.y));
+                PlaneGroup planeGroup = groupList[i].GetComponent<PlaneGroup>();
+                bool softFadeIn = true;
+                if (i == 0)
+                {
+                    softFadeIn = false;
+                }
+                Task spawnCoroutine = new Task(planeGroup.SpawnForwards(dimension.y, softFadeIn));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -387,15 +199,20 @@ namespace Vortices
             movingOperationRunning = false;
         }
 
-        private IEnumerator GroupSpawnBackwards()
+        protected override IEnumerator GroupSpawnBackwards()
         {
             movingOperationRunning = true;
             int spawnCoroutinesRunning = 0;
 
             for (int i = 0; i < dimension.z; i++)
             {
-                PlaneGroup planeGroup = planeList[i].GetComponent<PlaneGroup>();
-                Task spawnCoroutine = new Task(planeGroup.SpawnBackwards(dimension.y));
+                PlaneGroup planeGroup = groupList[i].GetComponent<PlaneGroup>();
+                bool softFadeIn = true;
+                if (i == 0)
+                {
+                    softFadeIn = false;
+                }
+                Task spawnCoroutine = new Task(planeGroup.SpawnBackwards(dimension.y, softFadeIn));
                 spawnCoroutine.Finished += delegate(bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -410,57 +227,89 @@ namespace Vortices
             movingOperationRunning = false;
         }
 
-        private IEnumerator GroupSpawnPull()
+        protected override IEnumerator GroupSpawnPull()
         {
             movingOperationRunning = true;
             // Destroy group in front
-            GameObject planeInFront = planeList[0];
-            planeList.Remove(planeInFront);
+            GameObject planeInFront = groupList[0];
+            groupList.Remove(planeInFront);
             Destroy(planeInFront.transform.gameObject);
             planeInFront.transform.parent = null;
             // Change global Index
             MoveGlobalIndex(true);
             // Spawn group in back
             GameObject gameObject = Instantiate(planeGroupPrefab, transform.position, transform.rotation, linearRail.transform);
-            planeList.Add(gameObject);
+            groupList.Add(gameObject);
             PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
             spawnGroup.filePaths = filePaths;
             spawnGroup.dimension = dimension;
-            yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex));
+            yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, true));
         
-            frontPlane = planeList[0];
+            // Front Group Operations
+            frontGroup = groupList[0];
             SetMovementBoundBox();
+            // Front group has to be fade alpha 1
+            Fade frontGroupFader = frontGroup.gameObject.GetComponent<Fade>();
+            frontGroupFader.lowerAlpha = softFadeUpperAlpha;
+            frontGroupFader.upperAlpha = 1;
+            int fadeCoroutinesRunning = 0;
+            Task fadeCoroutine = new Task(frontGroupFader.FadeInCoroutine());
+            fadeCoroutine.Finished += delegate (bool manual)
+            {
+                fadeCoroutinesRunning--;
+            };
+            fadeCoroutinesRunning++;
 
-            yield return new WaitForSeconds(spawnCooldownZ);
+            while (fadeCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
 
             movingOperationRunning = false;
         }
 
-        private IEnumerator GroupSpawnPush()
+        protected override IEnumerator GroupSpawnPush()
         {
             movingOperationRunning = true;
+            // Front group has to be fade alpha 0
+            Fade frontGroupFader = groupList[0].gameObject.GetComponent<Fade>();
+            frontGroupFader.lowerAlpha = softFadeUpperAlpha;
+            frontGroupFader.upperAlpha = 1;
+            int fadeCoroutinesRunning = 0;
+            Task fadeCoroutine = new Task(frontGroupFader.FadeOutCoroutine());
+            fadeCoroutine.Finished += delegate (bool manual)
+            {
+                fadeCoroutinesRunning--;
+            };
+            fadeCoroutinesRunning++;
             // Change global Index
             MoveGlobalIndex(false);
             // Spawn group in front
             GameObject gameObject = Instantiate(planeGroupPrefab, transform.position - new Vector3(0, 0, 1f), transform.rotation, linearRail.transform);
             gameObject.transform.SetSiblingIndex(0);
-            planeList.Insert(0, gameObject);
+            groupList.Insert(0, gameObject);
             PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
             spawnGroup.filePaths = filePaths;
             spawnGroup.dimension = dimension;
-            yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex));
+            yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, false));
 
-            frontPlane = gameObject;
+            // Front Group Operations
+            frontGroup = gameObject;
             SetMovementBoundBox();
 
             // Destroy group in back
-            GameObject planeInBack = planeList[planeList.Count - 1];
-            planeList.Remove(planeInBack);
+            GameObject planeInBack = groupList[groupList.Count - 1];
+            groupList.Remove(planeInBack);
             Destroy(planeInBack.transform.gameObject);
             planeInBack.transform.parent = null;
 
+            while (fadeCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
+
             yield return new WaitForSeconds(spawnCooldownZ);
-            
+
             movingOperationRunning = false;
         }
 

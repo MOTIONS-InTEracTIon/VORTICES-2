@@ -7,6 +7,9 @@ namespace Vortices
 {
     public class SpawnGroup : MonoBehaviour
     {
+        // Other references
+        protected LayoutGroup3D layoutGroup;
+
         // SpawnBase Data Components
         [HideInInspector] public List<string> filePaths;
 
@@ -18,39 +21,29 @@ namespace Vortices
         protected List<GameObject> loadObjects;
         public GameObject elementPrefab;
         protected Fade groupFader;
-        protected float objectFaderTime;
         public int fadeCoroutinesRunning;
 
         // Settings
         [HideInInspector] public Vector3Int dimension;
+        public float softFadeUpperAlpha;
 
         // Auxiliary Task Class
         public GameObject renderManager; 
 
         #region Multimedia Spawn
-        public IEnumerator StartSpawnOperation(int offsetGlobalIndex)
+        public virtual IEnumerator StartSpawnOperation(int offsetGlobalIndex, bool softFadeIn)
         {
-            // Startup
-            globalIndex = offsetGlobalIndex;
-            lastLoadForward = true;
-            loadPaths = new List<string>();
-            unloadObjects = new List<GameObject>();
-            groupFader = GetComponent<Fade>();
-
-            // First time has to fill every slot so it uses width * height
-            int startingLoad = dimension.x * dimension.y;
-
-            // Execution
-            yield return StartCoroutine(ObjectSpawn(0, startingLoad, true));
-
+            // Each spawn group has a different start operation, radial constructing aditional childs
+            Debug.Log("Start Spawn Operation not being overridden");
+            yield return null;
         }
 
         // Spawns files using overriden GenerateObjectPlacement
-        protected IEnumerator ObjectSpawn(int unloadNumber, int loadNumber, bool forwards)
+        protected IEnumerator ObjectSpawn(int unloadNumber, int loadNumber, bool forwards, bool softFade)
         {
             ObjectPreparing(unloadNumber, loadNumber, forwards);
             yield return StartCoroutine(ObjectLoad(loadNumber, forwards));
-            yield return StartCoroutine(ObjectFadeIn());
+            yield return StartCoroutine(ObjectFadeIn(softFade));
         }
     
         // Destroys placement objects not needed and insert new ones at the same time
@@ -81,13 +74,17 @@ namespace Vortices
             // Eliminate 
         }
 
-        protected IEnumerator ObjectFadeIn()
+        protected IEnumerator ObjectFadeIn(bool softFade)
         {
             fadeCoroutinesRunning = 0;
 
             foreach (GameObject go in loadObjects)
             {
                 Fade objectFader = go.GetComponent<Fade>();
+                if (softFade)
+                {
+                    objectFader.upperAlpha = softFadeUpperAlpha;
+                }
                 Task fadeCoroutine = new Task(objectFader.FadeInCoroutine());
                 fadeCoroutine.Finished += delegate(bool manual)
                 {
@@ -100,6 +97,7 @@ namespace Vortices
             {
                 yield return null;
             }
+
         }
 
         protected IEnumerator GenerateLoadPaths(int loadNumber, bool forwards)
@@ -201,23 +199,23 @@ namespace Vortices
             Debug.Log("Not being overridden");
         }
 
-        public IEnumerator SpawnForwards(int loadNumber)
+        public IEnumerator SpawnForwards(int loadNumber, bool softFade)
         {
             // Startup
             loadPaths = new List<string>();
             unloadObjects = new List<GameObject>();
             // Execution
-            yield return StartCoroutine(ObjectSpawn(loadNumber, loadNumber, true));
+            yield return StartCoroutine(ObjectSpawn(loadNumber, loadNumber, true, softFade));
 
         }
 
-        public IEnumerator SpawnBackwards(int loadNumber)
+        public IEnumerator SpawnBackwards(int loadNumber, bool softFade)
         {
             // Startup
             loadPaths = new List<string>();
             unloadObjects = new List<GameObject>();
             // Execution
-            yield return StartCoroutine(ObjectSpawn(loadNumber, loadNumber, false));
+            yield return StartCoroutine(ObjectSpawn(loadNumber, loadNumber, false, softFade));
         }
 
         #endregion

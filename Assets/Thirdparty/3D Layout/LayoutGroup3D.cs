@@ -59,6 +59,8 @@ public class LayoutGroup3D : MonoBehaviour
     [HideInInspector]
     public bool AlignToRadius;
     [HideInInspector]
+    public bool NoCurve;
+    [HideInInspector]
     public LayoutAxis3D LayoutAxis;
     [HideInInspector]
     public LayoutAxis3D SecondaryLayoutAxis;
@@ -402,10 +404,22 @@ public class LayoutGroup3D : MonoBehaviour
             MaxArcAngle = 360f - 360f / LayoutElements.Count;
         }
 
+        bool linePosX = false;
         for(int i = 0; i < LayoutElements.Count; i++)
         {
             float angle = (float)i / (LayoutElements.Count - 1) * MaxArcAngle * Mathf.Deg2Rad;
-            pos.x = Mathf.Cos(angle + Mathf.Deg2Rad * StartAngleOffset) * (Radius + spiralSum);
+            if (NoCurve)
+            {
+                if (!linePosX)
+                {
+                    pos.x = Mathf.Cos(angle + Mathf.Deg2Rad * StartAngleOffset) * (Radius + spiralSum);
+                    linePosX = true;
+                }
+            }
+            else
+            {
+                pos.x = Mathf.Cos(angle + Mathf.Deg2Rad * StartAngleOffset) * (Radius + spiralSum);
+            }
             pos.y = Mathf.Sin(angle + Mathf.Deg2Rad * StartAngleOffset) * (Radius + spiralSum);
 
             if(AlignToRadius)
@@ -414,7 +428,10 @@ public class LayoutGroup3D : MonoBehaviour
                 LayoutElements[i].up = dir;
             }
 
-            LayoutElements[i].localPosition = pos + StartPositionOffset;
+            if (transform.childCount > 2)
+            {
+                LayoutElements[i].localPosition = pos + StartPositionOffset;
+            }
             spiralSum += spiralIncrement;
         }
     }
