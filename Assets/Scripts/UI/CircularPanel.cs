@@ -46,11 +46,15 @@ namespace Vortices
             FadeUI actualComponentFader = uiComponents[actualComponentId].GetComponent<FadeUI>();
             yield return StartCoroutine(actualComponentFader.FadeOut());
             // Disable actual component
+            if(componentId == 10)
+            {
+                Destroy(uiComponents[9].gameObject);
+            }
             uiComponents[actualComponentId].SetActive(false);
             // Enable new component
             uiComponents[componentId].SetActive(true);
             // Block button if necessary
-            if(componentId != 9)
+            if (componentId != 9)
             {
                 blockButton(componentId);
             }

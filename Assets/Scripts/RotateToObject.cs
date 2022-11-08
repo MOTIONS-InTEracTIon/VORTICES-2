@@ -6,7 +6,6 @@ namespace Vortices
     {
         [SerializeField] private Transform followObject;
 
-        private float rotationSpeed = 10.0f;
         private bool follow;
 
         // Settings

@@ -185,7 +185,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                Task spawnCoroutine = new Task(planeGroup.SpawnForwards(dimension.y, softFadeIn));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnForwards(dimension.y, softFadeIn));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -212,7 +212,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                Task spawnCoroutine = new Task(planeGroup.SpawnBackwards(dimension.y, softFadeIn));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnBackwards(dimension.y, softFadeIn));
                 spawnCoroutine.Finished += delegate(bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -235,6 +235,20 @@ namespace Vortices
             groupList.Remove(planeInFront);
             Destroy(planeInFront.transform.gameObject);
             planeInFront.transform.parent = null;
+            // Front Group Operations
+            frontGroup = groupList[0];
+            SetMovementBoundBox();
+            // Front group has to be fade alpha 1
+            Fade frontGroupFader = frontGroup.gameObject.GetComponent<Fade>();
+            frontGroupFader.lowerAlpha = softFadeUpperAlpha;
+            frontGroupFader.upperAlpha = 1;
+            int fadeCoroutinesRunning = 0;
+            TaskCoroutine fadeCoroutine = new TaskCoroutine(frontGroupFader.FadeInCoroutine());
+            fadeCoroutine.Finished += delegate (bool manual)
+            {
+                fadeCoroutinesRunning--;
+            };
+            fadeCoroutinesRunning++;
             // Change global Index
             MoveGlobalIndex(true);
             // Spawn group in back
@@ -245,20 +259,7 @@ namespace Vortices
             spawnGroup.dimension = dimension;
             yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, true));
         
-            // Front Group Operations
-            frontGroup = groupList[0];
-            SetMovementBoundBox();
-            // Front group has to be fade alpha 1
-            Fade frontGroupFader = frontGroup.gameObject.GetComponent<Fade>();
-            frontGroupFader.lowerAlpha = softFadeUpperAlpha;
-            frontGroupFader.upperAlpha = 1;
-            int fadeCoroutinesRunning = 0;
-            Task fadeCoroutine = new Task(frontGroupFader.FadeInCoroutine());
-            fadeCoroutine.Finished += delegate (bool manual)
-            {
-                fadeCoroutinesRunning--;
-            };
-            fadeCoroutinesRunning++;
+            yield return new WaitForSeconds(spawnCooldownZ);
 
             while (fadeCoroutinesRunning > 0)
             {
@@ -276,7 +277,7 @@ namespace Vortices
             frontGroupFader.lowerAlpha = softFadeUpperAlpha;
             frontGroupFader.upperAlpha = 1;
             int fadeCoroutinesRunning = 0;
-            Task fadeCoroutine = new Task(frontGroupFader.FadeOutCoroutine());
+            TaskCoroutine fadeCoroutine = new TaskCoroutine(frontGroupFader.FadeOutCoroutine());
             fadeCoroutine.Finished += delegate (bool manual)
             {
                 fadeCoroutinesRunning--;
@@ -303,12 +304,12 @@ namespace Vortices
             Destroy(planeInBack.transform.gameObject);
             planeInBack.transform.parent = null;
 
+            yield return new WaitForSeconds(spawnCooldownZ);
+
             while (fadeCoroutinesRunning > 0)
             {
                 yield return null;
             }
-
-            yield return new WaitForSeconds(spawnCooldownZ);
 
             movingOperationRunning = false;
         }

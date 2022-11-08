@@ -15,10 +15,10 @@ namespace Vortices
         private int rotationCoroutinesRunning;
 
         // Settings
-        public float groupRadius;
-        public float groupAngleOffset;
+        public float groupRadius = 2.0f;
+        public float groupAngleOffset = 15.0f;
         public float rotationAngleStep = 1.0f;
-        public float rotationTime = 1.0f;
+        public float rotationTime = 0.5f;
 
         private void Start()
         {
@@ -37,7 +37,7 @@ namespace Vortices
             foreach (GameObject radialRing in radialRingList)
             {
                 GameObject ring = radialRing.transform.GetChild(0).gameObject;
-                Task rotateCoroutine = new Task(RotateRing(ring, moveDir, rotationTime, rotationAngleStep));
+                TaskCoroutine rotateCoroutine = new TaskCoroutine(RotateRing(ring, moveDir, rotationTime, rotationAngleStep));
                 rotateCoroutine.Finished += delegate (bool manual)
                 {
                     rotationCoroutinesRunning--;
@@ -56,19 +56,21 @@ namespace Vortices
             LayoutGroup3D layout = radialRing.GetComponent<LayoutGroup3D>();
 
             float timeElapsed = 0;
+            float startingAngle = layout.StartAngleOffset;
+            float finalAngle = 0;
+            if (moveDir == "Right")
+            {
+                finalAngle = layout.StartAngleOffset - rotationAngleStep;
+            }
+            else if (moveDir == "Left")
+            {
+                finalAngle = layout.StartAngleOffset + rotationAngleStep;
+            }
+
             while (timeElapsed < rotationTime)
             {
                 timeElapsed += Time.deltaTime;
-                float finalAngle = 0;
-                if (moveDir == "Right")
-                {
-                    finalAngle = layout.StartAngleOffset - rotationAngleStep;
-                }
-                else if (moveDir == "Left")
-                {
-                    finalAngle = layout.StartAngleOffset + rotationAngleStep;
-                }
-                layout.StartAngleOffset = Mathf.Lerp(layout.StartAngleOffset, finalAngle, timeElapsed / rotationTime);
+                layout.StartAngleOffset = Mathf.Lerp(startingAngle, finalAngle, timeElapsed / rotationTime);
                 yield return null;
             }
             groupAngleOffset = layout.StartAngleOffset;
@@ -79,7 +81,7 @@ namespace Vortices
             int radiusLerpCoroutinesRunning = 0;
             foreach (GameObject radialRing in radialRingList)
             {
-                Task radiusLerpCoroutine = new Task(RadiusLerpRing(radialRing, dragDir, radiusStep, timeLerp));
+                TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(RadiusLerpRing(radialRing, dragDir, radiusStep, timeLerp));
                 radiusLerpCoroutine.Finished += delegate (bool manual)
                 {
                     radiusLerpCoroutinesRunning--;
@@ -112,6 +114,7 @@ namespace Vortices
                 ringLayout.Radius = Mathf.Lerp(ringLayout.Radius, finalRadius, timeElapsed / timeLerp);
                 yield return null;
             }
+            groupRadius = finalRadius;
         }
 
         #endregion

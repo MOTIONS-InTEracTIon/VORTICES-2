@@ -70,7 +70,7 @@ namespace Vortices
                 Fade groupFader = group.GetComponent<Fade>();
                 groupFader.lowerAlpha = 0;
                 groupFader.upperAlpha = 1;
-                Task fadeCoroutine = new Task(groupFader.FadeOutCoroutine());
+                TaskCoroutine fadeCoroutine = new TaskCoroutine(groupFader.FadeOutCoroutine());
                 fadeCoroutine.Finished += delegate (bool manual)
                 {
                     fadeCoroutinesRunning--;

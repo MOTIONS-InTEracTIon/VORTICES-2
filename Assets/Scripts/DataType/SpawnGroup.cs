@@ -85,7 +85,7 @@ namespace Vortices
                 {
                     objectFader.upperAlpha = softFadeUpperAlpha;
                 }
-                Task fadeCoroutine = new Task(objectFader.FadeInCoroutine());
+                TaskCoroutine fadeCoroutine = new TaskCoroutine(objectFader.FadeInCoroutine());
                 fadeCoroutine.Finished += delegate(bool manual)
                 {
                     fadeCoroutinesRunning--;

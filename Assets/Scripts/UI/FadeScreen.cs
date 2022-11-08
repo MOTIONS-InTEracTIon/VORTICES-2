@@ -11,12 +11,12 @@ namespace Vortices
 
         public Color fadeColor;
         private Renderer rend;
-        private BoxCollider collider;
+        private BoxCollider boxCollider;
 
         void Start()
         {
             rend = GetComponent<Renderer>();
-            collider = GetComponent<BoxCollider>();
+            boxCollider = GetComponent<BoxCollider>();
 
             if(fadeOnStart)
             {
@@ -59,11 +59,11 @@ namespace Vortices
 
             if(alphaOut == 0)
             {
-                collider.enabled = false;
+                boxCollider.enabled = false;
             }
             else
             {
-                collider.enabled = true;
+                boxCollider.enabled = true;
             }
         }
     }

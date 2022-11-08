@@ -11,19 +11,21 @@ namespace Vortices
         public GameObject radialGroupPrefab;
 
         // Movement Variables
-        private bool radiusLerpRunning;
         private bool rotateFrontSpawnGroupRunning;
         private float pullPushCount;
+        private bool lastPullPushForward;
 
         // Settings
         public float startingRadius = 2.0f;
         public float radiusStep = 1.0f;
         public float angleStep = 15.0f;
+        public float rotationAngleStep = 15.0f;
 
         #region Group Spawn
         public override void StartGenerateSpawnGroup()
         {
             globalIndex = -1;
+            rotationAngleStep = 360 / dimension.x;
             lastLoadForward = true;
             groupList = new List<GameObject>();
             for (int i = 0; i < dimension.z; i++) 
@@ -44,6 +46,7 @@ namespace Vortices
                 spawnGroup.groupRadius = startingRadius + radiusStep * i;
                 spawnGroup.groupAngleOffset += angleStep * i;
                 spawnGroup.softFadeUpperAlpha = softFadeUpperAlpha;
+                spawnGroup.rotationAngleStep = rotationAngleStep;
                 bool softFadeIn = true;
                 if (i == 0)
                 {
@@ -130,6 +133,36 @@ namespace Vortices
             rotateFrontSpawnGroupRunning = false;
         }
 
+        protected void MoveGroupCount(bool forwards)
+        {
+            if (forwards)
+            {
+                if (!lastPullPushForward)
+                {
+                    pullPushCount += dimension.z;
+                }
+                else
+                {
+                    pullPushCount += 1;
+                }
+
+                lastPullPushForward = true;
+            }
+            else
+            {
+                if (lastPullPushForward)
+                {
+                    pullPushCount -= dimension.z;
+                }
+                else
+                {
+                    pullPushCount -= 1;
+                }
+
+                lastPullPushForward = false;
+            }
+        }
+
         #endregion
 
         #region Multimedia Spawn
@@ -146,7 +179,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                Task spawnCoroutine = new Task(radialGroup.SpawnForwards(dimension.x, softFadeIn));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SpawnForwards(dimension.x, softFadeIn));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -173,7 +206,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                Task spawnCoroutine = new Task(radialGroup.SpawnBackwards(dimension.x, softFadeIn));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SpawnBackwards(dimension.x, softFadeIn));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -204,7 +237,7 @@ namespace Vortices
             frontGroupFader.lowerAlpha = softFadeUpperAlpha;
             frontGroupFader.upperAlpha = 1;
             int fadeCoroutinesRunning = 0;
-            Task fadeCoroutine = new Task(frontGroupFader.FadeInCoroutine());
+            TaskCoroutine fadeCoroutine = new TaskCoroutine(frontGroupFader.FadeInCoroutine());
             fadeCoroutine.Finished += delegate (bool manual)
             {
                 fadeCoroutinesRunning--;
@@ -215,7 +248,7 @@ namespace Vortices
             foreach (GameObject radialGroup in groupList)
             {
                 RadialGroup radialGroupComponent = radialGroup.GetComponent<RadialGroup>();
-                Task radiusLerpCoroutine = new Task(radialGroupComponent.RadiusLerp("Pull", radiusStep, timeLerp));
+                TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Pull", radiusStep, timeLerp));
                 radiusLerpCoroutine.Finished += delegate (bool manual)
                 {
                     radiusLerpCoroutinesRunning--;
@@ -224,6 +257,8 @@ namespace Vortices
             }
             // Change global Index
             MoveGlobalIndex(true);
+            // Change Group Offset Index
+            MoveGroupCount(true);
             // Spawn group in back
             GameObject gameObject = Instantiate(radialGroupPrefab, transform.position, transform.rotation, transform);
             groupList.Add(gameObject);
@@ -236,8 +271,9 @@ namespace Vortices
             spawnGroup.dimension = dimension;
             spawnGroup.radialRingLinearRail = linearRail;
             spawnGroup.groupRadius = startingRadius + radiusStep * (groupList.Count - 1);
-            spawnGroup.groupAngleOffset += angleStep * pullPushCount;
+            spawnGroup.groupAngleOffset = angleStep * pullPushCount;
             spawnGroup.softFadeUpperAlpha = softFadeUpperAlpha;
+            spawnGroup.rotationAngleStep = rotationAngleStep;
             yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, true));
 
             while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
@@ -245,7 +281,6 @@ namespace Vortices
                 yield return null;
             }
 
-            pullPushCount++;
             movingOperationRunning = false;
         }
 
@@ -262,7 +297,7 @@ namespace Vortices
             foreach (GameObject radialGroup in groupList)
             {
                 RadialGroup radialGroupComponent = radialGroup.GetComponent<RadialGroup>();
-                Task radiusLerpCoroutine = new Task(radialGroupComponent.RadiusLerp("Push", radiusStep, timeLerp));
+                TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Push", radiusStep, timeLerp));
                 radiusLerpCoroutine.Finished += delegate (bool manual)
                 {
                     radiusLerpCoroutinesRunning--;
@@ -274,7 +309,7 @@ namespace Vortices
             frontGroupFader.lowerAlpha = softFadeUpperAlpha;
             frontGroupFader.upperAlpha = 1;
             int fadeCoroutinesRunning = 0;
-            Task fadeCoroutine = new Task(frontGroupFader.FadeOutCoroutine());
+            TaskCoroutine fadeCoroutine = new TaskCoroutine(frontGroupFader.FadeOutCoroutine());
             fadeCoroutine.Finished += delegate (bool manual)
             {
                 fadeCoroutinesRunning--;
@@ -282,9 +317,12 @@ namespace Vortices
             fadeCoroutinesRunning++;
             // Change global Index
             MoveGlobalIndex(false);
+            // Change Group Offset Index
+            MoveGroupCount(false);
             // Spawn group in front
             GameObject gameObject = Instantiate(radialGroupPrefab, transform.position, transform.rotation, transform);
             gameObject.transform.SetSiblingIndex(0);
+            frontGroup = gameObject;
             groupList.Insert(0, gameObject);
             GameObject linearRail = Instantiate(linearRailPrefab, transform.position, transform.rotation, gameObject.transform);
             LayoutGroup3D railLayout = linearRail.GetComponent<LayoutGroup3D>();
@@ -295,21 +333,18 @@ namespace Vortices
             spawnGroup.dimension = dimension;
             spawnGroup.radialRingLinearRail = linearRail;
             spawnGroup.groupRadius = startingRadius;
-            spawnGroup.groupAngleOffset -= angleStep * pullPushCount;
+            spawnGroup.groupAngleOffset = angleStep * pullPushCount;
             spawnGroup.softFadeUpperAlpha = softFadeUpperAlpha;
+            spawnGroup.rotationAngleStep = rotationAngleStep;
 
             yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, false));
-
-            // Front Group Operations
-            frontGroup = gameObject;
 
             while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
             {
                 yield return null;
             }
 
-            pullPushCount++;
-            yield return new WaitForSeconds(spawnCooldownZ);
+           // yield return new WaitForSeconds(spawnCooldownZ);
 
             movingOperationRunning = false;
         }
