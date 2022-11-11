@@ -5,7 +5,10 @@ namespace Vortices
 {
     public class TextInputField : MonoBehaviour
     {
-        [SerializeField] private TMP_InputField inputfield;
+        [SerializeField] public TMP_InputField inputfield;
+
+        [SerializeField] public TextMeshProUGUI placeholder;
+        [SerializeField] public TextMeshProUGUI text;
 
         public string GetData()
         {
@@ -27,6 +30,11 @@ namespace Vortices
         public void SetText(string text)
         {
             inputfield.text = text;
+        }
+
+        public void ClearPlaceholderText()
+        {
+            placeholder.text = "";
         }
     }
 }

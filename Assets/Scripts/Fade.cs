@@ -139,7 +139,6 @@ namespace Vortices
                 foreach (Material material in materialList)
                 {
                     material.color = new Color(actualColor.r, actualColor.g, actualColor.b, alphaOut);
-                    fadeOps--;
                 }
             }
             else if (canvas != null)
@@ -156,7 +155,17 @@ namespace Vortices
                 }
 
                 canvas.alpha = alphaOut;
+
+                if (alphaOut == 0)
+                {
+                    canvas.blocksRaycasts = false;
+                }
+                else
+                {
+                    canvas.blocksRaycasts = true;
+                }
             }
+            fadeOps--;
         }
     }
 }

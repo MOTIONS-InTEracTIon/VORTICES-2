@@ -42,11 +42,14 @@ namespace Vortices
                 RadialGroup spawnGroup = gameObject.GetComponent<RadialGroup>();
                 spawnGroup.filePaths = filePaths;
                 spawnGroup.dimension = dimension;
+                spawnGroup.browsingMode = browsingMode;
+                spawnGroup.rootUrl = rootUrl;
                 spawnGroup.radialRingLinearRail = linearRail;
                 spawnGroup.groupRadius = startingRadius + radiusStep * i;
                 spawnGroup.groupAngleOffset += angleStep * i;
                 spawnGroup.softFadeUpperAlpha = softFadeUpperAlpha;
                 spawnGroup.rotationAngleStep = rotationAngleStep;
+
                 bool softFadeIn = true;
                 if (i == 0)
                 {
@@ -269,6 +272,8 @@ namespace Vortices
             RadialGroup spawnGroup = gameObject.GetComponent<RadialGroup>();
             spawnGroup.filePaths = filePaths;
             spawnGroup.dimension = dimension;
+            spawnGroup.browsingMode = browsingMode;
+            spawnGroup.rootUrl = rootUrl;
             spawnGroup.radialRingLinearRail = linearRail;
             spawnGroup.groupRadius = startingRadius + radiusStep * (groupList.Count - 1);
             spawnGroup.groupAngleOffset = angleStep * pullPushCount;
@@ -330,6 +335,8 @@ namespace Vortices
             railLayout.PrimaryAlignment = Alignment.Center;
             RadialGroup spawnGroup = gameObject.GetComponent<RadialGroup>();
             spawnGroup.filePaths = filePaths;
+            spawnGroup.browsingMode = browsingMode;
+            spawnGroup.rootUrl = rootUrl;
             spawnGroup.dimension = dimension;
             spawnGroup.radialRingLinearRail = linearRail;
             spawnGroup.groupRadius = startingRadius;

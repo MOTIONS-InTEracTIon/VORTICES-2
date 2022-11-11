@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Vortices
@@ -10,8 +11,9 @@ namespace Vortices
         // Other references
         protected LayoutGroup3D layoutGroup;
 
-        // SpawnBase Data Components
+        // Data variables
         [HideInInspector] public List<string> filePaths;
+        [HideInInspector] public string rootUrl { get; set; }
 
         // Utility
         protected int globalIndex;
@@ -19,13 +21,14 @@ namespace Vortices
         protected List<string> loadPaths;
         protected List<GameObject> unloadObjects;
         protected List<GameObject> loadObjects;
-        public GameObject elementPrefab;
         protected Fade groupFader;
         public int fadeCoroutinesRunning;
 
         // Settings
-        [HideInInspector] public Vector3Int dimension;
-        public float softFadeUpperAlpha;
+        [HideInInspector] public Vector3Int dimension { get; set; }
+        public string browsingMode { get; set; }
+        public float softFadeUpperAlpha { get; set; }
+  
 
         // Auxiliary Task Class
         public GameObject renderManager; 
@@ -53,7 +56,7 @@ namespace Vortices
             GenerateDestroyObjects(unloadNumber, forwards);
             foreach (GameObject go in unloadObjects)
             {
-                Destroy(go.gameObject);
+                Destroy(go.gameObject); //Instead of destroying, save them then look for them X
             }
             // Generate list of child objects to spawn into
             GenerateObjectPlacement(loadNumber, forwards);
@@ -66,10 +69,13 @@ namespace Vortices
 
             // Make them appear in the scene
             RenderManager render = Instantiate(renderManager).GetComponent<RenderManager>();
-            yield return StartCoroutine(render.PlaceMultimedia(loadPaths,
+            yield return StartCoroutine(render.PlaceMultimedia(loadPaths, loadObjects, browsingMode));
+            /*yield return StartCoroutine(render.PlaceMultimedia(loadPaths,
                                                                       elementPrefab,
                                                                       false, false,
-                                                                      loadObjects));
+                                                                      loadObjects));*/
+            // Make it so you search in memory, if there is nothing you load with render X
+
             Destroy(render.gameObject);
             // Eliminate 
         }
@@ -102,7 +108,6 @@ namespace Vortices
 
         protected IEnumerator GenerateLoadPaths(int loadNumber, bool forwards)
         {
-            // CHANGE: Make the search double the size, so the next batch is ready when you switch to the next
             int index = 0;
 
             if (forwards)
@@ -127,60 +132,34 @@ namespace Vortices
                 if (forwards)
                 {
                     globalIndex++;
-                    bool search = true;
-                    int attempts = 200;
-                    int attempt = 0;
-                    string actualPath;
-                    string pathExtension;
-                    while (search && attempt < attempts)
+                    string actualPath = "";
+                    // Uses rootUrl for online mode and searches filePaths in circular manner for local mode
+                    if (browsingMode == "Online")
+                    {
+                        actualPath = rootUrl;
+                    }
+                    else if (browsingMode == "Local")
                     {
                         actualPath = CircularList.GetElement<string>(filePaths, globalIndex);
-                        pathExtension = Path.GetExtension(actualPath);
-                        if (pathExtension == ".png" ||
-                            pathExtension == ".PNG" ||
-                            pathExtension == ".JPG" ||
-                            pathExtension == ".jpg" ||
-                            pathExtension == ".jpeg"||
-                            pathExtension == ".JPEG")
-                        {
-                            loadPaths.Add(actualPath);
-                            search = false;
-                        }
-                        else
-                        {
-                            globalIndex++;
-                            attempt++;
-                        }
                     }
+                    // Look if that path is in memory X
+                    loadPaths.Add(actualPath);
                 }
                 else
                 {
                     globalIndex--;
-                    bool search = true;
-                    int attempts = 200;
-                    int attempt = 0;
-                    string actualPath;
-                    string pathExtension;
-                    while (search && attempt < attempts)
+                    string actualPath = "";
+                    // Uses rootUrl for online mode and searches filePaths in circular manner for local mode
+                    if (browsingMode == "Online")
+                    {
+                        actualPath = rootUrl;
+                    }
+                    else if (browsingMode == "Local")
                     {
                         actualPath = CircularList.GetElement<string>(filePaths, globalIndex);
-                        pathExtension = Path.GetExtension(actualPath);
-                        if (pathExtension == ".png" ||
-                            pathExtension == ".PNG" ||
-                            pathExtension == ".JPG" ||
-                            pathExtension == ".jpg" ||
-                            pathExtension == ".jpeg"||
-                            pathExtension == ".JPEG")
-                        {
-                            loadPaths.Add(actualPath);
-                            search = false;
-                        }
-                        else
-                        {
-                            globalIndex--;
-                            attempt++;
-                        }
                     }
+                    // Look if that path is in memory X
+                    loadPaths.Add(actualPath);
                 }
                 index++;
                 yield return null;

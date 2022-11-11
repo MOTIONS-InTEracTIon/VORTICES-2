@@ -44,6 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e488613ec54c90a44a504fe87801246b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  webViewPrefab: {fileID: 1535822479614194, guid: 3e10f3b6a733e441c8352020cff2f1f6,
+    type: 3}
+  webViewCanvasPrefab: {fileID: 2040862489700390576, guid: 6baeb15aa2d0a9e4ab6cb504b7c31cfe,
+    type: 3}
+  webViewCanvasFollowerPrefab: {fileID: 2040862489700390576, guid: 7728413f79a7f9340b3aba0f8ae44c4e,
+    type: 3}
   loadManager: {fileID: 8700879235151639090, guid: e4dc803ad8668974b833588dd30c4bf4,
     type: 3}
   result: 1

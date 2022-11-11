@@ -14,6 +14,7 @@ namespace Vortices
 
         // SpawnBase Data Components
         [HideInInspector] public List<string> filePaths;
+        [HideInInspector] public string rootUrl { get; set; }
 
         // Movement variables
         protected XRRayInteractor currentlySelecting;
@@ -27,8 +28,9 @@ namespace Vortices
         protected Vector3 offset = Vector3.zero;
 
         // Settings
-        [HideInInspector] public Vector3Int dimension;
+        [HideInInspector] public Vector3Int dimension { get; set; }
         public bool volumetric { get; set; }
+        public string browsingMode { get; set; }
         public GameObject frontGroup;
         public float afterSpawnTime;
         public float spawnCooldownX = 1.0f;
@@ -208,10 +210,8 @@ namespace Vortices
                 while (coroutineQueue.Count > 0)
                 {
                     coordinatorWorking = true;
-                    Debug.Log(coordinatorWorking);
                     yield return StartCoroutine(coroutineQueue.Dequeue());
                     coordinatorWorking = false;
-                    Debug.Log(coordinatorWorking);
                 }
 
                 yield return null;

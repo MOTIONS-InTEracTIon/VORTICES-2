@@ -216,7 +216,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &211911075
 GameObject:
@@ -275,7 +275,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &303663283
 Mesh:
@@ -546,15 +546,9 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 319840494}
   m_PrefabAsset: {fileID: 0}
---- !u!20 &586979414 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 2670365003190263991, guid: 22eea9a5c3743d74f90555fbe5def0d7,
-    type: 3}
-  m_PrefabInstance: {fileID: 2670365002610178273}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &653643557 stripped
+--- !u!114 &592426634 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2670365003256903620, guid: 22eea9a5c3743d74f90555fbe5def0d7,
+  m_CorrespondingSourceObject: {fileID: 1205409578568994997, guid: 22eea9a5c3743d74f90555fbe5def0d7,
     type: 3}
   m_PrefabInstance: {fileID: 2670365002610178273}
   m_PrefabAsset: {fileID: 0}
@@ -857,7 +851,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &1576242425
 GameObject:
@@ -888,7 +882,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac8d5c63c6bd7ba45b1d73b01be55635, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeScreen: {fileID: 653643557}
+  fadeScreen: {fileID: 592426634}
 --- !u!4 &1576242427
 Transform:
   m_ObjectHideFlags: 0
@@ -1106,7 +1100,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 586979414}
+      objectReference: {fileID: 0}
     - target: {fileID: 1000539818304674880, guid: 72ebbe355383d3c41a20f48c9dde3a2d,
         type: 3}
       propertyPath: m_Mesh

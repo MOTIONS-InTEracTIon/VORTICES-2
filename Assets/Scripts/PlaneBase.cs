@@ -41,6 +41,8 @@ namespace Vortices
                 PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
                 spawnGroup.filePaths = filePaths;
                 spawnGroup.dimension = dimension;
+                spawnGroup.browsingMode = browsingMode;
+                spawnGroup.rootUrl = rootUrl;
                 spawnGroup.softFadeUpperAlpha = softFadeUpperAlpha;
                 bool softFadeIn = true;
                 if (i == 0)
@@ -80,11 +82,11 @@ namespace Vortices
         #region Movement
         protected override void PerformAction()
         {
-            if (drag)
+            if (drag && dragDir != "")
             {
                 Vector3 center = frontGroup.transform.position;
                 // This means the base has been pulled and will spawn inwards
-                if (volumetric && dragDir == "Pull")
+                if (dimension.z > 1 && dragDir == "Pull")
                 {
                     if (afterSpawnTime >= spawnCooldownZ && !movingOperationRunning)
                     {
@@ -93,7 +95,7 @@ namespace Vortices
                     }
                 }
                 // This means the base has been pushed and will spawn outwards
-                else if (volumetric && dragDir == "Push")
+                else if (dimension.z > 1 && dragDir == "Push")
                 {
                     if (afterSpawnTime >= spawnCooldownZ && drag && !movingOperationRunning)
                     {
