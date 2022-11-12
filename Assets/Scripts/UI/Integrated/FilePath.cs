@@ -17,7 +17,6 @@ namespace Vortices
         // Extension check
         private bool hasH264Codec = false;
         private List<string> supportedExtensions;
-        private List<string> unsupportedExtensions;
         private List<string> filePathsRaw;
 
         // Data
@@ -25,15 +24,12 @@ namespace Vortices
         public int numberOfFolders { get; private set; }
         public int numberOfSupported { get; private set; }
         public int numberOfUnsupported { get; private set; }
-        public int numberOfUnknown { get; private set; }
         #endregion
 
         private void Start()
         {
             supportedExtensions = new List<string>();
-            unsupportedExtensions = new List<string>();
             AddSupportedExtensions();
-            AddUnsupportedExtensions();
         }
 
         #region Path extraction
@@ -105,12 +101,6 @@ namespace Vortices
             {
                 dataCounters[1].color = Color.red;
             }
-            // Unknown
-            dataCounters[2].text = "" + numberOfUnknown;
-            if (numberOfUnsupported > 0)
-            {
-                dataCounters[2].color = Color.grey;
-            }
         }
 
         // Clears the information everytime the list of folders or files is changed
@@ -121,7 +111,6 @@ namespace Vortices
             numberOfFolders = 0;
             numberOfSupported = 0;
             numberOfUnsupported = 0;
-            numberOfUnknown = 0;
         }
 
         #endregion
@@ -131,7 +120,6 @@ namespace Vortices
         private bool CheckExtensionSupport(string path)
         {
             bool addToFilePaths = false;
-            bool found = false;
             string pathExtension = Path.GetExtension(path);
             pathExtension = pathExtension.ToLower();
             //Check if its supported
@@ -139,19 +127,11 @@ namespace Vortices
             {
                 numberOfSupported++;
                 addToFilePaths = true;
-                found = true;
             }
-            //Check if its unsupported
-            if (!found && unsupportedExtensions.Contains(pathExtension))
+            //Else its unsupported
+            else
             {
                 numberOfUnsupported++;
-                found = true;
-            }
-            //Otherwise add to unknown
-            if (!found)
-            {
-                numberOfUnknown++;
-                addToFilePaths = true;
             }
             return addToFilePaths;
         }
@@ -183,36 +163,6 @@ namespace Vortices
                 supportedExtensions.Add(".mp4");
                 supportedExtensions.Add(".m4a");
                 supportedExtensions.Add(".m4v");
-            }
-
-        }
-
-        private void AddUnsupportedExtensions()
-        {
-            // Add here tested unsupported extensions
-            unsupportedExtensions.Add(".doc");
-            unsupportedExtensions.Add(".docx");
-            unsupportedExtensions.Add(".xls");
-            unsupportedExtensions.Add(".xlsx");
-            unsupportedExtensions.Add(".ppt");
-            unsupportedExtensions.Add(".pptx");
-            unsupportedExtensions.Add(".avi");
-            unsupportedExtensions.Add(".mov");
-            unsupportedExtensions.Add(".mkv");
-            unsupportedExtensions.Add(".wmv");
-            unsupportedExtensions.Add(".odt");
-            unsupportedExtensions.Add(".ods");
-            unsupportedExtensions.Add(".odp");
-            unsupportedExtensions.Add(".rtf");
-            unsupportedExtensions.Add(".tiff");
-            unsupportedExtensions.Add(".xml");
-            unsupportedExtensions.Add(".csv");
-            if (!hasH264Codec)
-            {
-                unsupportedExtensions.Add(".3gp");
-                unsupportedExtensions.Add(".mp4");
-                unsupportedExtensions.Add(".m4a");
-                unsupportedExtensions.Add(".m4v");
             }
 
         }

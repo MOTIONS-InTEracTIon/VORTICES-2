@@ -107,7 +107,7 @@ public class SpawnMenu : MonoBehaviour
         yield return StartCoroutine(GenerateSelectionPaths(forwards));
 
         // Generate positions to make them appear
-        yield return StartCoroutine(GenerateObjectPlacement(optionVisibleNumber.GetDataInt()));
+        yield return StartCoroutine(GenerateEnterObjects(optionVisibleNumber.GetDataInt()));
 
         // Make them appear in the scene
         RenderManager render = Instantiate(renderManager).GetComponent<RenderManager>();
@@ -162,7 +162,7 @@ public class SpawnMenu : MonoBehaviour
         }
     }
 
-    public IEnumerator GenerateObjectPlacement(int numberOfPlacements) //CHANGE: Take an option and split this function for each placement mode
+    public IEnumerator GenerateEnterObjects(int numberOfPlacements) //CHANGE: Take an option and split this function for each placement mode
     {
         spawnPositionObjects = new List<GameObject>();
 

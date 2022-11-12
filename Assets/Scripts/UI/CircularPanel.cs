@@ -356,6 +356,14 @@ namespace Vortices
                 spawnBase.browsingMode = "Online";
                 spawnBase.rootUrl = rootUrl;
             }
+            if (displayMode == 0)
+            {
+                spawnBase.displayMode = "Plane";
+            }
+            else
+            {
+                spawnBase.displayMode = "Radial";
+            }
             spawnBase.volumetric = volumetric;
             if (volumetric == false || dimension.z == 0)
             {
@@ -370,7 +378,7 @@ namespace Vortices
         public void DestroyBase()
         {
             SpawnBase spawnBase = placementBase.GetComponent<SpawnBase>();
-            StartCoroutine(spawnBase.StopSpawn());
+            StartCoroutine(spawnBase.DestroyBase());
         }
         #endregion
     }

@@ -120,6 +120,20 @@ namespace Vortices
         #endregion
 
         #region Multimedia Spawn
+        public void Init(List<string> filePaths, Vector3Int dimension, string browsingMode, string displayMode, string rootUrl, GameObject linearRail, float groupRadius, float groupAngleOffset,  float softFadeUpperAlpha, float rotationAngleStep)
+        {
+            this.filePaths = filePaths;
+            this.dimension = dimension;
+            this.browsingMode = browsingMode;
+            this.displayMode = displayMode;
+            this.rootUrl = rootUrl;
+            this.radialRingLinearRail = linearRail;
+            this.groupRadius = groupRadius;
+            this.groupAngleOffset = groupAngleOffset;
+            this.softFadeUpperAlpha = softFadeUpperAlpha;
+            this.rotationAngleStep = rotationAngleStep;
+        }
+
         public override IEnumerator StartSpawnOperation(int offsetGlobalIndex, bool softFadeIn)
         {
             // Startup
@@ -159,7 +173,7 @@ namespace Vortices
             return gameObject;
         }
 
-        public override void GenerateObjectPlacement(int loadNumber, bool forwards)
+        public override void GenerateEnterObjects(int loadNumber, bool forwards)
         {
             loadObjects = new List<GameObject>();
 
@@ -177,7 +191,7 @@ namespace Vortices
             }
         }
 
-        public override void GenerateDestroyObjects(int unloadNumber, bool forwards)
+        public override void GenerateExitObjects(int unloadNumber, bool forwards)
         {
             unloadObjects = new List<GameObject>();
 

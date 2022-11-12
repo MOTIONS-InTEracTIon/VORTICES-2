@@ -22,18 +22,20 @@ namespace Vortices
         protected List<GameObject> unloadObjects;
         protected List<GameObject> loadObjects;
         protected Fade groupFader;
-        public int fadeCoroutinesRunning;
+        private int spawnedHandlingCoroutinesRunning;
 
         // Settings
         [HideInInspector] public Vector3Int dimension { get; set; }
         public string browsingMode { get; set; }
+        public string displayMode { get; set; }
         public float softFadeUpperAlpha { get; set; }
   
 
         // Auxiliary Task Class
-        public GameObject renderManager; 
+        public GameObject renderManager;
 
         #region Multimedia Spawn
+
         public virtual IEnumerator StartSpawnOperation(int offsetGlobalIndex, bool softFadeIn)
         {
             // Each spawn group has a different start operation, radial constructing aditional childs
@@ -41,25 +43,23 @@ namespace Vortices
             yield return null;
         }
 
-        // Spawns files using overriden GenerateObjectPlacement
+        // Spawns files using overriden GenerateExitObjects and GenerateEnterObjects
         protected IEnumerator ObjectSpawn(int unloadNumber, int loadNumber, bool forwards, bool softFade)
         {
             ObjectPreparing(unloadNumber, loadNumber, forwards);
+            yield return StartCoroutine(DestroyObjectHandling());
             yield return StartCoroutine(ObjectLoad(loadNumber, forwards));
-            yield return StartCoroutine(ObjectFadeIn(softFade));
+            yield return StartCoroutine(SpawnedObjectHandling(softFade));
         }
     
         // Destroys placement objects not needed and insert new ones at the same time
         protected void ObjectPreparing(int unloadNumber, int loadNumber, bool forwards)
         {
-            // Generate list of child objects to destroy
-            GenerateDestroyObjects(unloadNumber, forwards);
-            foreach (GameObject go in unloadObjects)
-            {
-                Destroy(go.gameObject); //Instead of destroying, save them then look for them X
-            }
-            // Generate list of child objects to spawn into
-            GenerateObjectPlacement(loadNumber, forwards);
+            // Generate list of child objects to leave the scene
+            GenerateExitObjects(unloadNumber, forwards);
+
+            // Generate list of child objects to spawn into the scene
+            GenerateEnterObjects(loadNumber, forwards);
         }
 
         protected IEnumerator ObjectLoad(int loadNumber, bool forwards)
@@ -69,7 +69,7 @@ namespace Vortices
 
             // Make them appear in the scene
             RenderManager render = Instantiate(renderManager).GetComponent<RenderManager>();
-            yield return StartCoroutine(render.PlaceMultimedia(loadPaths, loadObjects, browsingMode));
+            yield return StartCoroutine(render.PlaceMultimedia(loadPaths, loadObjects, browsingMode, displayMode));
             /*yield return StartCoroutine(render.PlaceMultimedia(loadPaths,
                                                                       elementPrefab,
                                                                       false, false,
@@ -80,9 +80,19 @@ namespace Vortices
             // Eliminate 
         }
 
-        protected IEnumerator ObjectFadeIn(bool softFade)
+        protected IEnumerator DestroyObjectHandling()
         {
-            fadeCoroutinesRunning = 0;
+            foreach (GameObject go in unloadObjects)
+            {
+                Destroy(go.gameObject); //Instead of destroying, save them then look for them X
+            }
+
+            yield return null;
+        }
+
+        protected IEnumerator SpawnedObjectHandling(bool softFade)
+        {
+            spawnedHandlingCoroutinesRunning = 0;
 
             foreach (GameObject go in loadObjects)
             {
@@ -94,12 +104,12 @@ namespace Vortices
                 TaskCoroutine fadeCoroutine = new TaskCoroutine(objectFader.FadeInCoroutine());
                 fadeCoroutine.Finished += delegate(bool manual)
                 {
-                    fadeCoroutinesRunning--;
+                    spawnedHandlingCoroutinesRunning--;
                 };
-                fadeCoroutinesRunning++;
+                spawnedHandlingCoroutinesRunning++;
             }
 
-            while (fadeCoroutinesRunning > 0)
+            while (spawnedHandlingCoroutinesRunning > 0)
             {
                 yield return null;
             }
@@ -166,13 +176,13 @@ namespace Vortices
             }
         }
 
-        public virtual void GenerateDestroyObjects(int unloadNumber, bool forwards)
+        public virtual void GenerateExitObjects(int unloadNumber, bool forwards)
         {
             // Destroying varies in each spawn base, Generating Destroy Objects must be overridden
             Debug.Log("Not being overridden");
         }
 
-        public virtual void GenerateObjectPlacement(int loadNumber, bool forwards)
+        public virtual void GenerateEnterObjects(int loadNumber, bool forwards)
         {
             // Generating placements varies in each spawn base, Generating Object Placement must be overridden
             Debug.Log("Not being overridden");

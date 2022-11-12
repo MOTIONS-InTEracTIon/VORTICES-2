@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEngine.XR.Interaction.Toolkit;
+using Vuplex.WebView;
 
 namespace Vortices
 {
@@ -31,6 +32,7 @@ namespace Vortices
         [HideInInspector] public Vector3Int dimension { get; set; }
         public bool volumetric { get; set; }
         public string browsingMode { get; set; }
+        public string displayMode { get; set; }
         public GameObject frontGroup;
         public float afterSpawnTime;
         public float spawnCooldownX = 1.0f;
@@ -63,7 +65,37 @@ namespace Vortices
             Debug.Log("Start Generate Spawn Group was not overriden");
         }
 
-        public IEnumerator StopSpawn()
+        protected void MoveGlobalIndex(bool forwards)
+        {
+            if (forwards)
+            {
+                if (!lastLoadForward)
+                {
+                    globalIndex += dimension.x * dimension.y * dimension.z;
+                }
+                else
+                {
+                    globalIndex += dimension.x * dimension.y;
+                }
+
+                lastLoadForward = true;
+            }
+            else
+            {
+                if (lastLoadForward)
+                {
+                    globalIndex -= dimension.x * dimension.y * dimension.z;
+                }
+                else
+                {
+                    globalIndex -= dimension.x * dimension.y;
+                }
+
+                lastLoadForward = false;
+            }
+        }
+
+        public IEnumerator DestroyBase()
         {
             int fadeCoroutinesRunning = 0;
             // Every group has to be alpha 0
@@ -85,12 +117,18 @@ namespace Vortices
                 yield return null;
             }
 
+            if (browsingMode == "Online")
+            {
+                yield return StartCoroutine(StandaloneWebView.TerminateBrowserProcess().AsIEnumerator());
+                Web.ClearAllData();
+            }
+
             Destroy(gameObject);
         }
 
         #endregion
 
-        #region Movement
+        #region Input
 
         private void Update()
         {
@@ -221,49 +259,19 @@ namespace Vortices
 
         #endregion
 
-        #region Multimedia Spawn
-
-        protected void MoveGlobalIndex(bool forwards)
+        #region Spawn Movement
+        // Moves then spawns more multimedia
+        protected virtual IEnumerator GroupSpawnRight()
         {
-            if (forwards)
-            {
-                if (!lastLoadForward)
-                {
-                    globalIndex += dimension.x * dimension.y * dimension.z;
-                }
-                else
-                {
-                    globalIndex += dimension.x * dimension.y;
-                }
-
-                lastLoadForward = true;
-            }
-            else
-            {
-                if (lastLoadForward)
-                {
-                    globalIndex -= dimension.x * dimension.y * dimension.z;
-                }
-                else
-                {
-                    globalIndex -= dimension.x * dimension.y;
-                }
-
-                lastLoadForward = false;
-            }
-        }
-
-        protected virtual IEnumerator GroupSpawnForwards()
-        {
-            // Different bases make multimedia go forward differently
-            Debug.Log("Group Spawn Forwards was not overriden");
+            // Different bases make multimedia go right differently
+            Debug.Log("Group Spawn Right was not overriden");
             yield return null;
         }
 
-        protected virtual IEnumerator GroupSpawnBackwards()
+        protected virtual IEnumerator GroupSpawnLeft()
         {
-            // Different bases make multimedia go backward differently
-            Debug.Log("Group Spawn Backwards was not overriden");
+            // Different bases make multimedia go left differently
+            Debug.Log("Group Spawn Left was not overriden");
             yield return null;
         }
 
@@ -281,6 +289,67 @@ namespace Vortices
             yield return null;
         }
 
+        protected virtual IEnumerator GroupSpawnUp()
+        {
+            // Different bases make multimedia go up differently
+            Debug.Log("Group Spawn Up was not overriden");
+            yield return null;
+        }
+
+        protected virtual IEnumerator GroupSpawnDown()
+        {
+            // Different bases make multimedia go down differently
+            Debug.Log("Group Spawn Down was not overriden");
+            yield return null;
+        }
+
+
+
+        #endregion
+
+        #region Movement
+        // Only moves
+        protected virtual IEnumerator GroupRight()
+        {
+            // Different bases make multimedia go right differently
+            Debug.Log("Group Right was not overriden");
+            yield return null;
+        }
+
+        protected virtual IEnumerator GroupLeft()
+        {
+            // Different bases make multimedia go left differently
+            Debug.Log("Group Left was not overriden");
+            yield return null;
+        }
+
+        protected virtual IEnumerator GroupPull()
+        {
+            // Different bases make multimedia go into the foreground differently
+            Debug.Log("Group Pull was not overriden");
+            yield return null;
+        }
+
+        protected virtual IEnumerator GroupPush()
+        {
+            // Different bases make multimedia go onto the background differently
+            Debug.Log("Group Push was not overriden");
+            yield return null;
+        }
+
+        protected virtual IEnumerator GroupUp()
+        {
+            // Different bases make multimedia go up differently
+            Debug.Log("Group Up was not overriden");
+            yield return null;
+        }
+
+        protected virtual IEnumerator GroupDown()
+        {
+            // Different bases make multimedia go down differently
+            Debug.Log("Group Down was not overriden");
+            yield return null;
+        }
         #endregion
     }
 }

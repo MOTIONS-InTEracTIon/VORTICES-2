@@ -18,9 +18,12 @@ namespace Vortices
         // Auxiliary Components
         [SerializeField] GameObject loadManager;
 
+
         // Coroutine
         private int spawnCoroutinesRunning;
 
+        // Debug
+        public int finishes;
 
         public Result result;
         #endregion
@@ -117,20 +120,28 @@ namespace Vortices
         // Places a multimedia object in the world using the 3D Web View Asset (New Version of multimedia loading)
         // loadPaths = Indicates file paths for local loading only
         // placementObject = List of locations to be filled by multimedia objects
-        public IEnumerator PlaceMultimedia(List<string> loadPaths, List<GameObject> placementObjects, string browsingMode)
+        public IEnumerator PlaceMultimedia(List<string> loadPaths, List<GameObject> placementObjects, string browsingMode, string displayMode)
         {
 
             result = Result.OnGoing;
             spawnCoroutinesRunning = 0;
-
             // Spawning
             for (int i = 0; i < placementObjects.Count; i++)
             {
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(GenerateCanvasWebView(loadPaths[i], placementObjects[i], browsingMode));
+                Canvas canvasHolder = new Canvas();
+                // Plane
+                if (displayMode == "Plane")
+                {
+                    canvasHolder = GenerateCanvas(placementObjects[i]);
+                }
+                // Radial
+                else if (displayMode == "Radial")
+                {
+                    canvasHolder = GenerateFollowerCanvas(placementObjects[i]);
+                }
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(GenerateCanvasWebView(canvasHolder, loadPaths[i], placementObjects[i], browsingMode));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
-
-                yield return null;
             }
 
             while (spawnCoroutinesRunning > 0)
@@ -141,44 +152,48 @@ namespace Vortices
             result = Result.Success;
         }
 
-        private IEnumerator GenerateCanvasWebView(string loadPath, GameObject placementObject, string browsingMode)
+        private Canvas GenerateCanvas(GameObject placementObject)
         {
-            GameObject canvasPrefab = new GameObject();
-            canvasPrefab.hideFlags = HideFlags.HideInHierarchy;
-            if (browsingMode == "Online")
-            {
-                canvasPrefab = webViewCanvasFollowerPrefab;
-            }
-            else if (browsingMode == "Local")
-            {
-                canvasPrefab = webViewCanvasPrefab;
-            }
+            GameObject canvasPrefab = Instantiate(webViewCanvasPrefab, placementObject.transform.position, placementObject.transform.rotation, placementObject.transform);
+            Canvas canvasHolder = canvasPrefab.GetComponent<Canvas>();
+            canvasHolder.worldCamera = Camera.main;
+            return canvasHolder;
+        }
 
-            GameObject canvasHolder = Instantiate(canvasPrefab, placementObject.transform.position, placementObject.transform.rotation, placementObject.transform);
-            Canvas canvasHolderCanvas = canvasHolder.GetComponent<Canvas>();
-            canvasHolderCanvas.worldCamera = Camera.main;
+        private Canvas GenerateFollowerCanvas(GameObject placementObject)
+        {
+            GameObject canvasPrefab = Instantiate(webViewCanvasFollowerPrefab, placementObject.transform.position, placementObject.transform.rotation, placementObject.transform);
+            Canvas canvasHolder = canvasPrefab.GetComponent<Canvas>();
+            canvasHolder.worldCamera = Camera.main;
+            return canvasHolder;
+        }
 
-            GameObject canvas = Instantiate(webViewPrefab);
-            canvas.transform.SetParent(canvasHolder.transform);
+        private IEnumerator GenerateCanvasWebView(Canvas canvasHolder, string loadPath, GameObject placementObject, string browsingMode)
+        {
+            GameObject canvas = Instantiate(webViewPrefab, canvasHolder.transform.position, canvasHolder.transform.rotation, canvasHolder.transform);
             CanvasWebViewPrefab canvasWebView = canvas.GetComponent<CanvasWebViewPrefab>();
             RectTransform rectTransform = canvasWebView.transform as RectTransform;
             rectTransform.anchoredPosition3D = Vector3.zero;
             rectTransform.offsetMin = Vector2.zero;
             rectTransform.offsetMax = Vector2.zero;
             canvas.transform.localScale = Vector3.one;
+            canvasWebView.Resolution = 640;
             yield return StartCoroutine(canvasWebView.WaitUntilInitialized().AsIEnumerator());
 
-            int failedTimes = 0;
-            int finishedTimes = 0;
-            canvasWebView.WebView.LoadProgressChanged += (sender, eventArgs) => {
+            bool finished = false;
+            canvasWebView.WebView.LoadProgressChanged += (sender, eventArgs) =>
+            {
+                //Debug.Log($"Load progress changed: {eventArgs.Type}, {eventArgs.Progress}");
                 if (eventArgs.Type == ProgressChangeType.Finished)
                 {
-                    finishedTimes++;
+                    finished = true;
+                    finishes++;
+                   // Debug.Log("Finished " + finishes + " times");
                 }
-
                 if (eventArgs.Type == ProgressChangeType.Failed)
                 {
-                    failedTimes++;
+                    Debug.Log("Load failed");
+                    finished = false;
                 }
             };
 
@@ -188,30 +203,6 @@ namespace Vortices
                 url = loadPath.Replace(@"\", "/");
                 url = url.Replace(" ", "%20");
                 url = @"file://" + url;
-
-                string extension = Path.GetExtension(loadPath);
-                // FIX THIS, SO IT DOESNT USE EXTENSIONS WITH HELP OF THE DEV
-                if (extension == ".mp3" ||
-                    extension == ".ogg" ||
-                    extension == ".wav" ||
-                    extension == ".webm" ||
-                    extension == ".oga" ||
-                    extension == ".ogv")
-                {
-                    while (failedTimes != 2)
-                    {
-                        yield return null;
-                    }
-                }
-                else
-                {
-                    while (finishedTimes != 1)
-                    {
-                        yield return null;
-                    }
-                }
-
-                yield return StartCoroutine(PauseWebView(canvasWebView).AsIEnumerator());
             }
             else if (browsingMode == "Online")
             {
@@ -219,6 +210,22 @@ namespace Vortices
             }
 
             canvasWebView.WebView.LoadUrl(url);
+           
+            while (!finished)
+            {
+                yield return null;
+            }
+
+            // After load
+
+            if (browsingMode == "Local")
+            {
+                yield return StartCoroutine(PauseWebView(canvasWebView).AsIEnumerator());
+            }
+            else if (browsingMode == "Online")
+            {
+                //canvasWebView.WebView.SetRenderingEnabled(false);
+            }
         }
 
         public async Task PauseWebView(CanvasWebViewPrefab canvas)

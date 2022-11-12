@@ -18,6 +18,7 @@ namespace Vortices
         // Settings
         public float startingRadius = 2.0f;
         public float radiusStep = 1.0f;
+        public float startingAngle = 15.0f;
         public float angleStep = 15.0f;
         public float rotationAngleStep = 15.0f;
 
@@ -40,16 +41,8 @@ namespace Vortices
                 railLayout.PrimaryAlignment = Alignment.Center;
                 // Radial Group Setting
                 RadialGroup spawnGroup = gameObject.GetComponent<RadialGroup>();
-                spawnGroup.filePaths = filePaths;
-                spawnGroup.dimension = dimension;
-                spawnGroup.browsingMode = browsingMode;
-                spawnGroup.rootUrl = rootUrl;
-                spawnGroup.radialRingLinearRail = linearRail;
-                spawnGroup.groupRadius = startingRadius + radiusStep * i;
-                spawnGroup.groupAngleOffset += angleStep * i;
-                spawnGroup.softFadeUpperAlpha = softFadeUpperAlpha;
-                spawnGroup.rotationAngleStep = rotationAngleStep;
-
+                spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, linearRail,
+                    startingRadius + radiusStep * i, startingAngle + angleStep * i, softFadeUpperAlpha, rotationAngleStep);
                 bool softFadeIn = true;
                 if (i == 0)
                 {
@@ -65,7 +58,7 @@ namespace Vortices
         }
         #endregion
 
-        #region Movement
+        #region Input
         protected override void PerformAction()
         {
             if (drag)
@@ -95,7 +88,7 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownX && !rotateFrontSpawnGroupRunning)
                     {
                         afterSpawnTime = 0;
-                        StartCoroutine(RotateFrontSpawnGroup(dragDir));
+                        StartCoroutine(GroupSpawnLeft());
                     }
                 }
                 // This means the base has touched the right bound and will spawn
@@ -104,7 +97,7 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownX && !rotateFrontSpawnGroupRunning)
                     {
                         afterSpawnTime = 0;
-                        StartCoroutine(RotateFrontSpawnGroup(dragDir));
+                        StartCoroutine(GroupSpawnRight());
                     }
                 }
                 else if (dragDir == "Up")
@@ -112,7 +105,7 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        coroutineQueue.Enqueue(GroupSpawnBackwards());
+                        coroutineQueue.Enqueue(GroupSpawnUp());
 
                     }
                 }
@@ -121,19 +114,10 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        coroutineQueue.Enqueue(GroupSpawnForwards());
+                        coroutineQueue.Enqueue(GroupSpawnDown());
                     }
                 }
             }
-        }
-
-        // Not Spawning movement
-        private IEnumerator RotateFrontSpawnGroup(string dragDir)
-        {
-            rotateFrontSpawnGroupRunning = true;
-            RadialGroup radialGroup = frontGroup.GetComponent<RadialGroup>();
-            yield return StartCoroutine(radialGroup.RotateSpawnGroup(dragDir));
-            rotateFrontSpawnGroupRunning = false;
         }
 
         protected void MoveGroupCount(bool forwards)
@@ -168,8 +152,9 @@ namespace Vortices
 
         #endregion
 
-        #region Multimedia Spawn
-        protected override IEnumerator GroupSpawnForwards()
+        #region Spawn Movement
+
+        protected override IEnumerator GroupSpawnDown()
         {
             movingOperationRunning = true;
             int spawnCoroutinesRunning = 0;
@@ -196,7 +181,7 @@ namespace Vortices
             movingOperationRunning = false;
         }
 
-        protected override IEnumerator GroupSpawnBackwards()
+        protected override IEnumerator GroupSpawnUp()
         {
             movingOperationRunning = true;
             int spawnCoroutinesRunning = 0;
@@ -270,15 +255,8 @@ namespace Vortices
             railLayout.LayoutAxis = LayoutAxis3D.Y;
             railLayout.PrimaryAlignment = Alignment.Center;
             RadialGroup spawnGroup = gameObject.GetComponent<RadialGroup>();
-            spawnGroup.filePaths = filePaths;
-            spawnGroup.dimension = dimension;
-            spawnGroup.browsingMode = browsingMode;
-            spawnGroup.rootUrl = rootUrl;
-            spawnGroup.radialRingLinearRail = linearRail;
-            spawnGroup.groupRadius = startingRadius + radiusStep * (groupList.Count - 1);
-            spawnGroup.groupAngleOffset = angleStep * pullPushCount;
-            spawnGroup.softFadeUpperAlpha = softFadeUpperAlpha;
-            spawnGroup.rotationAngleStep = rotationAngleStep;
+            spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, linearRail,
+                startingRadius + radiusStep * (groupList.Count - 1), angleStep * pullPushCount, softFadeUpperAlpha, rotationAngleStep);
             yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, true));
 
             while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
@@ -297,7 +275,7 @@ namespace Vortices
             groupList.Remove(radialGroupInBack);
             Destroy(radialGroupInBack.transform.gameObject);
             radialGroupInBack.transform.parent = null;
-            // Every group except front has to lerp radius outwards
+            // Every group has to lerp radius outwards
             int radiusLerpCoroutinesRunning = 0;
             foreach (GameObject radialGroup in groupList)
             {
@@ -334,16 +312,8 @@ namespace Vortices
             railLayout.LayoutAxis = LayoutAxis3D.Y;
             railLayout.PrimaryAlignment = Alignment.Center;
             RadialGroup spawnGroup = gameObject.GetComponent<RadialGroup>();
-            spawnGroup.filePaths = filePaths;
-            spawnGroup.browsingMode = browsingMode;
-            spawnGroup.rootUrl = rootUrl;
-            spawnGroup.dimension = dimension;
-            spawnGroup.radialRingLinearRail = linearRail;
-            spawnGroup.groupRadius = startingRadius;
-            spawnGroup.groupAngleOffset = angleStep * pullPushCount;
-            spawnGroup.softFadeUpperAlpha = softFadeUpperAlpha;
-            spawnGroup.rotationAngleStep = rotationAngleStep;
-
+            spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, linearRail,
+                startingRadius, angleStep * pullPushCount, softFadeUpperAlpha, rotationAngleStep);
             yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, false));
 
             while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
@@ -351,10 +321,29 @@ namespace Vortices
                 yield return null;
             }
 
-           // yield return new WaitForSeconds(spawnCooldownZ);
-
             movingOperationRunning = false;
         }
+
+        protected override IEnumerator GroupSpawnRight()
+        {
+            movingOperationRunning = true;
+            RadialGroup radialGroup = frontGroup.GetComponent<RadialGroup>();
+            yield return StartCoroutine(radialGroup.RotateSpawnGroup("Right"));
+            movingOperationRunning = false;
+        }
+
+        protected override IEnumerator GroupSpawnLeft()
+        {
+            movingOperationRunning = true;
+            RadialGroup radialGroup = frontGroup.GetComponent<RadialGroup>();
+            yield return StartCoroutine(radialGroup.RotateSpawnGroup("Left"));
+            movingOperationRunning = false;
+        }
+        #endregion
+
+        #region Movement
+
+       
         #endregion
     }
 }
