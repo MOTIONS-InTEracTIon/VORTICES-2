@@ -120,7 +120,7 @@ namespace Vortices
             if (browsingMode == "Online")
             {
                 yield return StartCoroutine(StandaloneWebView.TerminateBrowserProcess().AsIEnumerator());
-                Web.ClearAllData();
+                //Web.ClearAllData();
             }
 
             Destroy(gameObject);

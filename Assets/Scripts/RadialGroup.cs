@@ -7,7 +7,6 @@ namespace Vortices
     public class RadialGroup : SpawnGroup
     {
         // Other references
-        public List<GameObject> radialRingList;
         [SerializeField] GameObject radialRingPrefab;
         public GameObject radialRingLinearRail;
 
@@ -20,21 +19,13 @@ namespace Vortices
         public float rotationAngleStep = 1.0f;
         public float rotationTime = 0.5f;
 
-        private void Start()
-        {
-            // Starting layout settings
-            layoutGroup = GetComponent<LayoutGroup3D>();
-            // IN THIS STEP YOU CONFIGURE SO THE RADIUS IS DIFFERENT IN EVERY GROUP (Layer radius)
-        }
-
-
         #region Movement
 
         public IEnumerator RotateSpawnGroup(string moveDir)
         {
             rotationCoroutinesRunning = 0;
 
-            foreach (GameObject radialRing in radialRingList)
+            foreach (GameObject radialRing in rowList)
             {
                 GameObject ring = radialRing.transform.GetChild(0).gameObject;
                 TaskCoroutine rotateCoroutine = new TaskCoroutine(RotateRing(ring, moveDir, rotationTime, rotationAngleStep));
@@ -51,18 +42,18 @@ namespace Vortices
             }
         }
 
-        public IEnumerator RotateRing(GameObject radialRing, string moveDir, float rotationTime, float rotationAngleStep)
+        public IEnumerator RotateRing(GameObject radialRing, string dragDir, float rotationTime, float rotationAngleStep)
         {
             LayoutGroup3D layout = radialRing.GetComponent<LayoutGroup3D>();
 
             float timeElapsed = 0;
             float startingAngle = layout.StartAngleOffset;
             float finalAngle = 0;
-            if (moveDir == "Right")
+            if (dragDir == "Right")
             {
                 finalAngle = layout.StartAngleOffset - rotationAngleStep;
             }
-            else if (moveDir == "Left")
+            else if (dragDir == "Left")
             {
                 finalAngle = layout.StartAngleOffset + rotationAngleStep;
             }
@@ -79,7 +70,7 @@ namespace Vortices
         public IEnumerator RadiusLerp(string dragDir, float radiusStep, float timeLerp)
         {
             int radiusLerpCoroutinesRunning = 0;
-            foreach (GameObject radialRing in radialRingList)
+            foreach (GameObject radialRing in rowList)
             {
                 TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(RadiusLerpRing(radialRing, dragDir, radiusStep, timeLerp));
                 radiusLerpCoroutine.Finished += delegate (bool manual)
@@ -117,6 +108,25 @@ namespace Vortices
             groupRadius = finalRadius;
         }
 
+        public IEnumerator SwapRingsVertically(string dragDir, bool softFadeIn)
+        {
+            // Put first ring in last position
+            if (dragDir == "Down")
+            {
+                GameObject firstRing = rowList[0];
+                ListUtils.Move(rowList, 0, rowList.Count - 1);
+                firstRing.transform.SetAsLastSibling();
+            }
+            // Put last ring in first position
+            else if (dragDir == "Up")
+            {
+                GameObject lastRing = rowList[rowList.Count - 1];
+                ListUtils.Move(rowList, rowList.Count - 1, 0);
+                lastRing.transform.SetAsFirstSibling();
+            }
+            yield return null;
+        }
+
         #endregion
 
         #region Multimedia Spawn
@@ -134,25 +144,7 @@ namespace Vortices
             this.rotationAngleStep = rotationAngleStep;
         }
 
-        public override IEnumerator StartSpawnOperation(int offsetGlobalIndex, bool softFadeIn)
-        {
-            // Startup
-            globalIndex = offsetGlobalIndex;
-            lastLoadForward = true;
-            radialRingList = new List<GameObject>();
-            loadPaths = new List<string>();
-            unloadObjects = new List<GameObject>();
-            loadObjects = new List<GameObject>();
-            groupFader = GetComponent<Fade>();
-
-            int startingLoad = dimension.x * dimension.y;
-
-            // Execution
-            yield return StartCoroutine(ObjectSpawn(0, startingLoad, true,softFadeIn));
-
-        }
-
-        private GameObject BuildRadialRing(bool onTop)
+        protected override GameObject BuildRow(bool onTop)
         {
             GameObject gameObject = Instantiate(radialRingPrefab, transform.position, radialRingPrefab.transform.rotation, radialRingLinearRail.transform);
             // Radial Ring Setting
@@ -163,52 +155,19 @@ namespace Vortices
             if (!onTop)
             {
                 gameObject.transform.SetAsFirstSibling();
-                radialRingList.Insert(0 ,gameObject);
+                rowList.Insert(0 ,gameObject);
             }
             else
             {
-                radialRingList.Add(gameObject);
+                rowList.Add(gameObject);
             }
 
-            return gameObject;
+            return gameObject.transform.GetChild(0).gameObject;
         }
 
-        public override void GenerateEnterObjects(int loadNumber, bool forwards)
-        {
-            loadObjects = new List<GameObject>();
 
-            for (int i = 0; i < loadNumber / dimension.x; i++)
-            {
-                GameObject radialRing = BuildRadialRing(forwards);
-                for (int j = 0; j < dimension.x; j++)
-                {
-                    GameObject positionObject = new GameObject();
-                    positionObject.AddComponent<Fade>();
-                    loadObjects.Add(positionObject);
 
-                    positionObject.transform.parent = radialRing.transform.GetChild(0).transform;
-                }
-            }
-        }
 
-        public override void GenerateExitObjects(int unloadNumber, bool forwards)
-        {
-            unloadObjects = new List<GameObject>();
-
-            for (int i = 0; i < unloadNumber / dimension.x; i++)
-            {
-                if (forwards)
-                {
-                    unloadObjects.Add(radialRingList[0].gameObject);
-                    radialRingList.RemoveAt(0);
-                }
-                else
-                {
-                    unloadObjects.Add(radialRingList[radialRingList.Count - 1].gameObject);
-                    radialRingList.RemoveAt(radialRingList.Count - 1);
-                }
-            }
-        }
         #endregion
     }
 }

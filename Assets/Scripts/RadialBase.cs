@@ -70,7 +70,14 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownZ && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        coroutineQueue.Enqueue(GroupSpawnPull());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnPull());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupPull());
+                        }
                     }
                 }
                 // This means the base has been pushed and will spawn outwards
@@ -79,7 +86,14 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownZ && drag && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        coroutineQueue.Enqueue(GroupSpawnPush());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnPush());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupPush());
+                        }
                     }
                 }
                 // This means the base has touched the left bound and will spawn
@@ -88,7 +102,14 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownX && !rotateFrontSpawnGroupRunning)
                     {
                         afterSpawnTime = 0;
-                        StartCoroutine(GroupSpawnLeft());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnLeft());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupLeft());
+                        }
                     }
                 }
                 // This means the base has touched the right bound and will spawn
@@ -97,7 +118,14 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownX && !rotateFrontSpawnGroupRunning)
                     {
                         afterSpawnTime = 0;
-                        StartCoroutine(GroupSpawnRight());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnRight());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupRight());
+                        }
                     }
                 }
                 else if (dragDir == "Up")
@@ -105,8 +133,14 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        coroutineQueue.Enqueue(GroupSpawnUp());
-
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnUp());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupUp());
+                        }
                     }
                 }
                 else if (dragDir == "Down")
@@ -114,7 +148,15 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        coroutineQueue.Enqueue(GroupSpawnDown());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnDown());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupDown());
+                        }
+
                     }
                 }
             }
@@ -167,7 +209,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SpawnForwards(dimension.x, softFadeIn));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SpawnForwards(dimension.x, softFadeIn, false));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -194,7 +236,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SpawnBackwards(dimension.x, softFadeIn));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SpawnBackwards(dimension.x, softFadeIn, false));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -343,7 +385,201 @@ namespace Vortices
 
         #region Movement
 
-       
+        protected override IEnumerator GroupRight()
+        {
+            movingOperationRunning = true;
+            RadialGroup radialGroup = frontGroup.GetComponent<RadialGroup>();
+            yield return StartCoroutine(radialGroup.RotateSpawnGroup("Right"));
+            movingOperationRunning = false;
+        }
+
+        protected override IEnumerator GroupLeft()
+        {
+            movingOperationRunning = true;
+            RadialGroup radialGroup = frontGroup.GetComponent<RadialGroup>();
+            yield return StartCoroutine(radialGroup.RotateSpawnGroup("Left"));
+            movingOperationRunning = false;
+        }
+
+        protected override IEnumerator GroupPull()
+        {
+            movingOperationRunning = true;
+            // Bring group in front to back
+            GameObject radialGroupInFront = groupList[0];
+            ListUtils.Move(groupList, 0, groupList.Count - 1);
+            radialGroupInFront.transform.SetAsLastSibling();
+            // Front Group Operations
+            frontGroup = groupList[0];
+            // Front group has to be fade alpha 1 and back group has to be fade alpha softfadeUpperAlpha
+            Fade frontGroupFader = frontGroup.gameObject.GetComponent<Fade>();
+            frontGroupFader.lowerAlpha = softFadeUpperAlpha;
+            frontGroupFader.upperAlpha = 1;
+            int fadeCoroutinesRunning = 0;
+            TaskCoroutine fadeCoroutine = new TaskCoroutine(frontGroupFader.FadeInCoroutine());
+            fadeCoroutine.Finished += delegate (bool manual)
+            {
+                fadeCoroutinesRunning--;
+            };
+            fadeCoroutinesRunning++;
+            Fade backGroupFader = radialGroupInFront.gameObject.GetComponent<Fade>();
+            backGroupFader.lowerAlpha = softFadeUpperAlpha;
+            backGroupFader.upperAlpha = 1;
+            fadeCoroutine = new TaskCoroutine(backGroupFader.FadeOutCoroutine());
+            fadeCoroutine.Finished += delegate (bool manual)
+            {
+                fadeCoroutinesRunning--;
+            };
+            fadeCoroutinesRunning++;
+            // Every group has to lerp radius inwards except group in front who lerp radius outwards
+            int radiusLerpCoroutinesRunning = 0;
+            for (int i = 0; i < groupList.Count; i++)
+            {
+                RadialGroup radialGroupComponent = groupList[i].GetComponent<RadialGroup>();
+                if (i == groupList.Count - 1)
+                {
+                    TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Push", radiusStep * dimension.z - 1, timeLerp));
+                    radiusLerpCoroutine.Finished += delegate (bool manual)
+                    {
+                        radiusLerpCoroutinesRunning--;
+                    };
+                    radiusLerpCoroutinesRunning++;
+                }
+                else
+                {
+                    TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Pull", radiusStep, timeLerp));
+                    radiusLerpCoroutine.Finished += delegate (bool manual)
+                    {
+                        radiusLerpCoroutinesRunning--;
+                    };
+                    radiusLerpCoroutinesRunning++;
+                }
+
+            }
+
+            while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
+
+            movingOperationRunning = false;
+        }
+
+        protected override IEnumerator GroupPush()
+        {
+            movingOperationRunning = true;
+            // Bring group in back to front
+            GameObject radialGroupInFront = groupList[groupList.Count - 1];
+            ListUtils.Move(groupList, groupList.Count - 1, 0);
+            radialGroupInFront.transform.SetAsLastSibling();
+            // Front group has to be fade alpha 1 and back group has to be fade alpha softfadeUpperAlpha
+            Fade frontGroupFader = frontGroup.gameObject.GetComponent<Fade>();
+            frontGroupFader.lowerAlpha = softFadeUpperAlpha;
+            frontGroupFader.upperAlpha = 1;
+            int fadeCoroutinesRunning = 0;
+            TaskCoroutine fadeCoroutine = new TaskCoroutine(frontGroupFader.FadeOutCoroutine());
+            fadeCoroutine.Finished += delegate (bool manual)
+            {
+                fadeCoroutinesRunning--;
+            };
+            fadeCoroutinesRunning++;
+            Fade backGroupFader = radialGroupInFront.gameObject.GetComponent<Fade>();
+            backGroupFader.lowerAlpha = softFadeUpperAlpha;
+            backGroupFader.upperAlpha = 1;
+            fadeCoroutine = new TaskCoroutine(backGroupFader.FadeInCoroutine());
+            fadeCoroutine.Finished += delegate (bool manual)
+            {
+                fadeCoroutinesRunning--;
+            };
+            fadeCoroutinesRunning++;
+            // Front Group Operations
+            frontGroup = groupList[0];
+            // Every group has to lerp radius outwards except group in back who lerp radius inwards
+            int radiusLerpCoroutinesRunning = 0;
+            for (int i = 0; i < groupList.Count; i++)
+            {
+                RadialGroup radialGroupComponent = groupList[i].GetComponent<RadialGroup>();
+                if (i == 0)
+                {
+                    TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Pull", radiusStep * dimension.z - 1, timeLerp));
+                    radiusLerpCoroutine.Finished += delegate (bool manual)
+                    {
+                        radiusLerpCoroutinesRunning--;
+                    };
+                    radiusLerpCoroutinesRunning++;
+                }
+                else
+                {
+                    TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Push", radiusStep, timeLerp));
+                    radiusLerpCoroutine.Finished += delegate (bool manual)
+                    {
+                        radiusLerpCoroutinesRunning--;
+                    };
+                    radiusLerpCoroutinesRunning++;
+                }
+
+            }
+
+            while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
+
+            movingOperationRunning = false;
+        }
+
+        protected override IEnumerator GroupUp()
+        {
+            movingOperationRunning = true;
+
+            int movingCoroutinesRunning = 0;
+
+            for (int i = 0; i < dimension.z; i++)
+            {
+                RadialGroup radialGroup = groupList[i].GetComponent<RadialGroup>();
+                bool softFadeIn = true;
+                if (i == 0)
+                {
+                    softFadeIn = false;
+                }
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SwapRingsVertically("Up", softFadeIn));
+                spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
+                movingCoroutinesRunning++;
+            }
+
+            while (movingCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
+
+            movingOperationRunning = false;
+        }
+
+        protected override IEnumerator GroupDown()
+        {
+            movingOperationRunning = true;
+
+            int movingCoroutinesRunning = 0;
+
+            for (int i = 0; i < dimension.z; i++)
+            {
+                RadialGroup radialGroup = groupList[i].GetComponent<RadialGroup>();
+                bool softFadeIn = true;
+                if (i == 0)
+                {
+                    softFadeIn = false;
+                }
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SwapRingsVertically("Down", softFadeIn));
+                spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
+                movingCoroutinesRunning++;
+            }
+
+            while (movingCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
+
+            movingOperationRunning = false;
+        }
         #endregion
     }
 }

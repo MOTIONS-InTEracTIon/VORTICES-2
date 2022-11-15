@@ -25,7 +25,6 @@ namespace Vortices
             {
                 followObject = Camera.main.gameObject.transform;
             }
-
         }
 
         private void Update()

@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Vuplex.WebView;
 
 namespace Vortices
 {
@@ -9,6 +10,11 @@ namespace Vortices
         public FadeScreen fadeScreen;
         private float blackScreenDuration = 2.0f;
         public int sceneTarget { get; set; }
+
+        private void Start()
+        {
+            UnityEditor.EditorApplication.quitting += OnQuitting;
+        }
 
         public void GoToScene()
         {
@@ -37,6 +43,24 @@ namespace Vortices
             }
 
             operation.allowSceneActivation = true;
+        }
+
+        // Handle application exit
+        private async void OnApplicationQuit()
+        {
+            await StandaloneWebView.TerminateBrowserProcess();
+        }
+
+
+        private void OnQuitting()
+        {
+            StartCoroutine(ClearWebData());
+        }
+
+        private IEnumerator ClearWebData()
+        {
+            yield return StartCoroutine(StandaloneWebView.TerminateBrowserProcess().AsIEnumerator());
+            Web.ClearAllData();
         }
     }
 }

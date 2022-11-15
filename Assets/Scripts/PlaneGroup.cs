@@ -6,16 +6,8 @@ namespace Vortices
 {
     public class PlaneGroup : SpawnGroup
     {
-        // Debug
-        public float timePassed;
-        public int trackTime = 0;
-
-        private void Start()
-        {
-            // Starting layout settings
-            layoutGroup = GetComponent<LayoutGroup3D>();
-            layoutGroup.GridConstraintCount = dimension.y;
-        }
+        // Other references
+        [SerializeField] GameObject planeRowPrefab;
 
         #region Multimedia Spawn
 
@@ -29,70 +21,23 @@ namespace Vortices
             this.softFadeUpperAlpha = softFadeUpperAlpha;
         }
 
-        public override IEnumerator StartSpawnOperation(int offsetGlobalIndex, bool softFadeIn)
+        protected override GameObject BuildRow(bool onTop)
         {
-            trackTime = 1;
-            // Startup
-            globalIndex = offsetGlobalIndex;
-            lastLoadForward = true;
-            loadPaths = new List<string>();
-            loadObjects = new List<GameObject>();
-            unloadObjects = new List<GameObject>();
-            groupFader = GetComponent<Fade>();
+            GameObject gameObject = Instantiate(planeRowPrefab, transform.position, planeRowPrefab.transform.rotation, transform);
 
-            // First time has to fill every slot so it uses width * height
-            int startingLoad = dimension.x * dimension.y;
-
-            // Execution
-            yield return StartCoroutine(ObjectSpawn(0, startingLoad, true, softFadeIn));
-            trackTime = 2;
-            Debug.Log("Time passed: " + timePassed);
-        }
-        private void Update()
-        {
-            if (trackTime == 1)
+            if (!onTop)
             {
-                timePassed += Time.deltaTime;
+                gameObject.transform.SetAsFirstSibling();
+                rowList.Insert(0, gameObject);
             }
-        }
-
-        public override void GenerateEnterObjects(int loadNumber, bool forwards)
-        {
-            loadObjects = new List<GameObject>();
-
-            for (int i = 0; i < loadNumber; i++)
+            else
             {
-                GameObject positionObject = new GameObject();
-                positionObject.AddComponent<Fade>();
-                loadObjects.Add(positionObject);
-                if (!forwards)
-                {
-                    positionObject.transform.parent = transform;
-                    positionObject.transform.SetAsFirstSibling();
-                }
-                else
-                {
-                    positionObject.transform.parent = transform;
-                }
+                rowList.Add(gameObject);
             }
+
+            return gameObject;
         }
 
-        public override void GenerateExitObjects(int unloadNumber, bool forwards)
-        {
-            unloadObjects = new List<GameObject>();
-
-            for (int i = 0; i < unloadNumber; i++)
-            {
-                if (forwards)
-                {
-                    unloadObjects.Add(transform.GetChild(i).gameObject);
-                }
-                else
-                {
-                    unloadObjects.Add(transform.GetChild(transform.childCount - i - 1).gameObject);
-                }
-            }
-        }
         #endregion
     }
 }

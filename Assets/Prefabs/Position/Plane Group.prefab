@@ -50,7 +50,7 @@ MonoBehaviour:
   LayoutElements: []
   ElementDimensions: {x: 0.5, y: 0.5, z: 0.001}
   Spacing: 0.04
-  Style: 1
+  Style: 0
   GridConstraintCount: 4
   SecondaryConstraintCount: 2
   UseFullCircle: 0
@@ -58,7 +58,8 @@ MonoBehaviour:
   Radius: 2
   StartAngleOffset: 0
   AlignToRadius: 0
-  LayoutAxis: 0
+  NoCurve: 0
+  LayoutAxis: 1
   SecondaryLayoutAxis: 1
   GridLayoutAxis: 1
   ElementRotations: []
@@ -85,10 +86,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   filePaths: []
-  elementPrefab: {fileID: 612345019028106533, guid: e439af109cca0f2438bc47bd9b75787b,
-    type: 3}
-  dimension: {x: 0, y: 0, z: 0}
   renderManager: {fileID: 2979524873638265696, guid: 760921f21669d8a42a1f2f5c074d7193,
+    type: 3}
+  planeRowPrefab: {fileID: 1276288065078292406, guid: 2ba1fe1a84561d943be931b986258fe0,
     type: 3}
 --- !u!54 &-5757747507563220786
 Rigidbody:
@@ -120,3 +120,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeOnStart: 0
   fadeDuration: 1
+  isRunning: 0
+  fadeOps: 0

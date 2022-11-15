@@ -20,7 +20,7 @@ namespace Vortices
         protected LayoutGroup3D layoutGroup;
         public Vector3 centerPosition;
         public Vector4 bounds; //PRIVATE
-        protected float boundZOffset = 0.001f;
+        protected float boundXOffset = 0.001f;
 
 
         #region Group Spawn
@@ -69,9 +69,9 @@ namespace Vortices
             boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
             // Generates bounds using dimension given (Box from the left side to its down side)
             centerPosition = transform.position;
-            bounds.w = -boxBoundsize;
+            bounds.w = -centerPosition.x - (layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * ((dimension.x - 1) / 2);
             bounds.x = centerPosition.y + (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
-            bounds.y = boxBoundsize;
+            bounds.y = centerPosition.x + (layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * ((dimension.x - 1) / 2);
             bounds.z = centerPosition.y - (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
         }
 
@@ -89,7 +89,14 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownZ && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        coroutineQueue.Enqueue(GroupSpawnPull());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnPull());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupPull());
+                        }
                     }
                 }
                 // This means the base has been pushed and will spawn outwards
@@ -98,43 +105,78 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownZ && drag && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        coroutineQueue.Enqueue(GroupSpawnPush());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnPush());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupPush());
+                        }
                     }
                 }
                 // This means the base has touched the left bound and will spawn
-                else if (dragDir == "Left")
+                else if (dragDir == "Left" &&
+                         ((center.x + boundXOffset) > bounds.w && (center.x - boundXOffset) > bounds.w))
                 {
                     if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        coroutineQueue.Enqueue(GroupSpawnLeft());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnLeft());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupLeft());
+                        }
                     }
                 }
                 // This means the base has touched the right bound and will spawn
-                else if (dragDir == "Right")
+                else if (dragDir == "Right" &&
+                         ((center.x + boundXOffset) < bounds.y && (center.x - boundXOffset) < bounds.y))
                 {
                     if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        coroutineQueue.Enqueue(GroupSpawnRight());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnRight());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupRight());
+                        }
                     }
                 }
-                else if (dragDir == "Up" &&
-                         ((center.y + boundZOffset) < bounds.x && (center.y - boundZOffset) < bounds.x))
+                else if (dragDir == "Up")
                 {
                     if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
                     {
                         afterSpawnTime = 0;
-                        StartCoroutine(GroupSpawnUp());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnUp());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupUp());
+                        }
                     }
                 }
-                else if (dragDir == "Down" &&
-                         ((center.y + boundZOffset) > bounds.z && (center.y - boundZOffset) > bounds.z))
+                else if (dragDir == "Down")
                 {
                     if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
                     {
                         afterSpawnTime = 0;
-                        StartCoroutine(GroupSpawnDown());
+                        if (browsingMode == "Local")
+                        {
+                            coroutineQueue.Enqueue(GroupSpawnDown());
+                        }
+                        else if (browsingMode == "Online")
+                        {
+                            coroutineQueue.Enqueue(GroupDown());
+                        }
                     }
                 }
             }
@@ -144,7 +186,7 @@ namespace Vortices
 
         #region Spawn Movement
         // Movement that involves spawning (When using circular list) on any of the dragDirs (Local Mode)
-        protected override IEnumerator GroupSpawnLeft()
+        protected override IEnumerator GroupSpawnDown()
         {
             movingOperationRunning = true;
             int movingCoroutinesRunning = 0;
@@ -157,7 +199,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnForwards(dimension.y, softFadeIn));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnForwards(dimension.x, softFadeIn, false));
                 spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
                 movingCoroutinesRunning++;
             }
@@ -171,7 +213,7 @@ namespace Vortices
             movingOperationRunning = false;
         }
 
-        protected override IEnumerator GroupSpawnRight()
+        protected override IEnumerator GroupSpawnUp()
         {
             movingOperationRunning = true;
             int movingCoroutinesRunning = 0;
@@ -184,7 +226,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnBackwards(dimension.y, softFadeIn));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnBackwards(dimension.x, softFadeIn, false));
                 spawnCoroutine.Finished += delegate(bool manual) { movingCoroutinesRunning--; };
                 movingCoroutinesRunning++;
             }
@@ -237,7 +279,6 @@ namespace Vortices
 
             movingOperationRunning = false;
         }
-
         protected override IEnumerator GroupSpawnPush()
         {
             movingOperationRunning = true;
@@ -279,17 +320,59 @@ namespace Vortices
             movingOperationRunning = false;
         }
 
-        protected override IEnumerator GroupSpawnUp()
+        protected override IEnumerator GroupSpawnRight()
         {
             movingOperationRunning = true;
-            yield return StartCoroutine(LerpToPosition("Up"));
+            int movingCoroutinesRunning = 0;
+
+            for (int i = 0; i < dimension.z; i++)
+            {
+                PlaneGroup planeGroup = groupList[i].GetComponent<PlaneGroup>();
+                bool softFadeIn = true;
+                if (i == 0)
+                {
+                    softFadeIn = false;
+                }
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnBackwards(dimension.x, softFadeIn, true));
+                spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
+                movingCoroutinesRunning++;
+            }
+
+            globalIndex -= dimension.y;
+
+            while (movingCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
+
             movingOperationRunning = false;
         }
 
-        protected override IEnumerator GroupSpawnDown()
+        protected override IEnumerator GroupSpawnLeft()
         {
             movingOperationRunning = true;
-            yield return StartCoroutine(LerpToPosition("Down"));
+            int movingCoroutinesRunning = 0;
+
+            for (int i = 0; i < dimension.z; i++)
+            {
+                PlaneGroup planeGroup = groupList[i].GetComponent<PlaneGroup>();
+                bool softFadeIn = true;
+                if (i == 0)
+                {
+                    softFadeIn = false;
+                }
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnForwards(dimension.x, softFadeIn, true));
+                spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
+                movingCoroutinesRunning++;
+            }
+
+            globalIndex -= dimension.y;
+
+            while (movingCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
+
             movingOperationRunning = false;
         }
 
@@ -444,13 +527,13 @@ namespace Vortices
             {
                 lerpToPositionRunning = true;
                 Vector3 position = Vector3.zero;
-                if (moveDir == "Up")
+                if (moveDir == "Right")
                 {
-                    position = new Vector3(frontGroup.transform.position.x, frontGroup.transform.position.y + layoutGroup.ElementDimensions.y + layoutGroup.Spacing, frontGroup.transform.position.z);
+                    position = new Vector3(frontGroup.transform.position.x + layoutGroup.ElementDimensions.x + layoutGroup.Spacing, frontGroup.transform.position.y, frontGroup.transform.position.z);
                 }
-                else if (moveDir == "Down")
+                else if (moveDir == "Left")
                 {
-                    position = new Vector3(frontGroup.transform.position.x, frontGroup.transform.position.y - layoutGroup.ElementDimensions.y - layoutGroup.Spacing, frontGroup.transform.position.z);
+                    position = new Vector3(frontGroup.transform.position.x - layoutGroup.ElementDimensions.x - layoutGroup.Spacing, frontGroup.transform.position.y, frontGroup.transform.position.z);
                 }
 
                 float timeElapsed = 0;

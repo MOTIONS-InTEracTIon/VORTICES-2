@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,13 +11,17 @@ namespace Vortices
     {
         // Other references
         protected LayoutGroup3D layoutGroup;
+        protected List<GameObject> rowList;
 
         // Data variables
         [HideInInspector] public List<string> filePaths;
         [HideInInspector] public string rootUrl { get; set; }
 
         // Utility
-        protected int globalIndex;
+        public int globalIndex;
+        public int movIndex;
+        public string globalJumpDirection;
+        public int lastJumpGlobalIndex;
         protected bool lastLoadForward;
         protected List<string> loadPaths;
         protected List<GameObject> unloadObjects;
@@ -35,56 +40,60 @@ namespace Vortices
         public GameObject renderManager;
 
         #region Multimedia Spawn
-
-        public virtual IEnumerator StartSpawnOperation(int offsetGlobalIndex, bool softFadeIn)
+        public IEnumerator StartSpawnOperation(int offsetGlobalIndex, bool softFadeIn)
         {
-            // Each spawn group has a different start operation, radial constructing aditional childs
-            Debug.Log("Start Spawn Operation not being overridden");
-            yield return null;
+            // Startup
+            globalIndex = offsetGlobalIndex;
+            lastLoadForward = true;
+            globalJumpDirection = "Both";
+            rowList = new List<GameObject>();
+            loadPaths = new List<string>();
+            unloadObjects = new List<GameObject>();
+            loadObjects = new List<GameObject>();
+            groupFader = GetComponent<Fade>();
+
+            int startingLoad = dimension.x * dimension.y;
+
+            // Execution
+            yield return StartCoroutine(ObjectSpawn(0, startingLoad, true, false, softFadeIn));
         }
 
         // Spawns files using overriden GenerateExitObjects and GenerateEnterObjects
-        protected IEnumerator ObjectSpawn(int unloadNumber, int loadNumber, bool forwards, bool softFade)
+        protected IEnumerator ObjectSpawn(int unloadNumber, int loadNumber, bool forwards, bool horizontally, bool softFade)
         {
-            ObjectPreparing(unloadNumber, loadNumber, forwards);
+            ObjectPreparing(unloadNumber, loadNumber, forwards, horizontally);
             yield return StartCoroutine(DestroyObjectHandling());
-            yield return StartCoroutine(ObjectLoad(loadNumber, forwards));
+            yield return StartCoroutine(ObjectLoad(loadNumber, forwards, horizontally));
             yield return StartCoroutine(SpawnedObjectHandling(softFade));
         }
     
         // Destroys placement objects not needed and insert new ones at the same time
-        protected void ObjectPreparing(int unloadNumber, int loadNumber, bool forwards)
+        protected void ObjectPreparing(int unloadNumber, int loadNumber, bool forwards, bool horizontally)
         {
             // Generate list of child objects to leave the scene
-            GenerateExitObjects(unloadNumber, forwards);
+            GenerateExitObjects(unloadNumber, forwards, horizontally);
 
             // Generate list of child objects to spawn into the scene
-            GenerateEnterObjects(loadNumber, forwards);
+            GenerateEnterObjects(loadNumber, forwards, horizontally);
         }
 
-        protected IEnumerator ObjectLoad(int loadNumber, bool forwards)
+        protected IEnumerator ObjectLoad(int loadNumber, bool forwards, bool horizontally)
         {
             // Generate selection path to get via render
-            yield return StartCoroutine(GenerateLoadPaths(loadNumber, forwards));
+            yield return StartCoroutine(GenerateLoadPaths(loadNumber, forwards, horizontally));
 
             // Make them appear in the scene
             RenderManager render = Instantiate(renderManager).GetComponent<RenderManager>();
             yield return StartCoroutine(render.PlaceMultimedia(loadPaths, loadObjects, browsingMode, displayMode));
-            /*yield return StartCoroutine(render.PlaceMultimedia(loadPaths,
-                                                                      elementPrefab,
-                                                                      false, false,
-                                                                      loadObjects));*/
-            // Make it so you search in memory, if there is nothing you load with render X
 
             Destroy(render.gameObject);
-            // Eliminate 
         }
 
         protected IEnumerator DestroyObjectHandling()
         {
             foreach (GameObject go in unloadObjects)
             {
-                Destroy(go.gameObject); //Instead of destroying, save them then look for them X
+                Destroy(go.gameObject);
             }
 
             yield return null;
@@ -116,7 +125,7 @@ namespace Vortices
 
         }
 
-        protected IEnumerator GenerateLoadPaths(int loadNumber, bool forwards)
+        protected IEnumerator GenerateLoadPaths(int loadNumber, bool forwards, bool horizontally)
         {
             int index = 0;
 
@@ -124,7 +133,25 @@ namespace Vortices
             {
                 if (!lastLoadForward)
                 {
-                    globalIndex += loadNumber * dimension.x - 1;
+                    if (horizontally)
+                    {
+                        if (globalJumpDirection == "None 1")
+                        {
+                            globalIndex = -1 + lastJumpGlobalIndex + (loadNumber * dimension.y - 1);
+                        }
+                        else if (globalJumpDirection == "None 2")
+                        {
+                            globalIndex = -2 + lastJumpGlobalIndex + (loadNumber * dimension.y - 1);
+                        }
+                        else
+                        {
+                            globalIndex += loadNumber * dimension.y - 1;
+                        }
+                    }
+                    else
+                    {
+                        globalIndex += loadNumber * dimension.y - 1;
+                    }
                 }
                 lastLoadForward = true;
             }
@@ -132,14 +159,143 @@ namespace Vortices
             {
                 if (lastLoadForward)
                 {
-                    globalIndex -= loadNumber * dimension.x - 1;
+                    if (horizontally)
+                    {
+                        if (globalJumpDirection == "None 1")
+                        {
+                            globalIndex = 1 + lastJumpGlobalIndex - (loadNumber * dimension.y - 1);
+                        }
+                        else if (globalJumpDirection == "None 2") 
+                        {
+                            globalIndex = 2 + lastJumpGlobalIndex - (loadNumber * dimension.y - 1);
+                        }
+                        else
+                        {
+                            globalIndex -= loadNumber * dimension.y - 1;
+                        }
+                    }
+                    else
+                    {
+                        globalIndex -= loadNumber * dimension.y - 1;
+                    }
                 }
                 lastLoadForward = false;
+            }
+            if (!forwards && !horizontally)
+            {
+                globalIndex -= loadNumber + 1;
             }
 
             while (index < loadNumber)
             {
-                if (forwards)
+                if (horizontally)
+                {
+
+
+                    for (int i = 0; i < dimension.y; i++)
+                    {
+                        string actualPath = "";
+                        // Uses rootUrl for online mode and searches filePaths in circular manner for local mode
+                        if (browsingMode == "Online")
+                        {
+                            actualPath = rootUrl;
+                        }
+                        else if (browsingMode == "Local")
+                        {
+                            if (forwards)
+                            {
+                                if (globalJumpDirection == "Both")
+                                {
+                                    actualPath = CircularList.GetElement<string>(filePaths, globalIndex + 1 + (dimension.x * i));
+                                }
+                                else
+                                {
+                                    actualPath = CircularList.GetElement<string>(filePaths, globalIndex + 1 - (dimension.x * (dimension.y - 1 - i)));
+
+                                }
+                            }
+                            else
+                            {
+                                if (globalJumpDirection == "Both")
+                                {
+                                    actualPath = CircularList.GetElement<string>(filePaths, globalIndex - 1 - (dimension.x * (dimension.y - 1 - i)));
+                                }
+                                else
+                                {
+                                    actualPath = CircularList.GetElement<string>(filePaths, globalIndex - 1 + (dimension.x * i));
+                                }
+                            }
+                        }
+                        loadPaths.Add(actualPath);
+                        index++;
+                    }
+
+                    if (forwards)
+                    {
+                        if (globalJumpDirection == "Both")
+                        {
+                            lastJumpGlobalIndex = globalIndex;
+                            globalIndex += 1 + (dimension.x * (dimension.y - 1));
+                        }
+                        else
+                        {
+                            globalIndex++;
+                        }
+
+                        movIndex++;
+                    }
+                    else
+                    {
+                        if (globalJumpDirection == "Both")
+                        {
+                            lastJumpGlobalIndex = globalIndex;
+                            globalIndex -= 1 + dimension.x * (dimension.y - 1);
+                        }
+                        else
+                        {
+                            globalIndex--;
+                        }
+
+                        movIndex--;
+                    }
+                    
+
+                    if (movIndex < 0)
+                    {
+                        float position = ListUtils.nfmod(movIndex, dimension.x);
+                        if (position == 2)
+                        {
+                            globalJumpDirection = "None 1";
+                        }
+                        else if (position == 1)
+                        {
+                            globalJumpDirection = "None 2";
+                        }
+                        else
+                        {
+                            globalJumpDirection = "Both";
+                        }
+                    }
+                    else
+                    {
+                        float position = movIndex % dimension.x;
+                        if (position == 1)
+                        {
+                            globalJumpDirection = "None 1";
+                        }
+                        else if (position == 2)
+                        {
+                            globalJumpDirection = "None 2";
+                        }
+                        else
+                        {
+                            globalJumpDirection = "Both";
+                        }
+                    }
+
+                    yield return null;
+                }
+                else
                 {
                     globalIndex++;
                     string actualPath = "";
@@ -154,57 +310,121 @@ namespace Vortices
                     }
                     // Look if that path is in memory X
                     loadPaths.Add(actualPath);
+
+                    index++;
+                    yield return null;
                 }
-                else
-                {
-                    globalIndex--;
-                    string actualPath = "";
-                    // Uses rootUrl for online mode and searches filePaths in circular manner for local mode
-                    if (browsingMode == "Online")
-                    {
-                        actualPath = rootUrl;
-                    }
-                    else if (browsingMode == "Local")
-                    {
-                        actualPath = CircularList.GetElement<string>(filePaths, globalIndex);
-                    }
-                    // Look if that path is in memory X
-                    loadPaths.Add(actualPath);
-                }
-                index++;
-                yield return null;
+            }
+
+            if (!forwards && !horizontally)
+            {
+                globalIndex -= loadNumber - 1;
             }
         }
 
-        public virtual void GenerateExitObjects(int unloadNumber, bool forwards)
+        public void GenerateExitObjects(int unloadNumber, bool forwards, bool horizontally)
         {
-            // Destroying varies in each spawn base, Generating Destroy Objects must be overridden
-            Debug.Log("Not being overridden");
+            unloadObjects = new List<GameObject>();
+            // Horizontally cant happen at startup so unloadNumber is always = dimension.x for it
+            if (horizontally)
+            {
+                for (int i = 0; i < dimension.y; i++)
+                {
+                    if (forwards)
+                    {
+                        // Get first element of each row
+                        unloadObjects.Add(rowList[i].transform.GetChild(0).gameObject);
+                    }
+                    else
+                    {
+                        // Get last element of each row
+                        unloadObjects.Add(rowList[i].transform.GetChild(rowList[i].transform.childCount - 1).gameObject);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < unloadNumber / dimension.x; i++)
+                {
+                    if (forwards)
+                    {
+                        unloadObjects.Add(rowList[0].gameObject);
+                        rowList.RemoveAt(0);
+                    }
+                    else
+                    {
+                        unloadObjects.Add(rowList[rowList.Count - 1].gameObject);
+                        rowList.RemoveAt(rowList.Count - 1);
+                    }
+                }
+            }
         }
 
-        public virtual void GenerateEnterObjects(int loadNumber, bool forwards)
+        public void GenerateEnterObjects(int loadNumber, bool forwards, bool horizontally)
         {
-            // Generating placements varies in each spawn base, Generating Object Placement must be overridden
-            Debug.Log("Not being overridden");
+            loadObjects = new List<GameObject>();
+
+            if (horizontally)
+            {
+                for (int i = 0; i < dimension.y; i++)
+                {
+                    GameObject rowObject = rowList[i];
+
+                    GameObject positionObject = new GameObject();
+                    positionObject.AddComponent<Fade>();
+
+                    positionObject.transform.parent = rowObject.transform;
+                    if(!forwards)
+                    {
+                        positionObject.transform.SetAsFirstSibling();
+                    }
+
+
+                    loadObjects.Add(positionObject);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < loadNumber / dimension.x; i++)
+                {
+                    GameObject rowObject = BuildRow(forwards);
+                    for (int j = 0; j < dimension.x; j++)
+                    {
+                        GameObject positionObject = new GameObject();
+                        positionObject.AddComponent<Fade>();
+                        positionObject.transform.parent = rowObject.transform;
+
+                        loadObjects.Add(positionObject);
+                    }
+                }
+            }
+            
         }
 
-        public IEnumerator SpawnForwards(int loadNumber, bool softFade)
+        protected virtual GameObject BuildRow(bool onTop)
+        {
+            // Both spawnGroups build its row differently
+            Debug.Log("BuildRow was not overriden");
+            return null;
+        }
+
+        public IEnumerator SpawnForwards(int loadNumber, bool softFade, bool horizontally)
         {
             // Startup
             loadPaths = new List<string>();
             unloadObjects = new List<GameObject>();
             // Execution
-            yield return StartCoroutine(ObjectSpawn(loadNumber, loadNumber, true, softFade));
+            yield return StartCoroutine(ObjectSpawn(loadNumber, loadNumber, true, horizontally,  softFade));
 
         }
 
-        public IEnumerator SpawnBackwards(int loadNumber, bool softFade)
+        public IEnumerator SpawnBackwards(int loadNumber, bool softFade, bool horizontally)
         {
             // Startup
             loadPaths = new List<string>();
             unloadObjects = new List<GameObject>();
             // Execution
-            yield return StartCoroutine(ObjectSpawn(loadNumber, loadNumber, false, softFade));
+            yield return StartCoroutine(ObjectSpawn(loadNumber, loadNumber, false, horizontally, softFade));
         }
 
         #endregion
