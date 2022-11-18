@@ -16,11 +16,10 @@ namespace Vortices
 
         // Bounds
         private BoxCollider boxCollider;
-        private float boxBoundsize = 0.0001f;
         protected LayoutGroup3D layoutGroup;
         public Vector3 centerPosition;
         public Vector4 bounds; //PRIVATE
-        protected float boundXOffset = 0.001f;
+        protected float boundOffset = 0.001f;
 
 
         #region Group Spawn
@@ -116,13 +115,12 @@ namespace Vortices
                     }
                 }
                 // This means the base has touched the left bound and will spawn
-                else if (dragDir == "Left" &&
-                         ((center.x + boundXOffset) > bounds.w && (center.x - boundXOffset) > bounds.w))
+                else if (dragDir == "Left")
                 {
                     if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        if (browsingMode == "Local")
+                        if (browsingMode == "Local" && ((center.x + boundOffset) > bounds.w && (center.x - boundOffset) > bounds.w))
                         {
                             coroutineQueue.Enqueue(GroupSpawnLeft());
                         }
@@ -133,13 +131,12 @@ namespace Vortices
                     }
                 }
                 // This means the base has touched the right bound and will spawn
-                else if (dragDir == "Right" &&
-                         ((center.x + boundXOffset) < bounds.y && (center.x - boundXOffset) < bounds.y))
+                else if (dragDir == "Right")
                 {
                     if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        if (browsingMode == "Local")
+                        if (browsingMode == "Local" && ((center.x + boundOffset) < bounds.y && (center.x - boundOffset) < bounds.y))
                         {
                             coroutineQueue.Enqueue(GroupSpawnRight());
                         }
@@ -199,7 +196,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnForwards(dimension.x, softFadeIn, false));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnForwards(dimension.x, softFadeIn));
                 spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
                 movingCoroutinesRunning++;
             }
@@ -226,7 +223,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnBackwards(dimension.x, softFadeIn, false));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnBackwards(dimension.x, softFadeIn));
                 spawnCoroutine.Finished += delegate(bool manual) { movingCoroutinesRunning--; };
                 movingCoroutinesRunning++;
             }
@@ -323,56 +320,14 @@ namespace Vortices
         protected override IEnumerator GroupSpawnRight()
         {
             movingOperationRunning = true;
-            int movingCoroutinesRunning = 0;
-
-            for (int i = 0; i < dimension.z; i++)
-            {
-                PlaneGroup planeGroup = groupList[i].GetComponent<PlaneGroup>();
-                bool softFadeIn = true;
-                if (i == 0)
-                {
-                    softFadeIn = false;
-                }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnBackwards(dimension.x, softFadeIn, true));
-                spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
-                movingCoroutinesRunning++;
-            }
-
-            globalIndex -= dimension.y;
-
-            while (movingCoroutinesRunning > 0)
-            {
-                yield return null;
-            }
-
+            yield return StartCoroutine(LerpToPosition("Right"));
             movingOperationRunning = false;
         }
 
         protected override IEnumerator GroupSpawnLeft()
         {
             movingOperationRunning = true;
-            int movingCoroutinesRunning = 0;
-
-            for (int i = 0; i < dimension.z; i++)
-            {
-                PlaneGroup planeGroup = groupList[i].GetComponent<PlaneGroup>();
-                bool softFadeIn = true;
-                if (i == 0)
-                {
-                    softFadeIn = false;
-                }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnForwards(dimension.x, softFadeIn, true));
-                spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
-                movingCoroutinesRunning++;
-            }
-
-            globalIndex -= dimension.y;
-
-            while (movingCoroutinesRunning > 0)
-            {
-                yield return null;
-            }
-
+            yield return StartCoroutine(LerpToPosition("Left"));
             movingOperationRunning = false;
         }
 
@@ -380,77 +335,32 @@ namespace Vortices
 
         #region Movement
         // Movement that doesn't involve spawning so it is just group movements
-
-
-
-
-        /*protected override IEnumerator GroupForwards()
+        protected override IEnumerator GroupRight()
         {
             movingOperationRunning = true;
-            int spawnCoroutinesRunning = 0;
-
-            for (int i = 0; i < dimension.z; i++)
-            {
-                PlaneGroup planeGroup = groupList[i].GetComponent<PlaneGroup>();
-                bool softFadeIn = true;
-                if (i == 0)
-                {
-                    softFadeIn = false;
-                }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnForwards(dimension.y, softFadeIn));
-                spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
-                spawnCoroutinesRunning++;
-            }
-            globalIndex += dimension.y;
-
-            while (spawnCoroutinesRunning > 0)
-            {
-                yield return null;
-            }
-
+            PlaneGroup planeGroup = frontGroup.GetComponent <PlaneGroup>();
+            yield return StartCoroutine(planeGroup.SwapRowsHorizontally("Right"));
             movingOperationRunning = false;
         }
 
-        protected override IEnumerator GroupBackwards()
+        protected override IEnumerator GroupLeft()
         {
             movingOperationRunning = true;
-            int spawnCoroutinesRunning = 0;
-
-            for (int i = 0; i < dimension.z; i++)
-            {
-                PlaneGroup planeGroup = groupList[i].GetComponent<PlaneGroup>();
-                bool softFadeIn = true;
-                if (i == 0)
-                {
-                    softFadeIn = false;
-                }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(planeGroup.SpawnBackwards(dimension.y, softFadeIn));
-                spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
-                spawnCoroutinesRunning++;
-            }
-
-            globalIndex -= dimension.y;
-
-            while (spawnCoroutinesRunning > 0)
-            {
-                yield return null;
-            }
-
+            PlaneGroup planeGroup = frontGroup.GetComponent<PlaneGroup>();
+            yield return StartCoroutine(planeGroup.SwapRowsHorizontally("Left"));
             movingOperationRunning = false;
         }
 
         protected override IEnumerator GroupPull()
         {
             movingOperationRunning = true;
-            // Destroy group in front
-            GameObject planeInFront = groupList[0];
-            groupList.Remove(planeInFront);
-            Destroy(planeInFront.transform.gameObject);
-            planeInFront.transform.parent = null;
+            // Bring group in front to back
+            GameObject planeGroupInFront = groupList[0];
+            ListUtils.Move(groupList, 0, groupList.Count - 1);
+            planeGroupInFront.transform.SetAsLastSibling();
             // Front Group Operations
             frontGroup = groupList[0];
-            SetMovementBoundBox();
-            // Front group has to be fade alpha 1
+            // Front group has to be fade alpha 1 and back group has to be fade alpha softfadeUpperAlpha
             Fade frontGroupFader = frontGroup.gameObject.GetComponent<Fade>();
             frontGroupFader.lowerAlpha = softFadeUpperAlpha;
             frontGroupFader.upperAlpha = 1;
@@ -461,14 +371,15 @@ namespace Vortices
                 fadeCoroutinesRunning--;
             };
             fadeCoroutinesRunning++;
-            // Change global Index
-            MoveGlobalIndex(true);
-            // Spawn group in back
-            GameObject gameObject = Instantiate(planeGroupPrefab, transform.position, transform.rotation, linearRail.transform);
-            groupList.Add(gameObject);
-            PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
-            spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, softFadeUpperAlpha);
-            yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, true));
+            Fade backGroupFader = planeGroupInFront.gameObject.GetComponent<Fade>();
+            backGroupFader.lowerAlpha = softFadeUpperAlpha;
+            backGroupFader.upperAlpha = 1;
+            fadeCoroutine = new TaskCoroutine(backGroupFader.FadeOutCoroutine());
+            fadeCoroutine.Finished += delegate (bool manual)
+            {
+                fadeCoroutinesRunning--;
+            };
+            fadeCoroutinesRunning++;
 
             while (fadeCoroutinesRunning > 0)
             {
@@ -481,35 +392,34 @@ namespace Vortices
         protected override IEnumerator GroupPush()
         {
             movingOperationRunning = true;
-            // Destroy group in back
-            GameObject planeInBack = groupList[groupList.Count - 1];
-            groupList.Remove(planeInBack);
-            planeInBack.transform.parent = null;
-            Destroy(planeInBack.transform.gameObject);
-            // Front group has to be fade alpha 0
-            Fade frontGroupFader = groupList[0].gameObject.GetComponent<Fade>();
+            // Bring group in back to front
+            GameObject planeGroupInFront = groupList[groupList.Count - 1];
+            ListUtils.Move(groupList, groupList.Count - 1, 0);
+            planeGroupInFront.transform.SetAsFirstSibling();
+            // Front Group Operations
+            frontGroup = groupList[0];
+            // Front group has to be fade alpha 1 and back group has to be fade alpha softfadeUpperAlpha
+            Fade frontGroupFader = frontGroup.gameObject.GetComponent<Fade>();
             frontGroupFader.lowerAlpha = softFadeUpperAlpha;
             frontGroupFader.upperAlpha = 1;
             int fadeCoroutinesRunning = 0;
-            TaskCoroutine fadeCoroutine = new TaskCoroutine(frontGroupFader.FadeOutCoroutine());
+            TaskCoroutine fadeCoroutine = new TaskCoroutine(frontGroupFader.FadeInCoroutine());
             fadeCoroutine.Finished += delegate (bool manual)
             {
                 fadeCoroutinesRunning--;
             };
             fadeCoroutinesRunning++;
-            // Change global Index
-            MoveGlobalIndex(false);
-            // Spawn group in front
-            GameObject gameObject = Instantiate(planeGroupPrefab, transform.position - new Vector3(0, 0, 1f), transform.rotation, linearRail.transform);
-            gameObject.transform.SetSiblingIndex(0);
-            groupList.Insert(0, gameObject);
-            PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
-            spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, softFadeUpperAlpha);
-            yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, false));
 
-            // Front Group Operations
-            frontGroup = gameObject;
-            SetMovementBoundBox();
+            GameObject backGroup = groupList[1];
+            Fade backGroupFader = backGroup.gameObject.GetComponent<Fade>();
+            backGroupFader.lowerAlpha = softFadeUpperAlpha;
+            backGroupFader.upperAlpha = 1;
+            fadeCoroutine = new TaskCoroutine(backGroupFader.FadeOutCoroutine());
+            fadeCoroutine.Finished += delegate (bool manual)
+            {
+                fadeCoroutinesRunning--;
+            };
+            fadeCoroutinesRunning++;
 
             while (fadeCoroutinesRunning > 0)
             {
@@ -517,36 +427,54 @@ namespace Vortices
             }
 
             movingOperationRunning = false;
-        }*/
+        }
+
+        protected override IEnumerator GroupUp()
+        {
+            movingOperationRunning = true;
+            PlaneGroup planeGroup = frontGroup.GetComponent<PlaneGroup>();
+            yield return StartCoroutine(planeGroup.SwapRowsVertically("Up"));
+            movingOperationRunning = false;
+        }
+
+        protected override IEnumerator GroupDown()
+        {
+            movingOperationRunning = true;
+            PlaneGroup planeGroup = frontGroup.GetComponent<PlaneGroup>();
+            yield return StartCoroutine(planeGroup.SwapRowsVertically("Down"));
+            movingOperationRunning = false;
+        }
+
+
         #endregion
 
         #region Movement Utility
         public IEnumerator LerpToPosition(string moveDir)
         {
-            if (frontGroup != null)
-            {
-                lerpToPositionRunning = true;
-                Vector3 position = Vector3.zero;
-                if (moveDir == "Right")
-                {
-                    position = new Vector3(frontGroup.transform.position.x + layoutGroup.ElementDimensions.x + layoutGroup.Spacing, frontGroup.transform.position.y, frontGroup.transform.position.z);
-                }
-                else if (moveDir == "Left")
-                {
-                    position = new Vector3(frontGroup.transform.position.x - layoutGroup.ElementDimensions.x - layoutGroup.Spacing, frontGroup.transform.position.y, frontGroup.transform.position.z);
-                }
+            lerpToPositionRunning = true;
+            Vector3 position = Vector3.zero;
 
-                float timeElapsed = 0;
-                while (timeElapsed < timeLerp)
-                {
-                    timeElapsed += Time.deltaTime;
-                    frontGroup.transform.position = Vector3.Lerp(frontGroup.transform.position, position, timeElapsed / timeLerp);
-                    centerPosition.y = frontGroup.transform.position.y;
-                    boxCollider.center = frontGroup.transform.localPosition;
-                    yield return null;
-                }
-                lerpToPositionRunning = false;
+            if (moveDir == "Right")
+            {
+                position = new Vector3(frontGroup.transform.position.x + (layoutGroup.ElementDimensions.x + layoutGroup.Spacing), frontGroup.transform.position.y, frontGroup.transform.position.z);
             }
+            else if (moveDir == "Left")
+            {
+                position = new Vector3(frontGroup.transform.position.x - (layoutGroup.ElementDimensions.x + layoutGroup.Spacing), frontGroup.transform.position.y, frontGroup.transform.position.z);
+            }
+
+            float timeElapsed = 0;
+            while (timeElapsed < timeLerp)
+            {
+                timeElapsed += Time.deltaTime;
+                frontGroup.transform.position = Vector3.Lerp(frontGroup.transform.position, position, timeElapsed / timeLerp);
+                centerPosition.y = frontGroup.transform.position.y;
+                boxCollider.center = frontGroup.transform.localPosition;
+                
+                yield return null;
+            }
+            lerpToPositionRunning = false;
+            
         }
 
         #endregion

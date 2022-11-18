@@ -60,7 +60,6 @@ namespace Vortices
         private IEnumerator ClearWebData()
         {
             yield return StartCoroutine(StandaloneWebView.TerminateBrowserProcess().AsIEnumerator());
-            Web.ClearAllData();
         }
     }
 }

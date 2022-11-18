@@ -108,23 +108,14 @@ namespace Vortices
             groupRadius = finalRadius;
         }
 
-        public IEnumerator SwapRingsVertically(string dragDir, bool softFadeIn)
+        public void SetRadiusRings(float radius)
         {
-            // Put first ring in last position
-            if (dragDir == "Down")
+            foreach (GameObject radialRing in rowList)
             {
-                GameObject firstRing = rowList[0];
-                ListUtils.Move(rowList, 0, rowList.Count - 1);
-                firstRing.transform.SetAsLastSibling();
+                LayoutGroup3D ringLayout = radialRing.GetComponentInChildren<LayoutGroup3D>();
+                ringLayout.Radius += radius;
+                groupRadius = ringLayout.Radius;
             }
-            // Put last ring in first position
-            else if (dragDir == "Up")
-            {
-                GameObject lastRing = rowList[rowList.Count - 1];
-                ListUtils.Move(rowList, rowList.Count - 1, 0);
-                lastRing.transform.SetAsFirstSibling();
-            }
-            yield return null;
         }
 
         #endregion

@@ -209,7 +209,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SpawnForwards(dimension.x, softFadeIn, false));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SpawnForwards(dimension.x, softFadeIn));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -236,7 +236,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SpawnBackwards(dimension.x, softFadeIn, false));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SpawnBackwards(dimension.x, softFadeIn));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -430,29 +430,22 @@ namespace Vortices
                 fadeCoroutinesRunning--;
             };
             fadeCoroutinesRunning++;
-            // Every group has to lerp radius inwards except group in front who lerp radius outwards
+            // Group in the front has to be brought to back by adding to its radius
+            RadialGroup inFrontRadialGroup = radialGroupInFront.GetComponent<RadialGroup>();
+            inFrontRadialGroup.SetRadiusRings(radiusStep * dimension.z);
+
+            // Every group has to lerp radius inwards
             int radiusLerpCoroutinesRunning = 0;
             for (int i = 0; i < groupList.Count; i++)
             {
                 RadialGroup radialGroupComponent = groupList[i].GetComponent<RadialGroup>();
-                if (i == groupList.Count - 1)
+
+                TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Pull", radiusStep, timeLerp));
+                radiusLerpCoroutine.Finished += delegate (bool manual)
                 {
-                    TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Push", radiusStep * dimension.z - 1, timeLerp));
-                    radiusLerpCoroutine.Finished += delegate (bool manual)
-                    {
-                        radiusLerpCoroutinesRunning--;
-                    };
-                    radiusLerpCoroutinesRunning++;
-                }
-                else
-                {
-                    TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Pull", radiusStep, timeLerp));
-                    radiusLerpCoroutine.Finished += delegate (bool manual)
-                    {
-                        radiusLerpCoroutinesRunning--;
-                    };
-                    radiusLerpCoroutinesRunning++;
-                }
+                    radiusLerpCoroutinesRunning--;
+                };
+                radiusLerpCoroutinesRunning++;
 
             }
 
@@ -470,7 +463,9 @@ namespace Vortices
             // Bring group in back to front
             GameObject radialGroupInFront = groupList[groupList.Count - 1];
             ListUtils.Move(groupList, groupList.Count - 1, 0);
-            radialGroupInFront.transform.SetAsLastSibling();
+            radialGroupInFront.transform.SetAsFirstSibling();
+            // Front Group Operations
+            frontGroup = groupList[0];
             // Front group has to be fade alpha 1 and back group has to be fade alpha softfadeUpperAlpha
             Fade frontGroupFader = frontGroup.gameObject.GetComponent<Fade>();
             frontGroupFader.lowerAlpha = softFadeUpperAlpha;
@@ -482,6 +477,31 @@ namespace Vortices
                 fadeCoroutinesRunning--;
             };
             fadeCoroutinesRunning++;
+
+            // Every group has to lerp radius outwards
+            int radiusLerpCoroutinesRunning = 0;
+            for (int i = 0; i < groupList.Count; i++)
+            {
+                RadialGroup radialGroupComponent = groupList[i].GetComponent<RadialGroup>();
+
+                TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Push", radiusStep, timeLerp));
+                radiusLerpCoroutine.Finished += delegate (bool manual)
+                {
+                    radiusLerpCoroutinesRunning--;
+                };
+                radiusLerpCoroutinesRunning++;
+
+            }
+
+            while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
+
+            // Group in the back has to be brought to front by reducing its radius
+            RadialGroup inFrontRadialGroup = radialGroupInFront.GetComponent<RadialGroup>();
+            inFrontRadialGroup.SetRadiusRings(-radiusStep * dimension.z);
+
             Fade backGroupFader = radialGroupInFront.gameObject.GetComponent<Fade>();
             backGroupFader.lowerAlpha = softFadeUpperAlpha;
             backGroupFader.upperAlpha = 1;
@@ -491,35 +511,8 @@ namespace Vortices
                 fadeCoroutinesRunning--;
             };
             fadeCoroutinesRunning++;
-            // Front Group Operations
-            frontGroup = groupList[0];
-            // Every group has to lerp radius outwards except group in back who lerp radius inwards
-            int radiusLerpCoroutinesRunning = 0;
-            for (int i = 0; i < groupList.Count; i++)
-            {
-                RadialGroup radialGroupComponent = groupList[i].GetComponent<RadialGroup>();
-                if (i == 0)
-                {
-                    TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Pull", radiusStep * dimension.z - 1, timeLerp));
-                    radiusLerpCoroutine.Finished += delegate (bool manual)
-                    {
-                        radiusLerpCoroutinesRunning--;
-                    };
-                    radiusLerpCoroutinesRunning++;
-                }
-                else
-                {
-                    TaskCoroutine radiusLerpCoroutine = new TaskCoroutine(radialGroupComponent.RadiusLerp("Push", radiusStep, timeLerp));
-                    radiusLerpCoroutine.Finished += delegate (bool manual)
-                    {
-                        radiusLerpCoroutinesRunning--;
-                    };
-                    radiusLerpCoroutinesRunning++;
-                }
 
-            }
-
-            while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
+            while (fadeCoroutinesRunning > 0)
             {
                 yield return null;
             }
@@ -541,7 +534,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SwapRingsVertically("Up", softFadeIn));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SwapRowsVertically("Up"));
                 spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
                 movingCoroutinesRunning++;
             }
@@ -568,7 +561,7 @@ namespace Vortices
                 {
                     softFadeIn = false;
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SwapRingsVertically("Down", softFadeIn));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SwapRowsVertically("Down"));
                 spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
                 movingCoroutinesRunning++;
             }

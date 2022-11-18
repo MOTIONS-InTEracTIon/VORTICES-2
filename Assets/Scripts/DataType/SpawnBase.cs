@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 using UnityEngine.XR.Interaction.Toolkit;
@@ -110,6 +111,15 @@ namespace Vortices
                     fadeCoroutinesRunning--;
                 };
                 fadeCoroutinesRunning++;
+            }
+
+            List<GameObject> managers = GameObject.FindGameObjectsWithTag("Manager").ToList();
+            if (managers.Count > 0)
+            {
+                foreach (GameObject manager in managers)
+                {
+                    Destroy(manager.gameObject);
+                }
             }
 
             while (fadeCoroutinesRunning > 0)

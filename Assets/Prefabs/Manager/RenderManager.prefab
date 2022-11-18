@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 176275114058308073}
   m_Layer: 0
   m_Name: RenderManager
-  m_TagString: Untagged
+  m_TagString: Manager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -52,4 +52,5 @@ MonoBehaviour:
     type: 3}
   loadManager: {fileID: 8700879235151639090, guid: e4dc803ad8668974b833588dd30c4bf4,
     type: 3}
+  finishes: 0
   result: 1

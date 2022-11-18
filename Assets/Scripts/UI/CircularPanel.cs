@@ -377,8 +377,12 @@ namespace Vortices
 
         public void DestroyBase()
         {
-            SpawnBase spawnBase = placementBase.GetComponent<SpawnBase>();
-            StartCoroutine(spawnBase.DestroyBase());
+            if (placementBase != null)
+            {
+                SpawnBase spawnBase = placementBase.GetComponent<SpawnBase>();
+                StartCoroutine(spawnBase.DestroyBase());
+            }
+
         }
         #endregion
     }
