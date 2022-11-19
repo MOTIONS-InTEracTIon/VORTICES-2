@@ -154,7 +154,7 @@ namespace Vortices
 
         private Canvas GenerateCanvas(GameObject placementObject)
         {
-            GameObject canvasPrefab = Instantiate(webViewCanvasPrefab, placementObject.transform.position, placementObject.transform.rotation, placementObject.transform);
+            GameObject canvasPrefab = Instantiate(webViewCanvasPrefab, placementObject.transform.position, webViewCanvasPrefab.transform.rotation, placementObject.transform);
             Canvas canvasHolder = canvasPrefab.GetComponent<Canvas>();
             canvasHolder.worldCamera = Camera.main;
             return canvasHolder;
@@ -162,7 +162,7 @@ namespace Vortices
 
         private Canvas GenerateFollowerCanvas(GameObject placementObject)
         {
-            GameObject canvasPrefab = Instantiate(webViewCanvasFollowerPrefab, placementObject.transform.position, placementObject.transform.rotation, placementObject.transform);
+            GameObject canvasPrefab = Instantiate(webViewCanvasFollowerPrefab, placementObject.transform.position, webViewCanvasPrefab.transform.rotation, placementObject.transform);
             Canvas canvasHolder = canvasPrefab.GetComponent<Canvas>();
             canvasHolder.worldCamera = Camera.main;
             return canvasHolder;

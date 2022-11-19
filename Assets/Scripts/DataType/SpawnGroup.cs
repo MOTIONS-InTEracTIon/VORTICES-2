@@ -19,9 +19,6 @@ namespace Vortices
 
         // Utility
         public int globalIndex;
-        public int movIndex;
-        public string globalJumpDirection;
-        public int lastJumpGlobalIndex;
         protected bool lastLoadForward;
         protected List<string> loadPaths;
         protected List<GameObject> unloadObjects;
@@ -45,7 +42,6 @@ namespace Vortices
             // Startup
             globalIndex = offsetGlobalIndex;
             lastLoadForward = true;
-            globalJumpDirection = "Both";
             rowList = new List<GameObject>();
             loadPaths = new List<string>();
             unloadObjects = new List<GameObject>();

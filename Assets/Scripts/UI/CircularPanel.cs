@@ -338,7 +338,7 @@ namespace Vortices
             if (displayMode == 0)
             {
                 Vector3 positionOffset = new Vector3(0, 0, 1f); ;
-                placementBase = Instantiate(placementBasePrefabs[0], spawnGroup.transform.position + positionOffset, spawnGroup.transform.rotation, spawnGroup);
+                placementBase = Instantiate(placementBasePrefabs[0], spawnGroup.transform.position + positionOffset, placementBasePrefabs[0].transform.rotation, spawnGroup);
 
             }
             else if (displayMode == 1)

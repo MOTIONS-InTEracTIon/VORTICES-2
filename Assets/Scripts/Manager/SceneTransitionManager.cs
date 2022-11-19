@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Vuplex.WebView;
+using UnityEditor;
 
 namespace Vortices
 {
@@ -13,7 +14,9 @@ namespace Vortices
 
         private void Start()
         {
-            UnityEditor.EditorApplication.quitting += OnQuitting;
+            #if UNITY_EDITOR
+                UnityEditor.EditorApplication.quitting += OnQuitting;
+            #endif
         }
 
         public void GoToScene()

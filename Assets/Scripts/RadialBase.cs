@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Vortices
 {
@@ -55,10 +56,47 @@ namespace Vortices
                 }
                 StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex,softFadeIn));
             }
+
+            SetMovementBoundBox();
         }
+
+        protected override void SetMovementBoundBox()
+        {
+            // Uses first plane layout to set bound box
+            layoutGroup = frontGroup.transform.GetChild(0).GetComponent<LayoutGroup3D>();
+
+            if (followerCollider == null)
+            {
+                GameObject camera = Camera.main.gameObject;
+                followerCollider = Instantiate(followerColliderPrefab, camera.transform.forward * (layoutGroup.Radius / 2) + camera.transform.position, frontGroup.transform.rotation, camera.transform);
+                XRGrabInteractable grabInteractable = followerCollider.GetComponent<XRGrabInteractable>();
+                grabInteractable.selectEntered.AddListener(MoveToCursor);
+                grabInteractable.selectExited.AddListener(StopMoveToCursor);
+                grabInteractable.selectExited.AddListener(ResetFollowerCollider);
+                followerCollider.GetComponent<RotateToObject>().enabled = true;
+            }
+
+            // Generates Collider Box for moving
+            boxCollider = followerCollider.GetComponent<BoxCollider>();
+            boxCollider.center = Vector3.zero;
+            boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
+            // Generates bounds using dimension given (Box from the left side to its down side)
+            centerPosition = transform.position;
+            bounds.w = -centerPosition.x - (layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * ((dimension.x - 1) / 2);
+            bounds.x = centerPosition.y + (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
+            bounds.y = centerPosition.x + (layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * ((dimension.x - 1) / 2);
+            bounds.z = centerPosition.y - (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
+        }
+
+        private void ResetFollowerCollider(SelectExitEventArgs args)
+        {
+            followerCollider.transform.position = Camera.main.transform.forward * (layoutGroup.Radius / 2) + Camera.main.transform.position;
+        }
+
         #endregion
 
         #region Input
+
         protected override void PerformAction()
         {
             if (drag)
@@ -430,12 +468,23 @@ namespace Vortices
                 fadeCoroutinesRunning--;
             };
             fadeCoroutinesRunning++;
+
+            int radiusLerpCoroutinesRunning = 0;
             // Group in the front has to be brought to back by adding to its radius
             RadialGroup inFrontRadialGroup = radialGroupInFront.GetComponent<RadialGroup>();
-            inFrontRadialGroup.SetRadiusRings(radiusStep * dimension.z);
+            TaskCoroutine frontRadiusLerpCoroutine = new TaskCoroutine(inFrontRadialGroup.RadiusLerp("Push", radiusStep * dimension.z, 0.5f));
+            frontRadiusLerpCoroutine.Finished += delegate (bool manual)
+            {
+                radiusLerpCoroutinesRunning--;
+            };
+            radiusLerpCoroutinesRunning++;
+
+            while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
+            {
+                yield return null;
+            }
 
             // Every group has to lerp radius inwards
-            int radiusLerpCoroutinesRunning = 0;
             for (int i = 0; i < groupList.Count; i++)
             {
                 RadialGroup radialGroupComponent = groupList[i].GetComponent<RadialGroup>();
@@ -449,7 +498,7 @@ namespace Vortices
 
             }
 
-            while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
+            while (radiusLerpCoroutinesRunning > 0 )
             {
                 yield return null;
             }
@@ -467,11 +516,12 @@ namespace Vortices
             // Front Group Operations
             frontGroup = groupList[0];
             // Front group has to be fade alpha 1 and back group has to be fade alpha softfadeUpperAlpha
-            Fade frontGroupFader = frontGroup.gameObject.GetComponent<Fade>();
-            frontGroupFader.lowerAlpha = softFadeUpperAlpha;
-            frontGroupFader.upperAlpha = 1;
+            GameObject lastFrontGroup = groupList[1];
+            Fade backGroupFader = lastFrontGroup.gameObject.GetComponent<Fade>();
+            backGroupFader.lowerAlpha = softFadeUpperAlpha;
+            backGroupFader.upperAlpha = 1;
             int fadeCoroutinesRunning = 0;
-            TaskCoroutine fadeCoroutine = new TaskCoroutine(frontGroupFader.FadeOutCoroutine());
+            TaskCoroutine fadeCoroutine = new TaskCoroutine(backGroupFader.FadeOutCoroutine());
             fadeCoroutine.Finished += delegate (bool manual)
             {
                 fadeCoroutinesRunning--;
@@ -499,20 +549,25 @@ namespace Vortices
             }
 
             // Group in the back has to be brought to front by reducing its radius
-            RadialGroup inFrontRadialGroup = radialGroupInFront.GetComponent<RadialGroup>();
-            inFrontRadialGroup.SetRadiusRings(-radiusStep * dimension.z);
+            RadialGroup inFrontRadialGroup = frontGroup.GetComponent<RadialGroup>();
+            TaskCoroutine frontRadiusLerpCoroutine = new TaskCoroutine(inFrontRadialGroup.RadiusLerp("Pull", radiusStep * dimension.z, 0.5f));
+            frontRadiusLerpCoroutine.Finished += delegate (bool manual)
+            {
+                radiusLerpCoroutinesRunning--;
+            };
+            radiusLerpCoroutinesRunning++;
 
-            Fade backGroupFader = radialGroupInFront.gameObject.GetComponent<Fade>();
-            backGroupFader.lowerAlpha = softFadeUpperAlpha;
-            backGroupFader.upperAlpha = 1;
-            fadeCoroutine = new TaskCoroutine(backGroupFader.FadeInCoroutine());
+            Fade frontGroupFader = radialGroupInFront.gameObject.GetComponent<Fade>();
+            frontGroupFader.lowerAlpha = softFadeUpperAlpha;
+            frontGroupFader.upperAlpha = 1;
+            fadeCoroutine = new TaskCoroutine(frontGroupFader.FadeInCoroutine());
             fadeCoroutine.Finished += delegate (bool manual)
             {
                 fadeCoroutinesRunning--;
             };
             fadeCoroutinesRunning++;
 
-            while (fadeCoroutinesRunning > 0)
+            while (fadeCoroutinesRunning > 0 && radiusLerpCoroutinesRunning > 0)
             {
                 yield return null;
             }

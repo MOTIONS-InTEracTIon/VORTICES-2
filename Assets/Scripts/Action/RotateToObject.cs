@@ -14,7 +14,7 @@ namespace Vortices
 
 
         private void Start()
-        {//TIENE QUE SEGUIR UN PUNTO NO MI CAMARA
+        {
             follow = true;
 
             if (followName != "")

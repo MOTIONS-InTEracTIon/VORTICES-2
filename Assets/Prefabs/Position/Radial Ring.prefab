@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LayoutElements: []
-  ElementDimensions: {x: 0.5, y: 0.5, z: 0.001}
+  ElementDimensions: {x: 0.001, y: 0.5, z: 0.5}
   Spacing: 0.04
   Style: 3
   GridConstraintCount: 4

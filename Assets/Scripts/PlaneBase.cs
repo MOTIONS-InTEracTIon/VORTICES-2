@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.XR.Interaction.Toolkit;
+
 namespace Vortices
 {
     public class PlaneBase : SpawnBase
@@ -13,13 +15,6 @@ namespace Vortices
 
         // Movement variables
         private bool lerpToPositionRunning;
-
-        // Bounds
-        private BoxCollider boxCollider;
-        protected LayoutGroup3D layoutGroup;
-        public Vector3 centerPosition;
-        public Vector4 bounds; //PRIVATE
-        protected float boundOffset = 0.001f;
 
 
         #region Group Spawn
@@ -58,12 +53,19 @@ namespace Vortices
             SetMovementBoundBox();
         }
 
-        private void SetMovementBoundBox()
+        protected override void SetMovementBoundBox()
         {
+            if (followerCollider == null)
+            {
+                followerCollider = Instantiate(followerColliderPrefab, frontGroup.transform.position, frontGroup.transform.rotation, transform);
+                XRGrabInteractable grabInteractable = followerCollider.GetComponent<XRGrabInteractable>();
+                grabInteractable.selectEntered.AddListener(MoveToCursor);
+                grabInteractable.selectExited.AddListener(StopMoveToCursor);
+            }
             // Uses first plane layout to set bound box
             layoutGroup = frontGroup.GetComponent<LayoutGroup3D>();
             // Generates Collider Box for moving
-            boxCollider = GetComponent<BoxCollider>();
+            boxCollider = followerCollider.GetComponent<BoxCollider>();
             boxCollider.center = Vector3.zero;
             boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
             // Generates bounds using dimension given (Box from the left side to its down side)
@@ -248,7 +250,6 @@ namespace Vortices
             planeInFront.transform.parent = null;
             // Front Group Operations
             frontGroup = groupList[0];
-            SetMovementBoundBox();
             // Front group has to be fade alpha 1
             Fade frontGroupFader = frontGroup.gameObject.GetComponent<Fade>();
             frontGroupFader.lowerAlpha = softFadeUpperAlpha;
@@ -307,7 +308,6 @@ namespace Vortices
 
             // Front Group Operations
             frontGroup = gameObject;
-            SetMovementBoundBox();
 
             while (fadeCoroutinesRunning > 0)
             {

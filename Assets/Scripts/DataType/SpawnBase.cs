@@ -13,6 +13,8 @@ namespace Vortices
         // Other references
         protected List<XRRayInteractor> rayInteractors;
         protected List<GameObject> groupList;
+        protected GameObject followerCollider;
+        public GameObject followerColliderPrefab;
 
         // SpawnBase Data Components
         [HideInInspector] public List<string> filePaths;
@@ -42,6 +44,13 @@ namespace Vortices
         public float softFadeUpperAlpha = 0.6f;
         protected float movementOffset = 0.1f;
 
+        // Bounds
+        protected BoxCollider boxCollider;
+        protected LayoutGroup3D layoutGroup;
+        public Vector3 centerPosition;
+        public Vector4 bounds; //PRIVATE
+        protected float boundOffset = 0.001f;
+
         // Coroutine
         protected Queue<IEnumerator> coroutineQueue;
         protected bool coordinatorWorking;
@@ -64,6 +73,12 @@ namespace Vortices
         public virtual void StartGenerateSpawnGroup()
         {
             Debug.Log("Start Generate Spawn Group was not overriden");
+        }
+
+        // Every base creates its control movement box differently
+        protected virtual void SetMovementBoundBox()
+        {
+            Debug.Log("Set Movement Bound Box was not overriden");
         }
 
         protected void MoveGlobalIndex(bool forwards)
@@ -119,6 +134,15 @@ namespace Vortices
                 foreach (GameObject manager in managers)
                 {
                     Destroy(manager.gameObject);
+                }
+            }
+
+            List<GameObject> externals = GameObject.FindGameObjectsWithTag("External").ToList();
+            if (externals.Count > 0)
+            {
+                foreach (GameObject external in externals)
+                {
+                    Destroy(external.gameObject);
                 }
             }
 
@@ -216,7 +240,7 @@ namespace Vortices
         }
 
         // Initializes drag operation when grabbing base collider
-        public void MoveToCursor()
+        public void MoveToCursor(SelectEnterEventArgs args)
         {
             if (rayInteractors[0].isSelectActive)
             {
@@ -242,7 +266,7 @@ namespace Vortices
         }
 
         // Disables drag operation and resets variables for the next drag operation
-        public void StopMoveToCursor()
+        public void StopMoveToCursor(SelectExitEventArgs args)
         {
             currentlySelecting = null;
             drag = false;

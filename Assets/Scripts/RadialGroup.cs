@@ -105,17 +105,9 @@ namespace Vortices
                 ringLayout.Radius = Mathf.Lerp(ringLayout.Radius, finalRadius, timeElapsed / timeLerp);
                 yield return null;
             }
-            groupRadius = finalRadius;
-        }
 
-        public void SetRadiusRings(float radius)
-        {
-            foreach (GameObject radialRing in rowList)
-            {
-                LayoutGroup3D ringLayout = radialRing.GetComponentInChildren<LayoutGroup3D>();
-                ringLayout.Radius += radius;
-                groupRadius = ringLayout.Radius;
-            }
+            ringLayout.Radius = finalRadius;
+            groupRadius = finalRadius;
         }
 
         #endregion
