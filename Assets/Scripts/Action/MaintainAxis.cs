@@ -16,12 +16,10 @@ public class MaintainAxis : MonoBehaviour
         else if (axis == "Y")
         {
             transform.position = new Vector3(transform.position.x, position, transform.position.z);
-
         }
         else if (axis == "Z")
         {
             transform.position = new Vector3(transform.position.x, transform.position.y, position);
-
         }
     }
 }
