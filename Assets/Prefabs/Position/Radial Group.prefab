@@ -47,11 +47,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   filePaths: []
   globalIndex: 0
-  renderManager: {fileID: 2979524873638265696, guid: 760921f21669d8a42a1f2f5c074d7193,
+  renderController: {fileID: 2979524873638265696, guid: 760921f21669d8a42a1f2f5c074d7193,
     type: 3}
   radialRingPrefab: {fileID: 7526711333010352363, guid: c55f05178b05c974d8df2c30d6545150,
     type: 3}
-  radialRingLinearRail: {fileID: 0}
+  radialRingLinearRail: {fileID: 3843819322707068528, guid: 0dd84dbb5bcc7da4abe8d441b6517cd4,
+    type: 3}
   groupRadius: 0
   groupAngleOffset: 0
   rotationAngleStep: 1

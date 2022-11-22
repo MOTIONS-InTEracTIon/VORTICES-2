@@ -8,86 +8,38 @@ using SimpleFileBrowser;
 
 namespace Vortices
 {
-    public class CircularPanel : MonoBehaviour
+    public class CircularPanel : SpawnPanel
     {
         #region Variables and properties
-        // Circular Panel UI Components
-        [SerializeField] private List<GameObject> uiComponents;
-
-        // Circular Panel Data Components
-        [SerializeField] private FilePath optionFilePath;
-        [SerializeField] private TextInputField optionRootUrl;
 
         // Circular Panel Properties
-        // (Input)
-        public int actualComponentId { get; set; }
         public int displayMode { get; set; }
         public int browsingMode { get; set; }
         public bool volumetric { get; set; }
         public Vector3Int dimension;
         public string rootUrl { get; set; }
 
-        // (Display)
+        // Display
         [SerializeField] List<GameObject> placementBasePrefabs;
         private GameObject placementBase;
-        [SerializeField] private Fade mapFade;
-
-        [SerializeField] private Transform spawnGroup;
 
         private void Start()
         {
+            // Default configs to properties
             rootUrl = "https://www.google.com";
         }
 
         #endregion
 
         #region User Input
-        // This set of functions are used so the system can take user input to display multimedia
-        // Changes single component
-        public void ChangeVisibleComponent(int componentId)
-        {
-            StartCoroutine(ChangeComponent(componentId));
-        }
-        private IEnumerator ChangeComponent(int componentId)
-        {
-            // FadeOut actual component
-            FadeUI actualComponentFader = uiComponents[actualComponentId].GetComponent<FadeUI>();
-            yield return StartCoroutine(actualComponentFader.FadeOut());
-            // Disable actual component
-            uiComponents[actualComponentId].SetActive(false);
-            // Enable new component
-            uiComponents[componentId].SetActive(true);
-            // Block button if necessary
-            if (componentId != 3)
-            {
-                BlockButton(componentId);
-            }
-            // FadeIn new component
-            FadeUI newComponentFader = uiComponents[componentId].GetComponent<FadeUI>();
-            yield return StartCoroutine(newComponentFader.FadeIn());
-            actualComponentId = componentId;
-        }
-        public void ChangeVisibleComponentFade(int componentId)
-        {
-            StartCoroutine(ChangeComponentFade(componentId));
-        }
-        private IEnumerator ChangeComponentFade(int componentId)
-        {
-            // FadeOut actual component
-            FadeUI actualComponentFader = uiComponents[actualComponentId].GetComponent<FadeUI>();
-            yield return StartCoroutine(actualComponentFader.FadeOut());
-            // FadeIn new component
-            FadeUI newComponentFader = uiComponents[componentId].GetComponent<FadeUI>();
-            yield return StartCoroutine(newComponentFader.FadeIn());
-            actualComponentId = componentId;
-        }
+
         public void AddBrowserToComponents()
         {
             uiComponents[3] = GameObject.Find("SimpleFileBrowserCanvas(Clone)");
         }
 
         // Handles block next button rules per component
-        public void BlockButton(int componentId)
+        public override void BlockButton(int componentId)
         {
             bool hasToBlock = true;
             switch (componentId)
@@ -145,7 +97,7 @@ namespace Vortices
             }
 
             // Insert here panels that dont need block function
-            if (componentId != 12)
+            if (componentId != 3 && componentId != 12)
             {
                 Button nextButton = uiComponents[componentId].transform.Find("Footer").transform.GetComponentInChildren<Button>();
                 if (hasToBlock)
@@ -332,7 +284,8 @@ namespace Vortices
         #endregion
 
         #region Display Multimedia
-        public void GenerateBase()
+        // Places all variables into a base that will display the multimedia objects
+        public override void GenerateBase()
         {
             // Plane mode
             if (displayMode == 0)
@@ -375,7 +328,7 @@ namespace Vortices
             mapFade.FadeOut();
         }
 
-        public void DestroyBase()
+        public override void DestroyBase()
         {
             if (placementBase != null)
             {

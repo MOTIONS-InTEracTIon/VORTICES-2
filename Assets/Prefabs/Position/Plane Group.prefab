@@ -87,7 +87,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   filePaths: []
   globalIndex: 0
-  renderManager: {fileID: 2979524873638265696, guid: 760921f21669d8a42a1f2f5c074d7193,
+  renderController: {fileID: 2979524873638265696, guid: 760921f21669d8a42a1f2f5c074d7193,
     type: 3}
   planeRowPrefab: {fileID: 1276288065078292406, guid: 2ba1fe1a84561d943be931b986258fe0,
     type: 3}
