@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Vortices
 {
-    public class FilePath : MonoBehaviour
+    public class FilePathController : MonoBehaviour
     {
         #region Variables and properties
         [SerializeField] private TextMeshProUGUI placeholderText;

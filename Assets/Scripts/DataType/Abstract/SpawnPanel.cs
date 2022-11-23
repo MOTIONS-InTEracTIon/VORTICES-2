@@ -9,7 +9,7 @@ namespace Vortices
         #region Variables and properties
         // Panel UI Components
         [SerializeField] protected List<GameObject> uiComponents;
-        [SerializeField] protected FilePath optionFilePath;
+        [SerializeField] protected FilePathController optionFilePath;
         [SerializeField] protected TextInputField optionRootUrl;
 
         // Display
