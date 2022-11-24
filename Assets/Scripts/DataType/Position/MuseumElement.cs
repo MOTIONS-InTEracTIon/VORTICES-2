@@ -165,6 +165,11 @@ namespace Vortices
 
         }
 
+        public void DestroyWebView()
+        {
+            Destroy(elementFrame.transform.GetChild(0).gameObject);
+        }
+
         #endregion
     }
 }

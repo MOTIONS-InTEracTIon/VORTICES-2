@@ -67,9 +67,28 @@ namespace Vortices
                 }
             }
 
+            // Restore old pictures
+            defaultPicture.SetActive(true);
+            // Fade in old pictures
+            Fade defaultFader = defaultPicture.GetComponent<Fade>();
+            defaultFader.lowerAlpha = 0;
+            defaultFader.upperAlpha = 1;
+            TaskCoroutine fadeCoroutine2 = new TaskCoroutine(defaultFader.FadeInCoroutine());
+            fadeCoroutine2.Finished += delegate (bool manual)
+            {
+                fadeCoroutinesRunning--;
+            };
+            fadeCoroutinesRunning++;
+
             while (fadeCoroutinesRunning > 0)
             {
                 yield return null;
+            }
+
+            foreach (GameObject element in elementList)
+            {
+                element.GetComponent<MuseumElement>().DestroyWebView();
+                element.SetActive(false);
             }
 
             if (browsingMode == "Online")
@@ -78,7 +97,6 @@ namespace Vortices
                 //Web.ClearAllData();
             }
 
-            Destroy(gameObject);
         }
 
         #endregion

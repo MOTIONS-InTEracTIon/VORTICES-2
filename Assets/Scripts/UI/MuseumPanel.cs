@@ -6,6 +6,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using SimpleFileBrowser;
 
+enum MuseumId
+{
+    // Change this when order is changed or when new panels are added
+    Introduction = 0,
+    BrowsingMode = 1,
+    BrowsingLocal = 2,
+    FileBrowser = 3,
+    BrowsingOnline = 4,
+    CategorySelection = 5,
+    Postload = 6
+
+}
+
 namespace Vortices
 {
     public class MuseumPanel : SpawnPanel
@@ -32,7 +45,7 @@ namespace Vortices
 
         public void AddBrowserToComponents()
         {
-            uiComponents[3] = GameObject.Find("SimpleFileBrowserCanvas(Clone)");
+            uiComponents[(int)MuseumId.FileBrowser] = GameObject.Find("SimpleFileBrowserCanvas(Clone)");
         }
 
         // Handles block next button rules per component
@@ -42,11 +55,11 @@ namespace Vortices
             switch (componentId)
             {
                 // Description has no block
-                case 0:
+                case (int)MuseumId.Introduction:
                     hasToBlock = false;
                     break;
                 // Browsing mode has to be selected
-                case 1:
+                case (int)MuseumId.BrowsingMode:
                     Toggle localToggle = uiComponents[componentId].transform.Find("Content/Horizontal Group/Local Toggle").GetComponentInChildren<Toggle>();
                     Toggle onlineToggle = uiComponents[componentId].transform.Find("Content/Horizontal Group/Online Toggle").GetComponentInChildren<Toggle>();
                     if (!localToggle.interactable || !onlineToggle.interactable)
@@ -55,23 +68,25 @@ namespace Vortices
                     }
                     break;
                 // Local mode has to have a correct set to load
-                case 2:
+                case (int)MuseumId.BrowsingLocal:
                     if (optionFilePath.filePaths != null && optionFilePath.filePaths.Count > 0)
                     {
                         hasToBlock = false;
                     }
                     break;
                 // Online mode has a default url so it starts enabled, disabled if no url
-                case 4:
+                case (int)MuseumId.BrowsingOnline:
                     if (optionRootUrl.text.text != "" || optionRootUrl.placeholder.text != "")
                     {
                         hasToBlock = false;
                     }
                     break;
+                // Category Controller unlocks button by its own
             }
 
             // Insert here panels that dont need block function
-            if (componentId != 3 && componentId != 5)
+            if (componentId != (int)MuseumId.FileBrowser && 
+                componentId != (int)MuseumId.Postload)
             {
                 Button nextButton = uiComponents[componentId].transform.Find("Footer").transform.GetComponentInChildren<Button>();
                 if (hasToBlock)
@@ -91,18 +106,18 @@ namespace Vortices
             // Browsing mode fork
             if (browsingMode == 0)
             {
-                ChangeVisibleComponent(2);
+                ChangeVisibleComponent((int)MuseumId.BrowsingLocal);
             }
             else if (browsingMode == 1)
             {
-                ChangeVisibleComponent(4);
+                ChangeVisibleComponent((int)MuseumId.BrowsingOnline);
             }
         }
 
         // Changes component and starts the base operation
         public void ChangeComponentBase()
         {
-            ChangeVisibleComponent(5);
+            ChangeVisibleComponent((int)MuseumId.Postload);
             GenerateBase();
         }
 
@@ -123,10 +138,10 @@ namespace Vortices
                     optionFilePath.ClearPaths();
                     optionFilePath.GetFilePaths(paths);
                     optionFilePath.SetUIText();
-                    ChangeVisibleComponent(2);
+                    ChangeVisibleComponent((int)MuseumId.BrowsingLocal);
                 },
                 () => {/* Handle closing*/
-                    ChangeVisibleComponent(2);
+                    ChangeVisibleComponent((int)MuseumId.BrowsingLocal);
                 },
                 FileBrowser.PickMode.FilesAndFolders, true, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), null, "Load", "Select");
 
@@ -162,7 +177,7 @@ namespace Vortices
         {
             if (placementBase != null)
             {
-                SpawnBase spawnBase = placementBase.GetComponent<SpawnBase>();
+                MuseumSpawnBase spawnBase = placementBase.GetComponent<MuseumSpawnBase>();
                 StartCoroutine(spawnBase.DestroyBase());
             }
 

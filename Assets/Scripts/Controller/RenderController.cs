@@ -12,8 +12,7 @@ namespace Vortices
         #region Variables and properties
         // Other references
         [SerializeField] private GameObject webViewPrefab;
-        [SerializeField] GameObject webViewCanvasPrefab;
-        [SerializeField] GameObject webViewCanvasFollowerPrefab;
+        [SerializeField] GameObject elementPrefab;
 
         // Auxiliary Components
         [SerializeField] GameObject loadManager;
@@ -137,7 +136,11 @@ namespace Vortices
                 // Radial
                 else if (displayMode == "Radial")
                 {
-                    canvasHolder = GenerateFollowerCanvas(placementObjects[i]);
+                    canvasHolder = GenerateCanvas(placementObjects[i]);
+                    RotateToObject canvasHolderComponent = canvasHolder.gameObject.AddComponent<RotateToObject>();
+                    canvasHolderComponent.offset = new Vector3(180f, 0, 180f);
+                    canvasHolderComponent.followName = "Information Object Group";
+                    canvasHolderComponent.StartRotating();
                 }
                 TaskCoroutine spawnCoroutine = new TaskCoroutine(GenerateCanvasWebView(canvasHolder, loadPaths[i], placementObjects[i], browsingMode));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
@@ -154,16 +157,7 @@ namespace Vortices
 
         private Canvas GenerateCanvas(GameObject placementObject)
         {
-            GameObject canvasPrefab = Instantiate(webViewCanvasPrefab, placementObject.transform.position, webViewCanvasPrefab.transform.rotation, placementObject.transform);
-            canvasPrefab.transform.localRotation = placementObject.transform.localRotation;
-            Canvas canvasHolder = canvasPrefab.GetComponent<Canvas>();
-            canvasHolder.worldCamera = Camera.main;
-            return canvasHolder;
-        }
-
-        private Canvas GenerateFollowerCanvas(GameObject placementObject)
-        {
-            GameObject canvasPrefab = Instantiate(webViewCanvasFollowerPrefab, placementObject.transform.position, webViewCanvasFollowerPrefab.transform.rotation, placementObject.transform);
+            GameObject canvasPrefab = Instantiate(elementPrefab, placementObject.transform.position, elementPrefab.transform.rotation, placementObject.transform);
             canvasPrefab.transform.localRotation = placementObject.transform.localRotation;
             Canvas canvasHolder = canvasPrefab.GetComponent<Canvas>();
             canvasHolder.worldCamera = Camera.main;
@@ -218,7 +212,9 @@ namespace Vortices
                 yield return null;
             }
 
-            // After load
+            // After load configuration
+            GameObject browserControls = canvasHolder.transform.Find("Browser Controls").gameObject;
+            browserControls.SetActive(true);
 
             if (browsingMode == "Local")
             {
@@ -226,7 +222,21 @@ namespace Vortices
             }
             else if (browsingMode == "Online")
             {
+                // If online it has to instantiate extra controls to go back and write url
+                GameObject webUrl = browserControls.transform.Find("Web URL").gameObject;
+                webUrl.SetActive(true);
+                GameObject goBack = browserControls.transform.Find("Go Back").gameObject;
+                GoBackBrowserButton goBackComponent = goBack.GetComponent<GoBackBrowserButton>();
+                goBackComponent.canvasWebView = canvasWebView.WebView;
+                goBack.SetActive(true);
+
                 //canvasWebView.WebView.SetRenderingEnabled(false);
+                var keyboard = CanvasKeyboard.Instantiate();
+                keyboard.transform.SetParent(canvasHolder.transform, false);
+                keyboard.transform.localEulerAngles = Vector3.zero;
+                keyboard.transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
+                var rectTransformKeyboard = keyboard.transform as RectTransform;
+                rectTransformKeyboard.anchoredPosition3D = new Vector3(0, -0.15f ,0);
             }
         }
 

@@ -13,7 +13,8 @@ namespace Vortices
         // Other references
         protected List<XRRayInteractor> rayInteractors;
         protected List<GameObject> groupList;
-        protected GameObject followerCollider;
+        protected GameObject normalCollider;
+        protected List<GameObject> followerCollider;
         public GameObject followerColliderPrefab;
 
         // SpawnBase Data Components
@@ -45,7 +46,6 @@ namespace Vortices
         protected float movementOffset = 0.1f;
 
         // Bounds
-        protected BoxCollider boxCollider;
         protected LayoutGroup3D layoutGroup;
         public Vector3 centerPosition;
         public Vector4 bounds; //PRIVATE
@@ -56,7 +56,7 @@ namespace Vortices
         protected bool coordinatorWorking;
         protected bool movingOperationRunning;
 
-        private void Start()
+        private void Awake()
         {
             rayInteractors = new List<XRRayInteractor>();
             rayInteractors.Add(GameObject.Find("Ray Interactor Left").GetComponent<XRRayInteractor>());

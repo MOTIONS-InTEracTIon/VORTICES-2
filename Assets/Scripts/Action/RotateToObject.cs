@@ -13,7 +13,7 @@ namespace Vortices
         public string followName = "";
 
 
-        private void Start()
+        public void StartRotating()
         {
             follow = true;
 

@@ -65,21 +65,33 @@ namespace Vortices
             // Uses first plane layout to set bound box
             layoutGroup = frontGroup.transform.GetChild(0).GetComponent<LayoutGroup3D>();
 
-            if (followerCollider == null)
+            followerCollider = new List<GameObject>();
+            // We create one collider for each hand
+            GameObject sourceLeft = rayInteractors[0].transform.parent.gameObject;
+            followerCollider.Add(Instantiate(followerColliderPrefab, sourceLeft.transform.forward * (layoutGroup.Radius / 2) + sourceLeft.transform.position, sourceLeft.transform.rotation, sourceLeft.transform));
+            GameObject sourceRight = rayInteractors[1].transform.parent.gameObject;
+            followerCollider.Add(Instantiate(followerColliderPrefab, sourceRight.transform.forward * (layoutGroup.Radius / 2) + sourceRight.transform.position, sourceRight.transform.rotation, sourceRight.transform));
+            foreach (GameObject collider in followerCollider)
             {
-                GameObject camera = Camera.main.gameObject;
-                followerCollider = Instantiate(followerColliderPrefab, camera.transform.forward * (layoutGroup.Radius / 2) + camera.transform.position, frontGroup.transform.rotation, camera.transform);
-                XRGrabInteractable grabInteractable = followerCollider.GetComponent<XRGrabInteractable>();
+                XRGrabInteractable grabInteractable = collider.GetComponent<XRGrabInteractable>();
                 grabInteractable.selectEntered.AddListener(MoveToCursor);
-                grabInteractable.selectExited.AddListener(StopMoveToCursor);
                 grabInteractable.selectExited.AddListener(ResetFollowerCollider);
-                followerCollider.GetComponent<RotateToObject>().enabled = true;
+                grabInteractable.selectExited.AddListener(StopMoveToCursor);
+                collider.GetComponent<RotateToObject>().enabled = true;
+
+                BoxCollider boxCollider = collider.GetComponent<BoxCollider>();
+                boxCollider.center = Vector3.zero;
+                boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
+
+                RotateToObject rotateToObject = collider.GetComponent<RotateToObject>();
+                rotateToObject.offset = new Vector3(180f, 0, 180f);
+                rotateToObject.followName = collider.transform.parent.name;
+                rotateToObject.StartRotating();
             }
 
-            // Generates Collider Box for moving
-            boxCollider = followerCollider.GetComponent<BoxCollider>();
-            boxCollider.center = Vector3.zero;
-            boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
+            followerCollider[0].gameObject.layer = LayerMask.NameToLayer("Interactable Left");
+            followerCollider[1].gameObject.layer = LayerMask.NameToLayer("Interactable Right");
+
             // Generates bounds using dimension given (Box from the left side to its down side)
             centerPosition = transform.position;
             bounds.w = -centerPosition.x - (layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * ((dimension.x - 1) / 2);
@@ -90,13 +102,32 @@ namespace Vortices
 
         private void ResetFollowerCollider(SelectExitEventArgs args)
         {
-            followerCollider.transform.position = Camera.main.transform.forward * (layoutGroup.Radius / 2) + Camera.main.transform.position;
+            GameObject sourceLeft = rayInteractors[0].transform.parent.gameObject;
+            GameObject sourceRight = rayInteractors[1].transform.parent.gameObject;
+            if (currentlySelecting.gameObject == rayInteractors[0].gameObject)
+            {
+                followerCollider[0].transform.position = sourceLeft.transform.forward * (layoutGroup.Radius / 2) + sourceLeft.transform.position;
+            }
+            else if (currentlySelecting.gameObject == rayInteractors[1].gameObject)
+            {
+                followerCollider[1].transform.position = sourceRight.transform.forward * (layoutGroup.Radius / 2) + sourceRight.transform.position;
+            }
+
+        }
+
+        private void OnDrawGizmos()
+        {
+            GameObject sourceLeft = rayInteractors[1].transform.parent.gameObject;
+            Vector3 position = sourceLeft.transform.forward * (layoutGroup.Radius / 2) + sourceLeft.transform.position;
+            Gizmos.color = new Color(0f, 1f, 1f, 0.75f);
+            Gizmos.DrawSphere(position, 0.15f);
         }
 
         #endregion
 
         #region Input
 
+        // Changed so it only spawns when pulling or pushing
         protected override void PerformAction()
         {
             if (drag)
@@ -173,7 +204,7 @@ namespace Vortices
                         afterSpawnTime = 0;
                         if (browsingMode == "Local")
                         {
-                            coroutineQueue.Enqueue(GroupSpawnUp());
+                            coroutineQueue.Enqueue(GroupUp());
                         }
                         else if (browsingMode == "Online")
                         {
@@ -188,7 +219,7 @@ namespace Vortices
                         afterSpawnTime = 0;
                         if (browsingMode == "Local")
                         {
-                            coroutineQueue.Enqueue(GroupSpawnDown());
+                            coroutineQueue.Enqueue(GroupDown());
                         }
                         else if (browsingMode == "Online")
                         {

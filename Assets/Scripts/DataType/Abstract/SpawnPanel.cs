@@ -38,12 +38,13 @@ namespace Vortices
             uiComponents[actualComponentId].SetActive(false);
             // Enable new component
             uiComponents[componentId].SetActive(true);
+            actualComponentId = componentId;
             // Block button if necessary
             BlockButton(componentId);
             // FadeIn new component
             FadeUI newComponentFader = uiComponents[componentId].GetComponent<FadeUI>();
             yield return StartCoroutine(newComponentFader.FadeIn());
-            actualComponentId = componentId;
+
         }
         public void ChangeVisibleComponentFade(int componentId)
         {

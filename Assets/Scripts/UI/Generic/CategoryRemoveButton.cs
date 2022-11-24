@@ -10,7 +10,6 @@ namespace Vortices
         public CategoryController controller;
         public Category category;
 
-
         public void RemoveCategory()
         {
             controller.RemoveCategory(category);

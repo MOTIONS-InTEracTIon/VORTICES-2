@@ -5,6 +5,8 @@ using UnityEngine;
 
 using TMPro;
 using System.Linq;
+using UnityEngine.InputSystem.UI;
+using UnityEngine.UI;
 
 
 namespace Vortices
@@ -14,6 +16,7 @@ namespace Vortices
         // Other references
         [SerializeField] private GameObject scrollviewContent;
         [SerializeField] private TextInputField categoryAddInputField;
+        [SerializeField] private Button continueButton;
         [SerializeField] private GameObject horizontalLayoutPrefab;
         [SerializeField] private GameObject UICategoryPrefab;
 
@@ -44,6 +47,14 @@ namespace Vortices
             string categoryName = categoryAddInputField.GetData();
             // Add to UI component
             AddCategoryToScrollView(categoryName);
+            // Save all categories to file
+            SaveCategories();
+        }
+
+        public void RemoveCategory(Category category)
+        {
+            // Remove from UI component
+            RemoveCategoryFromScrollView(category);
             // Save all categories to file
             SaveCategories();
         }
@@ -96,14 +107,7 @@ namespace Vortices
                     Destroy(child.gameObject);
                 }
             }
-        }
 
-        public void RemoveCategory(Category category)
-        {
-            // Remove from UI component
-            RemoveCategoryFromScrollView(category);
-            // Save all categories to file
-            SaveCategories();
         }
 
         private void AddCategoryToScrollView(string categoryName)
@@ -120,21 +124,6 @@ namespace Vortices
             UpdateCategories();
         }
 
-        private void CreateCategory(string categoryName, GameObject horizontalGroup, bool addToList)
-        {
-            Category newCategory = Instantiate(UICategoryPrefab, horizontalGroup.transform).GetComponent<Category>();
-            // Initialize
-            newCategory.Init(categoryName, this, horizontalGroup);
-   
-            // Add category to category list (If its loaded, you dont add it again)
-            if (addToList)
-            {
-                categories.Add(newCategory.categoryName);
-            }
-            // Add gameobject to list for easy access
-            UICategories.Add(newCategory);
-        }
-
         private void RemoveCategoryFromScrollView(Category category)
         {
             // Searches the UIComponents for category position
@@ -143,12 +132,95 @@ namespace Vortices
 
             // Removes from list
             categories.Remove(categoryName);
+            if (selectedCategories.Contains(categoryName))
+            {
+                selectedCategories.Remove(categoryName);
+            }
             // Destroys said Component
             category.DestroyCategory();
             // Destroys UI Category
             UICategories.Remove(category);
             // Updates rows
             UpdateCategories();
+        }
+
+        private void CreateCategory(string categoryName, GameObject horizontalGroup, bool addToList)
+        {
+            
+            if (categoryName != "")
+            {
+                //Filters if category should be created by the rules specified in this function
+                string result = "";
+
+                if (addToList && categoryName != "")
+                {
+                    result = FilterCategory(categoryName);
+                }
+                else
+                {
+                    result = "OK";
+                }
+
+                if (result == "OK")
+                {
+                    Category newCategory = Instantiate(UICategoryPrefab, horizontalGroup.transform).GetComponent<Category>();
+                    // Initialize
+                    newCategory.Init(categoryName, this, horizontalGroup);
+
+                    // Add category to category list (If its loaded, you dont add it again)
+                    if (addToList)
+                    {
+                        categories.Add(newCategory.categoryName);
+                    }
+                    // Add gameobject to list for easy access
+                    UICategories.Add(newCategory);
+
+                    // Sometimes the UI elements deactivate, activate if so
+                    HorizontalLayoutGroup horizontalLayoutGroup = newCategory.GetComponent<HorizontalLayoutGroup>();
+                    LayoutElement layoutElement = newCategory.GetComponent<LayoutElement>();
+                    if (!horizontalLayoutGroup.isActiveAndEnabled)
+                    {
+                        horizontalLayoutGroup.gameObject.SetActive(true);
+                    }
+                    if (!layoutElement.isActiveAndEnabled)
+                    {
+                        layoutElement.gameObject.SetActive(true);
+                    }
+                }
+                else if (result == "Same")
+                {
+                    categoryAddInputField.SetText("");
+                    categoryAddInputField.placeholder.text = "Category already exists.";
+                }
+            }
+        }
+
+        private string FilterCategory(string categoryName)
+        {
+            // Check if category has been already added
+            string newName = categoryName.ToLower();
+            char[] a = newName.ToCharArray();
+            a[0] = char.ToUpper(a[0]);
+            newName = new string(a);
+
+            if (categories.Contains(newName))
+            {
+                return "Same";
+            }
+
+            return "OK";
+        }
+
+        public void UnlockContinueButton()
+        {
+            if (selectedCategories.Count > 0)
+            {
+                continueButton.interactable = true;
+            }
+            else
+            {
+                continueButton.interactable = false;
+            }
         }
 
         #endregion

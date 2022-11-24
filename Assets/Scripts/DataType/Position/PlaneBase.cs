@@ -55,17 +55,17 @@ namespace Vortices
 
         protected override void SetMovementBoundBox()
         {
-            if (followerCollider == null)
+            if (GetComponent<Collider>() == null)
             {
-                followerCollider = Instantiate(followerColliderPrefab, frontGroup.transform.position, frontGroup.transform.rotation, transform);
-                XRGrabInteractable grabInteractable = followerCollider.GetComponent<XRGrabInteractable>();
+                normalCollider = Instantiate(followerColliderPrefab, frontGroup.transform.position, frontGroup.transform.rotation, transform);
+                XRGrabInteractable grabInteractable = GetComponent<Collider>().GetComponent<XRGrabInteractable>();
                 grabInteractable.selectEntered.AddListener(MoveToCursor);
                 grabInteractable.selectExited.AddListener(StopMoveToCursor);
             }
             // Uses first plane layout to set bound box
             layoutGroup = frontGroup.GetComponent<LayoutGroup3D>();
             // Generates Collider Box for moving
-            boxCollider = followerCollider.GetComponent<BoxCollider>();
+            BoxCollider boxCollider = GetComponent<Collider>().GetComponent<BoxCollider>();
             boxCollider.center = Vector3.zero;
             boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
             // Generates bounds using dimension given (Box from the left side to its down side)
@@ -79,6 +79,7 @@ namespace Vortices
         #endregion
 
         #region Input
+        // Changed so it only spawns when pulling or pushing
         protected override void PerformAction()
         {
             if (drag && dragDir != "")
@@ -122,9 +123,9 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        if (browsingMode == "Local" && ((center.x + boundOffset) > bounds.w && (center.x - boundOffset) > bounds.w))
+                        if (browsingMode == "Local" /* && ((center.x + boundOffset) > bounds.w && (center.x - boundOffset) > bounds.w)*/)
                         {
-                            coroutineQueue.Enqueue(GroupSpawnLeft());
+                            coroutineQueue.Enqueue(GroupLeft());
                         }
                         else if (browsingMode == "Online")
                         {
@@ -138,9 +139,9 @@ namespace Vortices
                     if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                     {
                         afterSpawnTime = 0;
-                        if (browsingMode == "Local" && ((center.x + boundOffset) < bounds.y && (center.x - boundOffset) < bounds.y))
+                        if (browsingMode == "Local" /* && ((center.x + boundOffset) < bounds.y && (center.x - boundOffset) < bounds.y)*/)
                         {
-                            coroutineQueue.Enqueue(GroupSpawnRight());
+                            coroutineQueue.Enqueue(GroupRight());
                         }
                         else if (browsingMode == "Online")
                         {
@@ -155,7 +156,7 @@ namespace Vortices
                         afterSpawnTime = 0;
                         if (browsingMode == "Local")
                         {
-                            coroutineQueue.Enqueue(GroupSpawnUp());
+                            coroutineQueue.Enqueue(GroupUp());
                         }
                         else if (browsingMode == "Online")
                         {
@@ -170,7 +171,7 @@ namespace Vortices
                         afterSpawnTime = 0;
                         if (browsingMode == "Local")
                         {
-                            coroutineQueue.Enqueue(GroupSpawnDown());
+                            coroutineQueue.Enqueue(GroupDown());
                         }
                         else if (browsingMode == "Online")
                         {
@@ -317,19 +318,6 @@ namespace Vortices
             movingOperationRunning = false;
         }
 
-        protected override IEnumerator GroupSpawnRight()
-        {
-            movingOperationRunning = true;
-            yield return StartCoroutine(LerpToPosition("Right"));
-            movingOperationRunning = false;
-        }
-
-        protected override IEnumerator GroupSpawnLeft()
-        {
-            movingOperationRunning = true;
-            yield return StartCoroutine(LerpToPosition("Left"));
-            movingOperationRunning = false;
-        }
 
         #endregion
 
@@ -448,35 +436,6 @@ namespace Vortices
 
         #endregion
 
-        #region Movement Utility
-        public IEnumerator LerpToPosition(string moveDir)
-        {
-            lerpToPositionRunning = true;
-            Vector3 position = Vector3.zero;
 
-            if (moveDir == "Right")
-            {
-                position = new Vector3(frontGroup.transform.position.x + (layoutGroup.ElementDimensions.x + layoutGroup.Spacing), frontGroup.transform.position.y, frontGroup.transform.position.z);
-            }
-            else if (moveDir == "Left")
-            {
-                position = new Vector3(frontGroup.transform.position.x - (layoutGroup.ElementDimensions.x + layoutGroup.Spacing), frontGroup.transform.position.y, frontGroup.transform.position.z);
-            }
-
-            float timeElapsed = 0;
-            while (timeElapsed < timeLerp)
-            {
-                timeElapsed += Time.deltaTime;
-                frontGroup.transform.position = Vector3.Lerp(frontGroup.transform.position, position, timeElapsed / timeLerp);
-                centerPosition.y = frontGroup.transform.position.y;
-                boxCollider.center = frontGroup.transform.localPosition;
-                
-                yield return null;
-            }
-            lerpToPositionRunning = false;
-            
-        }
-
-        #endregion
     }
 }
