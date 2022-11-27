@@ -180,7 +180,7 @@ namespace Vortices
                         }
                         break;
                     case 3:
-                        ChangeVisibleComponent(12);
+                        ChangeVisibleComponent((int)CircularId.Postload);
                         GenerateBase();
                         break;
                     default:

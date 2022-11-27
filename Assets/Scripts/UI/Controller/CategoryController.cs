@@ -23,7 +23,7 @@ namespace Vortices
         // Data
         public List<string> categories;
         public List<string> selectedCategories;
-        private List<Category> UICategories;
+        private List<UICategory> UICategories;
 
         private GameObject lastHorizontalGroup;
 
@@ -32,7 +32,7 @@ namespace Vortices
         private void Start()
         {
             selectedCategories = new List<string>();
-            UICategories = new List<Category>();
+            UICategories = new List<UICategory>();
             categories = new List<string>();
             // When initialized will try to load categories, will create a new category list otherwise
             LoadCategories();
@@ -51,7 +51,7 @@ namespace Vortices
             SaveCategories();
         }
 
-        public void RemoveCategory(Category category)
+        public void RemoveCategory(UICategory category)
         {
             // Remove from UI component
             RemoveCategoryFromScrollView(category);
@@ -107,7 +107,6 @@ namespace Vortices
                     Destroy(child.gameObject);
                 }
             }
-
         }
 
         private void AddCategoryToScrollView(string categoryName)
@@ -124,7 +123,7 @@ namespace Vortices
             UpdateCategories();
         }
 
-        private void RemoveCategoryFromScrollView(Category category)
+        private void RemoveCategoryFromScrollView(UICategory category)
         {
             // Searches the UIComponents for category position
             GameObject horizontalGroup = category.horizontalGroup;
@@ -163,7 +162,7 @@ namespace Vortices
 
                 if (result == "OK")
                 {
-                    Category newCategory = Instantiate(UICategoryPrefab, horizontalGroup.transform).GetComponent<Category>();
+                    UICategory newCategory = Instantiate(UICategoryPrefab, horizontalGroup.transform).GetComponent<UICategory>();
                     // Initialize
                     newCategory.Init(categoryName, this, horizontalGroup);
 
@@ -257,9 +256,13 @@ namespace Vortices
 
     }
 
+    #region Persistance classes
+
     [System.Serializable]
     public class CategorySaveData
     {
         public List<string> categories;
     }
+
+    #endregion
 }

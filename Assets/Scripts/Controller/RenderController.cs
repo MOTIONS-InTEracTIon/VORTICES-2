@@ -127,22 +127,22 @@ namespace Vortices
             // Spawning
             for (int i = 0; i < placementObjects.Count; i++)
             {
-                Canvas canvasHolder = new Canvas();
+                Canvas elementCanvas = new Canvas();
                 // Plane
                 if (displayMode == "Plane")
                 {
-                    canvasHolder = GenerateCanvas(placementObjects[i]);
+                    elementCanvas = GenerateElement(placementObjects[i]);
                 }
                 // Radial
                 else if (displayMode == "Radial")
                 {
-                    canvasHolder = GenerateCanvas(placementObjects[i]);
-                    RotateToObject canvasHolderComponent = canvasHolder.gameObject.AddComponent<RotateToObject>();
+                    elementCanvas = GenerateElement(placementObjects[i]);
+                    RotateToObject canvasHolderComponent = elementCanvas.gameObject.AddComponent<RotateToObject>();
                     canvasHolderComponent.offset = new Vector3(180f, 0, 180f);
                     canvasHolderComponent.followName = "Information Object Group";
-                    canvasHolderComponent.StartRotating();
+                    canvasHolderComponent.StartRotating(false);
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(GenerateCanvasWebView(canvasHolder, loadPaths[i], placementObjects[i], browsingMode));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(GenerateCanvasWebView(elementCanvas, loadPaths[i], placementObjects[i], browsingMode));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -155,18 +155,18 @@ namespace Vortices
             result = Result.Success;
         }
 
-        private Canvas GenerateCanvas(GameObject placementObject)
+        private Canvas GenerateElement(GameObject placementObject)
         {
-            GameObject canvasPrefab = Instantiate(elementPrefab, placementObject.transform.position, elementPrefab.transform.rotation, placementObject.transform);
-            canvasPrefab.transform.localRotation = placementObject.transform.localRotation;
-            Canvas canvasHolder = canvasPrefab.GetComponent<Canvas>();
+            GameObject element = Instantiate(elementPrefab, placementObject.transform.position, elementPrefab.transform.rotation, placementObject.transform);
+            element.transform.localRotation = placementObject.transform.localRotation;
+            Canvas canvasHolder = element.GetComponent<Canvas>();
             canvasHolder.worldCamera = Camera.main;
             return canvasHolder;
         }
 
-        private IEnumerator GenerateCanvasWebView(Canvas canvasHolder, string loadPath, GameObject placementObject, string browsingMode)
+        private IEnumerator GenerateCanvasWebView(Canvas elementCanvas, string loadPath, GameObject placementObject, string browsingMode)
         {
-            GameObject canvas = Instantiate(webViewPrefab, canvasHolder.transform.position, canvasHolder.transform.rotation, canvasHolder.transform);
+            GameObject canvas = Instantiate(webViewPrefab, elementCanvas.transform.position, elementCanvas.transform.rotation, elementCanvas.transform);
             CanvasWebViewPrefab canvasWebView = canvas.GetComponent<CanvasWebViewPrefab>();
             RectTransform rectTransform = canvasWebView.transform as RectTransform;
             rectTransform.anchoredPosition3D = Vector3.zero;
@@ -179,16 +179,13 @@ namespace Vortices
             bool finished = false;
             canvasWebView.WebView.LoadProgressChanged += (sender, eventArgs) =>
             {
-                //Debug.Log($"Load progress changed: {eventArgs.Type}, {eventArgs.Progress}");
                 if (eventArgs.Type == ProgressChangeType.Finished)
                 {
                     finished = true;
                     finishes++;
-                   // Debug.Log("Finished " + finishes + " times");
                 }
                 if (eventArgs.Type == ProgressChangeType.Failed)
                 {
-                    Debug.Log("Load failed");
                     finished = false;
                 }
             };
@@ -213,8 +210,9 @@ namespace Vortices
             }
 
             // After load configuration
-            GameObject browserControls = canvasHolder.transform.Find("Browser Controls").gameObject;
-            browserControls.SetActive(true);
+
+            Element element = elementCanvas.GetComponent<Element>();
+            yield return StartCoroutine(element.Initialize(browsingMode, url, canvasWebView).AsIEnumerator());
 
             if (browsingMode == "Local")
             {
@@ -222,21 +220,7 @@ namespace Vortices
             }
             else if (browsingMode == "Online")
             {
-                // If online it has to instantiate extra controls to go back and write url
-                GameObject webUrl = browserControls.transform.Find("Web URL").gameObject;
-                webUrl.SetActive(true);
-                GameObject goBack = browserControls.transform.Find("Go Back").gameObject;
-                GoBackBrowserButton goBackComponent = goBack.GetComponent<GoBackBrowserButton>();
-                goBackComponent.canvasWebView = canvasWebView.WebView;
-                goBack.SetActive(true);
-
                 //canvasWebView.WebView.SetRenderingEnabled(false);
-                var keyboard = CanvasKeyboard.Instantiate();
-                keyboard.transform.SetParent(canvasHolder.transform, false);
-                keyboard.transform.localEulerAngles = Vector3.zero;
-                keyboard.transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
-                var rectTransformKeyboard = keyboard.transform as RectTransform;
-                rectTransformKeyboard.anchoredPosition3D = new Vector3(0, -0.15f ,0);
             }
         }
 

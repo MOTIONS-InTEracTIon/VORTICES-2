@@ -55,17 +55,17 @@ namespace Vortices
 
         protected override void SetMovementBoundBox()
         {
-            if (GetComponent<Collider>() == null)
+            if (normalCollider == null)
             {
                 normalCollider = Instantiate(followerColliderPrefab, frontGroup.transform.position, frontGroup.transform.rotation, transform);
-                XRGrabInteractable grabInteractable = GetComponent<Collider>().GetComponent<XRGrabInteractable>();
+                XRGrabInteractable grabInteractable = normalCollider.GetComponent<XRGrabInteractable>();
                 grabInteractable.selectEntered.AddListener(MoveToCursor);
                 grabInteractable.selectExited.AddListener(StopMoveToCursor);
             }
             // Uses first plane layout to set bound box
             layoutGroup = frontGroup.GetComponent<LayoutGroup3D>();
             // Generates Collider Box for moving
-            BoxCollider boxCollider = GetComponent<Collider>().GetComponent<BoxCollider>();
+            BoxCollider boxCollider = normalCollider.GetComponent<BoxCollider>();
             boxCollider.center = Vector3.zero;
             boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
             // Generates bounds using dimension given (Box from the left side to its down side)

@@ -4,26 +4,30 @@ namespace Vortices
 {
     public class RotateToObject : MonoBehaviour
     {
-        [SerializeField] private Transform followObject;
+        [SerializeField] private Vector3 followObject;
 
+        private Transform followingPosition;
         private bool follow;
 
         // Settings
         public Vector3 offset;
         public string followName = "";
+        private bool followAxisY;
 
 
-        public void StartRotating()
+        public void StartRotating(bool followAxisY)
         {
             follow = true;
+            this.followAxisY = followAxisY;
 
             if (followName != "")
             {
-                followObject = GameObject.Find(followName).transform;
+                followingPosition = GameObject.Find(followName).transform;
+
             }
-            else if (followObject == null)
+            else if (followObject == Vector3.zero)
             {
-                followObject = Camera.main.gameObject.transform;
+                followObject = Camera.main.gameObject.transform.position;
             }
         }
 
@@ -31,7 +35,15 @@ namespace Vortices
         {
             if(follow)
             {
-                Quaternion lookRotation = Quaternion.LookRotation(followObject.position - transform.position);
+                if (!followAxisY)
+                {
+                    followObject = new Vector3(followingPosition.position.x, transform.position.y, followingPosition.position.z);
+                }
+                else
+                {
+                    followObject = followingPosition.position;
+                }
+                Quaternion lookRotation = Quaternion.LookRotation(followObject - transform.position);
                 Quaternion lookDirection = lookRotation * Quaternion.Euler(offset.x, offset.y, offset.z);
                 transform.rotation = lookDirection;
             }

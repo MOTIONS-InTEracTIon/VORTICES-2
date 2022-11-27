@@ -1267,7 +1267,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh58900
+  m_Name: pb_Mesh127408
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -1519,7 +1519,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &131493831
 GameObject:
@@ -3194,7 +3194,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh191032
+  m_Name: pb_Mesh203368
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3969,7 +3969,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -3988,6 +3988,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 350410889}
@@ -4000,8 +4005,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 1726658350587809435, guid: 6baeb15aa2d0a9e4ab6cb504b7c31cfe,
+      objectReference: {fileID: 1742336158}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
+      value: 
+      objectReference: {fileID: 6738376392737878461}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
@@ -4014,18 +4023,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: set_interactable
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: ChangeComponentDisplayMode
+      value: SetDimension
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: ChangeVisibleComponent
+      value: ChangeComponentDisplayMode
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
+      value: RemoveInputField
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -4040,7 +4059,12 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: CircularPanel, Assembly-CSharp
+      value: Vortices.CircularPanel, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
+      value: Vortices.HandKeyboard, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -4050,12 +4074,12 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
-      value: 8
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -4075,6 +4099,11 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066727888, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -6088,37 +6117,25 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1742336158}
-        m_TargetAssemblyTypeName: Vortices.CircularPanel, Assembly-CSharp
-        m_MethodName: SetRootUrl
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1742336158}
-        m_TargetAssemblyTypeName: Vortices.CircularPanel, Assembly-CSharp
-        m_MethodName: BlockButton
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 4
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
   m_OnSelect:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 6738376392737878461}
+        m_TargetAssemblyTypeName: Vortices.HandKeyboard, Assembly-CSharp
+        m_MethodName: SetInputField
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 545845003}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 502349263}
         m_TargetAssemblyTypeName: Vortices.TextInputField, Assembly-CSharp
         m_MethodName: ClearPlaceholderText
@@ -6142,7 +6159,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1742336158}
+        m_TargetAssemblyTypeName: Vortices.CircularPanel, Assembly-CSharp
+        m_MethodName: BlockButton
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 4
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -6737,7 +6766,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -6747,7 +6776,17 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -6761,7 +6800,27 @@ PrefabInstance:
       objectReference: {fileID: 1742336158}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 1742336158}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
+      value: 
+      objectReference: {fileID: 6738376392737878461}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -6772,7 +6831,17 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SetRootUrl
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
       value: ChangeVisibleComponent
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
+      value: RemoveInputField
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -6786,12 +6855,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
+      value: Vortices.CircularPanel, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
+      value: Vortices.HandKeyboard, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -6807,6 +6891,16 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066727888, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -7126,25 +7220,25 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1742336158}
-        m_TargetAssemblyTypeName: CircularPanel, Assembly-CSharp
-        m_MethodName: SetDimension
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 2
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
   m_OnSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6738376392737878461}
+        m_TargetAssemblyTypeName: Vortices.HandKeyboard, Assembly-CSharp
+        m_MethodName: SetInputField
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 591176886}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnDeselect:
     m_PersistentCalls:
       m_Calls: []
@@ -8108,7 +8202,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -8128,7 +8222,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -8149,14 +8243,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 1726658350587809435, guid: 6baeb15aa2d0a9e4ab6cb504b7c31cfe,
-        type: 3}
+      objectReference: {fileID: 1742336158}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
       value: 
-      objectReference: {fileID: 1726658350587809435, guid: 6baeb15aa2d0a9e4ab6cb504b7c31cfe,
-        type: 3}
+      objectReference: {fileID: 6738376392737878461}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[4].m_Target
@@ -8191,17 +8283,17 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: ChangeComponentDisplayMode
+      value: SetDimension
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: ChangeComponentMode
+      value: ChangeComponentDisplayMode
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
-      value: ChangeComponentMode
+      value: RemoveInputField
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -8221,12 +8313,12 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: CircularPanel, Assembly-CSharp
+      value: Vortices.CircularPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
-      value: CircularPanel, Assembly-CSharp
+      value: Vortices.HandKeyboard, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -8241,7 +8333,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -8251,7 +8343,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_IntArgument
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -8629,6 +8721,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 720789908}
   m_CullTransparentMesh: 1
+--- !u!114 &723603915 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3848586192266891850, guid: 171fda3a83d205e43b614958e49aaa84,
+    type: 3}
+  m_PrefabInstance: {fileID: 8795929345101247111}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &728714572
 GameObject:
   m_ObjectHideFlags: 0
@@ -8830,7 +8934,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -8844,6 +8948,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 730198081}
@@ -8854,7 +8968,27 @@ PrefabInstance:
       objectReference: {fileID: 1742336158}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 1742336158}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
+      value: 
+      objectReference: {fileID: 6738376392737878461}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -8865,7 +8999,17 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SetDimension
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
       value: ChangeComponentDisplayMode
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
+      value: RemoveInputField
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -8879,12 +9023,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
+      value: Vortices.CircularPanel, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
+      value: Vortices.HandKeyboard, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -8900,6 +9059,16 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066727888, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -9354,7 +9523,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -9368,6 +9537,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 755299660}
@@ -9378,7 +9557,27 @@ PrefabInstance:
       objectReference: {fileID: 1742336158}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 1742336158}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
+      value: 
+      objectReference: {fileID: 6738376392737878461}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -9389,7 +9588,17 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SetDimension
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
       value: ChangeComponentDisplayMode
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
+      value: RemoveInputField
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -9403,12 +9612,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
+      value: Vortices.CircularPanel, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
+      value: Vortices.HandKeyboard, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -9424,6 +9648,16 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066727888, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -12087,6 +12321,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1005118316}
         m_TargetAssemblyTypeName: Fade, Assembly-CSharp
         m_MethodName: FadeIn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 6738376392737878461}
+        m_TargetAssemblyTypeName: Vortices.HandKeyboard, Assembly-CSharp
+        m_MethodName: RemoveInputField
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18965,25 +19211,25 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1742336158}
-        m_TargetAssemblyTypeName: Vortices.CircularPanel, Assembly-CSharp
-        m_MethodName: SetDimension
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
   m_OnSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6738376392737878461}
+        m_TargetAssemblyTypeName: Vortices.HandKeyboard, Assembly-CSharp
+        m_MethodName: SetInputField
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1216923466}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnDeselect:
     m_PersistentCalls:
       m_Calls: []
@@ -19400,7 +19646,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -19410,6 +19656,11 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -19421,10 +19672,20 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
+      objectReference: {fileID: 6738376392737878461}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
       objectReference: {fileID: 1742336158}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -19435,6 +19696,11 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: RemoveInputField
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
       value: ChangeVisibleComponent
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -19445,6 +19711,11 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Vortices.HandKeyboard, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
       value: Vortices.SpawnPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -19455,6 +19726,11 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -19470,6 +19746,11 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066727888, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -19732,6 +20013,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1279803107}
   - component: {fileID: 1279803106}
+  - component: {fileID: 1279803108}
   m_Layer: 0
   m_Name: Information Object Group
   m_TagString: Untagged
@@ -19762,14 +20044,27 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1279803105}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1279803108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279803105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e8843a5a93fc12428677e4ab147876f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  elementCategoriesList: []
 --- !u!1001 &1283688462
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21895,25 +22190,25 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1742336158}
-        m_TargetAssemblyTypeName: CircularPanel, Assembly-CSharp
-        m_MethodName: SetDimension
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
   m_OnSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6738376392737878461}
+        m_TargetAssemblyTypeName: Vortices.HandKeyboard, Assembly-CSharp
+        m_MethodName: SetInputField
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1478357074}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnDeselect:
     m_PersistentCalls:
       m_Calls: []
@@ -22086,25 +22381,25 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1742336158}
-        m_TargetAssemblyTypeName: CircularPanel, Assembly-CSharp
-        m_MethodName: SetDimension
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 2
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
   m_OnSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6738376392737878461}
+        m_TargetAssemblyTypeName: Vortices.HandKeyboard, Assembly-CSharp
+        m_MethodName: SetInputField
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1485402506}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnDeselect:
     m_PersistentCalls:
       m_Calls: []
@@ -22716,6 +23011,52 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1511000660}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1511172810
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1511172812}
+  - component: {fileID: 1511172811}
+  m_Layer: 0
+  m_Name: Session
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1511172811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511172810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e97eb372f5caf94481737e16962e194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  categoryController: {fileID: 8795929345101247112}
+  elementCategoryController: {fileID: 1279803108}
+--- !u!4 &1511172812
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511172810}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.6993237, y: 1.2469285, z: 4.8032026}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1511912407
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25473,7 +25814,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -25492,6 +25833,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1762477314}
@@ -25504,8 +25850,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 1726658350587809435, guid: 6baeb15aa2d0a9e4ab6cb504b7c31cfe,
+      objectReference: {fileID: 1742336158}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
+      value: 
+      objectReference: {fileID: 6738376392737878461}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
@@ -25518,18 +25868,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: set_interactable
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: ChangeComponentDisplayMode
+      value: SetDimension
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: ChangeVisibleComponent
+      value: ChangeComponentDisplayMode
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
+      value: RemoveInputField
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -25544,7 +25904,12 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: CircularPanel, Assembly-CSharp
+      value: Vortices.CircularPanel, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
+      value: Vortices.HandKeyboard, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -25554,12 +25919,12 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
-      value: 8
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -25579,6 +25944,11 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066727888, guid: 702b770573a69a040a95864b7ea3aec4,
@@ -26448,7 +26818,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -26468,12 +26838,12 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[4].m_Mode
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -26489,20 +26859,17 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 1726658350587809435, guid: 6baeb15aa2d0a9e4ab6cb504b7c31cfe,
-        type: 3}
+      objectReference: {fileID: 1742336158}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
       value: 
-      objectReference: {fileID: 1726658350587809435, guid: 6baeb15aa2d0a9e4ab6cb504b7c31cfe,
-        type: 3}
+      objectReference: {fileID: 6738376392737878461}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[4].m_Target
       value: 
-      objectReference: {fileID: 1726658350587809435, guid: 6baeb15aa2d0a9e4ab6cb504b7c31cfe,
-        type: 3}
+      objectReference: {fileID: 6738376392737878454}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
@@ -26531,22 +26898,22 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: ChangeComponentDisplayMode
+      value: SetDimension
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: ChangeComponentMode
+      value: ChangeComponentDisplayMode
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
-      value: ChangeComponentMode
+      value: RemoveInputField
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[4].m_MethodName
-      value: ChangeComponentMode
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -26561,17 +26928,17 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: CircularPanel, Assembly-CSharp
+      value: Vortices.CircularPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
-      value: CircularPanel, Assembly-CSharp
+      value: Vortices.HandKeyboard, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[4].m_TargetAssemblyTypeName
-      value: CircularPanel, Assembly-CSharp
+      value: Vortices.CircularPanel, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -26581,7 +26948,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -26591,12 +26958,12 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_IntArgument
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[4].m_Arguments.m_IntArgument
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -26631,7 +26998,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[4].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066727888, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -31152,6 +31519,125 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1994909729}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1998542134
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1677110914676591412}
+    m_Modifications:
+    - target: {fileID: 1979505071034685744, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_Name
+      value: Keyboard Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 357246bdda27bbb438e89a0b366c0be4, type: 3}
 --- !u!1 &2000258823
 GameObject:
   m_ObjectHideFlags: 0
@@ -31713,25 +32199,25 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1742336158}
-        m_TargetAssemblyTypeName: Vortices.CircularPanel, Assembly-CSharp
-        m_MethodName: SetDimension
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
   m_OnSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6738376392737878461}
+        m_TargetAssemblyTypeName: Vortices.HandKeyboard, Assembly-CSharp
+        m_MethodName: SetInputField
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2041171149}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnDeselect:
     m_PersistentCalls:
       m_Calls: []
@@ -33213,25 +33699,25 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1742336158}
-        m_TargetAssemblyTypeName: CircularPanel, Assembly-CSharp
-        m_MethodName: SetDimension
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
   m_OnSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6738376392737878461}
+        m_TargetAssemblyTypeName: Vortices.HandKeyboard, Assembly-CSharp
+        m_MethodName: SetInputField
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2139629846}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnDeselect:
     m_PersistentCalls:
       m_Calls: []
@@ -34271,7 +34757,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 983
+    m_Bits: 4055
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -34811,6 +35297,7 @@ Transform:
   m_Children:
   - {fileID: 1677110914458065290}
   - {fileID: 1677110915564731238}
+  - {fileID: 6738376392737878455}
   m_Father: {fileID: 1677110915445021447}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -35943,6 +36430,30 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8795929345101247111}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &6738376392737878454 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1979505071034685744, guid: 357246bdda27bbb438e89a0b366c0be4,
+    type: 3}
+  m_PrefabInstance: {fileID: 1998542134}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &6738376392737878455 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1979505071034685745, guid: 357246bdda27bbb438e89a0b366c0be4,
+    type: 3}
+  m_PrefabInstance: {fileID: 1998542134}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6738376392737878461 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1979505071034685755, guid: 357246bdda27bbb438e89a0b366c0be4,
+    type: 3}
+  m_PrefabInstance: {fileID: 1998542134}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6738376392737878454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c848f068404111c46b063b371e989444, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8208680962525051771
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36089,6 +36600,46 @@ PrefabInstance:
       propertyPath: continueButton
       value: 
       objectReference: {fileID: 1260774654}
+    - target: {fileID: 3848586192266891850, guid: 171fda3a83d205e43b614958e49aaa84,
+        type: 3}
+      propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3848586192266891850, guid: 171fda3a83d205e43b614958e49aaa84,
+        type: 3}
+      propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3848586192266891850, guid: 171fda3a83d205e43b614958e49aaa84,
+        type: 3}
+      propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 6738376392737878461}
+    - target: {fileID: 3848586192266891850, guid: 171fda3a83d205e43b614958e49aaa84,
+        type: 3}
+      propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3848586192266891850, guid: 171fda3a83d205e43b614958e49aaa84,
+        type: 3}
+      propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SetInputField
+      objectReference: {fileID: 0}
+    - target: {fileID: 3848586192266891850, guid: 171fda3a83d205e43b614958e49aaa84,
+        type: 3}
+      propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Vortices.HandKeyboard, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3848586192266891850, guid: 171fda3a83d205e43b614958e49aaa84,
+        type: 3}
+      propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 723603915}
+    - target: {fileID: 3848586192266891850, guid: 171fda3a83d205e43b614958e49aaa84,
+        type: 3}
+      propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: TMPro.TMP_InputField, Unity.TextMeshPro
+      objectReference: {fileID: 0}
     - target: {fileID: 5841661414991040607, guid: 171fda3a83d205e43b614958e49aaa84,
         type: 3}
       propertyPath: m_Name
@@ -36201,3 +36752,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 171fda3a83d205e43b614958e49aaa84, type: 3}
+--- !u!114 &8795929345101247112 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3776763681472663015, guid: 171fda3a83d205e43b614958e49aaa84,
+    type: 3}
+  m_PrefabInstance: {fileID: 8795929345101247111}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82015b16dfa8a8e499e9d411b4ab28ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

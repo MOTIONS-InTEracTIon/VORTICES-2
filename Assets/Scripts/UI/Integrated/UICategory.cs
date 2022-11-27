@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Vortices
 {
-    public class Category : MonoBehaviour
+    public class UICategory : MonoBehaviour
     {
         // Other references
         [SerializeField] private TextMeshProUGUI nameText;

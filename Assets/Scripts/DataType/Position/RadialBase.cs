@@ -86,7 +86,7 @@ namespace Vortices
                 RotateToObject rotateToObject = collider.GetComponent<RotateToObject>();
                 rotateToObject.offset = new Vector3(180f, 0, 180f);
                 rotateToObject.followName = collider.transform.parent.name;
-                rotateToObject.StartRotating();
+                rotateToObject.StartRotating(true);
             }
 
             followerCollider[0].gameObject.layer = LayerMask.NameToLayer("Interactable Left");
@@ -615,11 +615,6 @@ namespace Vortices
             for (int i = 0; i < dimension.z; i++)
             {
                 RadialGroup radialGroup = groupList[i].GetComponent<RadialGroup>();
-                bool softFadeIn = true;
-                if (i == 0)
-                {
-                    softFadeIn = false;
-                }
                 TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SwapRowsVertically("Up"));
                 spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
                 movingCoroutinesRunning++;
@@ -642,11 +637,6 @@ namespace Vortices
             for (int i = 0; i < dimension.z; i++)
             {
                 RadialGroup radialGroup = groupList[i].GetComponent<RadialGroup>();
-                bool softFadeIn = true;
-                if (i == 0)
-                {
-                    softFadeIn = false;
-                }
                 TaskCoroutine spawnCoroutine = new TaskCoroutine(radialGroup.SwapRowsVertically("Down"));
                 spawnCoroutine.Finished += delegate (bool manual) { movingCoroutinesRunning--; };
                 movingCoroutinesRunning++;
