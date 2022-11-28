@@ -67,11 +67,9 @@ namespace Vortices
         #endregion
 
         #region Display Multimedia
-        // After configuring in Input, it has to generate a base to spawn multimedia
         public abstract void GenerateBase();
-        // Also has to have a way to eliminate it after it serves its purpose
-        public abstract void DestroyBase();
 
+        public abstract void DestroyBase();
         #endregion
     }
 }

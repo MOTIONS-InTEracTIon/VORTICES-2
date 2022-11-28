@@ -10,6 +10,14 @@ namespace Vortices
         [SerializeField] public TextMeshProUGUI placeholder;
         [SerializeField] public TextMeshProUGUI text;
 
+        private string placeholderText;
+
+        private void Start()
+        {
+            placeholderText = placeholder.text;
+            text.text = "";
+        }
+
         public string GetData()
         {
             return inputfield.text;
@@ -35,6 +43,11 @@ namespace Vortices
         public void ClearPlaceholderText()
         {
             placeholder.text = "";
+        }
+
+        public void RestorePlaceholderText()
+        {
+            placeholder.text = placeholderText;
         }
     }
 }

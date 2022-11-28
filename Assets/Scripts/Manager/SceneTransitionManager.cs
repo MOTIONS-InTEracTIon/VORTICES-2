@@ -48,6 +48,11 @@ namespace Vortices
             operation.allowSceneActivation = true;
         }
 
+        public IEnumerator FadeScreenOut()
+        {
+            yield return StartCoroutine(fadeScreen.FadeRoutine(0, 1));
+        }
+
         // Handle application exit
         private async void OnApplicationQuit()
         {

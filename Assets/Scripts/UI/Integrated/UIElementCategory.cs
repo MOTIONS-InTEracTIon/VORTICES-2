@@ -17,7 +17,7 @@ namespace Vortices
 
         // Data variables
         public string categoryName;
-        public bool initialized;
+        public bool changeSelection;
 
 
         #region Data Operation
@@ -45,7 +45,7 @@ namespace Vortices
         {
             // Changing a category in this UI Component will change the element selected categories and the category controller categories
             // to save them correctly
-            if (initialized)
+            if (changeSelection)
             {
                 if (element.selectedCategories.Contains(categoryName))
                 {

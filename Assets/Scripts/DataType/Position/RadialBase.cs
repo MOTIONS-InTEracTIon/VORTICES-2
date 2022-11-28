@@ -17,7 +17,7 @@ namespace Vortices
         private bool lastPullPushForward;
 
         // Settings
-        public float startingRadius = 2.0f;
+        public float startingRadius = 1.0f;
         public float radiusStep = 1.0f;
         public float startingAngle = 15.0f;
         public float angleStep = 15.0f;

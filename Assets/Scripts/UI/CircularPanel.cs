@@ -285,7 +285,7 @@ namespace Vortices
         // Sets starting Url for online mode
         public void SetRootUrl()
         {
-            if (optionRootUrl.text.text != "")
+            if (optionRootUrl.GetData() != "")
             {
                 rootUrl = optionRootUrl.text.text;
             }
@@ -317,7 +317,7 @@ namespace Vortices
             // Plane mode
             if (displayMode == 0)
             {
-                Vector3 positionOffset = new Vector3(0, 0, 1f); ;
+                Vector3 positionOffset = new Vector3(0, 0, 0.5f); ;
                 placementBase = Instantiate(placementBasePrefabs[0], spawnGroup.transform.position + positionOffset, placementBasePrefabs[0].transform.rotation, spawnGroup);
 
             }

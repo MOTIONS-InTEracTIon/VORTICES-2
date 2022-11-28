@@ -142,7 +142,7 @@ namespace Vortices
                     canvasHolderComponent.followName = "Information Object Group";
                     canvasHolderComponent.StartRotating(false);
                 }
-                TaskCoroutine spawnCoroutine = new TaskCoroutine(GenerateCanvasWebView(elementCanvas, loadPaths[i], placementObjects[i], browsingMode));
+                TaskCoroutine spawnCoroutine = new TaskCoroutine(GenerateCanvasWebView(elementCanvas, loadPaths[i], placementObjects[i], browsingMode, displayMode));
                 spawnCoroutine.Finished += delegate (bool manual) { spawnCoroutinesRunning--; };
                 spawnCoroutinesRunning++;
             }
@@ -164,7 +164,7 @@ namespace Vortices
             return canvasHolder;
         }
 
-        private IEnumerator GenerateCanvasWebView(Canvas elementCanvas, string loadPath, GameObject placementObject, string browsingMode)
+        private IEnumerator GenerateCanvasWebView(Canvas elementCanvas, string loadPath, GameObject placementObject, string browsingMode, string displayMode)
         {
             GameObject canvas = Instantiate(webViewPrefab, elementCanvas.transform.position, elementCanvas.transform.rotation, elementCanvas.transform);
             CanvasWebViewPrefab canvasWebView = canvas.GetComponent<CanvasWebViewPrefab>();
@@ -212,7 +212,7 @@ namespace Vortices
             // After load configuration
 
             Element element = elementCanvas.GetComponent<Element>();
-            yield return StartCoroutine(element.Initialize(browsingMode, url, canvasWebView).AsIEnumerator());
+            element.Initialize(browsingMode, displayMode, url, canvasWebView);
 
             if (browsingMode == "Local")
             {

@@ -60,7 +60,7 @@ MonoBehaviour:
     type: 3}
   radialGroupPrefab: {fileID: 4674631936786309719, guid: 4d5ce1242a8a13b4c90c3f26f67d88e8,
     type: 3}
-  startingRadius: 2
+  startingRadius: 1.4
   radiusStep: 1
   startingAngle: 15
   angleStep: 15

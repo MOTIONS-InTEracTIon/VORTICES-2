@@ -124,7 +124,7 @@ namespace Vortices
         // Sets starting Url for online mode
         public void SetRootUrl()
         {
-            if (optionRootUrl.text.text != "")
+            if (optionRootUrl.GetData() != "")
             {
                 rootUrl = optionRootUrl.text.text;
             }
