@@ -248,7 +248,11 @@ namespace Vortices
             }
             else
             {
-                File.WriteAllText(Application.persistentDataPath + "/categories.json","");
+                // If there is no file we create one 
+                List<string> categories = new List<string>();
+
+                this.categories = categories;
+                SaveCategories();
             }
         }
 
