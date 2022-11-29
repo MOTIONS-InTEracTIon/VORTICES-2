@@ -4,6 +4,7 @@ using UnityEngine;
 
 using System.IO;
 using System.Linq;
+using Unity.VisualScripting;
 
 namespace Vortices
 { 
@@ -132,6 +133,7 @@ namespace Vortices
             string json = JsonUtility.ToJson(newElementCategorySaveData);
 
             File.WriteAllText(Application.persistentDataPath + "/Session element categories.json", json);
+            SaveSessionElementCategoriesToRootFolder();
         }
 
         public void LoadAllSessionElementCategories()
@@ -149,6 +151,7 @@ namespace Vortices
                 if(thisSessionElementCategory != null)
                 {
                     elementCategoriesList = thisSessionElementCategory.elementCategoriesList;
+                    SaveAllSessionElementCategories();
                 }
                 // No data found, create one
                 else
@@ -178,7 +181,41 @@ namespace Vortices
 
         public void SaveSessionElementCategoriesToRootFolder()
         {
+            string filename = Path.Combine(Application.dataPath + "/Results");
+            // File path depends on session name and user Id
+            filename = Path.Combine(filename, sessionName);
+            filename = Path.Combine(filename, userId.ToString());
 
+            if (!Directory.Exists(filename))
+            {
+                Directory.CreateDirectory(filename);
+            }
+
+            filename = Path.Combine(filename, "Session Element Categories.csv");
+
+            TextWriter tw = new StreamWriter(filename, false);
+            tw.WriteLine("Url;Categories");
+            tw.Close();
+
+            tw= new StreamWriter(filename, true);
+
+            for(int i = 0; i < elementCategoriesList.Count; i++)
+            {
+                tw.Write(elementCategoriesList[i].elementUrl + ";");
+                for(int j = 0; j < elementCategoriesList[i].elementCategories.Count; j++)
+                {
+                    if(!(j == elementCategoriesList[i].elementCategories.Count - 1))
+                    {
+                        tw.Write(elementCategoriesList[i].elementCategories[j] + ";");
+                    }
+                    else
+                    {
+                        tw.Write(elementCategoriesList[i].elementCategories[j]);
+                    }
+                }
+                tw.WriteLine();
+            }
+            tw.Close();
         }
 
         #endregion

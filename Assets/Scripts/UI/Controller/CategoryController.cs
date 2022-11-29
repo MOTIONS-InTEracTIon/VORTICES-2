@@ -125,6 +125,7 @@ namespace Vortices
             string json = JsonUtility.ToJson(newCategorySaveData);
 
             File.WriteAllText(Application.persistentDataPath + "/Session categories.json", json);
+            SaveSessionCategoriesToRootFolder();
         }
 
         public void LoadAllSessionCategories()
@@ -138,11 +139,12 @@ namespace Vortices
                 allSessionCategory = JsonUtility.FromJson<CategorySaveData>(json).allSessionCategory;
 
                 // Loads data relevant to session to use in the program
-                SessionCategory thisSessionCategory = allSessionCategory.FirstOrDefault<SessionCategory>(session => session.sessionName == this.sessionName && session.userId == this.userId);
+                SessionCategory thisSessionCategory = allSessionCategory.FirstOrDefault<SessionCategory>(session => session.sessionName == this.sessionName);
                 if (thisSessionCategory != null)
                 {
                     categoriesList = thisSessionCategory.categoriesList;
                     selectedCategoriesList = thisSessionCategory.selectedCategoriesList;
+                    SaveAllSessionCategories();
                 }
                 // No data found, create one
                 else
@@ -172,13 +174,61 @@ namespace Vortices
             }
         }
 
+        public void SaveSessionCategoriesToRootFolder()
+        {
+            string filename = Path.Combine(Application.dataPath + "/Results");
+            // File path depends on session name and user Id
+            filename = Path.Combine(filename, sessionName);
+
+            if (!Directory.Exists(filename))
+            {
+                Directory.CreateDirectory(filename);
+            }
+
+            filename = Path.Combine(filename, "Session Categories.csv");
+
+            TextWriter tw = new StreamWriter(filename, false);
+            tw.WriteLine("Categories");
+            tw.Close();
+
+            tw = new StreamWriter(filename, true);
+
+            for (int i = 0; i < categoriesList.Count; i++)
+            {
+                if(!(i == categoriesList.Count - 1))
+                {
+                    tw.Write(categoriesList[i] + ";");
+                }
+                else
+                {
+                    tw.Write(categoriesList[i]);
+                }
+            }
+            tw.WriteLine();
+            tw.WriteLine("Selected Categories");
+            for (int i = 0; i < selectedCategoriesList.Count; i++)
+            {
+                if(!(i == selectedCategoriesList.Count - 1))
+                {
+                    tw.Write(selectedCategoriesList[i] + ";");
+                }
+                else
+                {
+                    tw.Write(selectedCategoriesList[i]);
+                }
+
+            }
+            tw.WriteLine();
+            tw.Close();
+        }
+
         #endregion
 
 
-    #region Persistance classes
+        #region Persistance classes
 
-    // Deals with all the  categories from all sessions and user Ids, it has to be filtered into the correct session and user Id for use
-    [System.Serializable]
+        // Deals with all the  categories from all sessions and user Ids, it has to be filtered into the correct session and user Id for use
+        [System.Serializable]
         public class CategorySaveData
         {
             public List<SessionCategory> allSessionCategory;
