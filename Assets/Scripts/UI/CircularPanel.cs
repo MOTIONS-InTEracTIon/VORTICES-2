@@ -124,6 +124,7 @@ namespace Vortices
 
             // Insert here panels that dont need block function
             if (componentId != (int)CircularId.FileBrowser && 
+                componentId != (int)CircularId.CategorySelection &&
                 componentId != (int)CircularId.Postload)
             {
                 Button nextButton = uiComponents[componentId].transform.Find("Footer").transform.GetComponentInChildren<Button>();

@@ -24,7 +24,7 @@ namespace Vortices
             StartCoroutine(GoToSceneRoutine());
         }
 
-        IEnumerator GoToSceneRoutine()
+        public IEnumerator GoToSceneRoutine()
         {
             fadeScreen.FadeOut();
 

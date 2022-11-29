@@ -12,19 +12,20 @@ namespace Vortices
     {
         // Other references
         [SerializeField] private TextMeshProUGUI nameText;
-        [SerializeField] private CategoryController categoryController;
+        [SerializeField] private CategorySelector categorySelector;
 
         [SerializeField] private CategoryRemoveButton removeButton;
-        [SerializeField] private Toggle selectToggle;
+        [SerializeField] public Toggle selectToggle;
 
         // Data variables
         public GameObject horizontalGroup; // Horizontal group gameobject where this category is present
         public string categoryName;
+        public bool changeSelection;
 
 
         #region Data Operation
 
-        public void Init(string name, CategoryController categoryController, GameObject horizontalGroup)
+        public void Init(string name, CategorySelector categorySelector, GameObject horizontalGroup)
         {
             string newName = name.ToLower();
             char[] a = newName.ToCharArray();
@@ -35,30 +36,39 @@ namespace Vortices
             categoryName = newName;
             this.horizontalGroup = horizontalGroup;
 
-            this.categoryController = categoryController;
+            this.categorySelector = categorySelector;
             selectToggle.onValueChanged.AddListener(delegate {
-                    categoryController.UnlockContinueButton();
+                categorySelector.UnlockContinueButton();
                 });
             removeButton.GetComponent<Button>().onClick.AddListener(delegate {
-                    categoryController.UnlockContinueButton();
+                    categorySelector.UnlockContinueButton();
                 });
 
             removeButton.category = this;
-            removeButton.controller = this.categoryController;
+            removeButton.selector = this.categorySelector;
+            changeSelection = true;
         }
 
         public void SelectedToggle()
         {
-            if (categoryController.selectedCategories.Contains(categoryName))
+            if (changeSelection)
             {
-                categoryController.selectedCategories.Remove(categoryName);
-            }
-            else
-            {
-                categoryController.selectedCategories.Add(categoryName);
-                categoryController.selectedCategories = categoryController.selectedCategories.OrderBy(cat => cat).ToList();
+                if (categorySelector.selectedCategories.Contains(categoryName))
+                {
+                    categorySelector.RemoveFromSelectedCategories(categoryName);
+                }
+                else
+                {
+                    categorySelector.AddToSelectedCategories(categoryName);
+                }
             }
         }
+
+        public void SetToggle(bool on)
+        {
+            selectToggle.isOn = on;
+        }
+
 
         public void DestroyCategory()
         {

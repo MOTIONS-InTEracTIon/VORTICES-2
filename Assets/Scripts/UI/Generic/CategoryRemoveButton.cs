@@ -7,12 +7,12 @@ namespace Vortices
 {
     public class CategoryRemoveButton : MonoBehaviour
     {
-        public CategoryController controller;
+        public CategorySelector selector;
         public UICategory category;
 
         public void RemoveCategory()
         {
-            controller.RemoveCategory(category);
+            selector.RemoveUICategory(category);
         }
     }
 }

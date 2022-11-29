@@ -5,6 +5,7 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Vortices
 { 
@@ -13,6 +14,7 @@ namespace Vortices
         // Other references
         [SerializeField] private GameObject scrollviewContent;
         [SerializeField] private TextInputField sessionAddInputField;
+        [SerializeField] private TextInputField userIdInputField;
         [SerializeField] private GameObject UISessionPrefab;
         [SerializeField] private Button continueButton;
 
@@ -20,21 +22,31 @@ namespace Vortices
         public List<string> sessions;
         private List<UISession> UISessions;
         public string selectedSession;
+        public int selectedUserId;
+        public string selectedEnvironment;
+
+
+        private void OnEnable()
+        {
+            UnlockContinueButton();
+        }
 
         private void Start()
         {
             selectedSession = "";
             sessions = new List<string>();
             UISessions = new List<UISession>();
+            selectedUserId = -1;
+            selectedEnvironment = "";
             // When initialized will try to load sessions, will create a new session list otherwise
             LoadSessions();
             // Categories will be added to UI Components
             UpdateSessions();
-
         }
 
         #region Data Operation;
 
+        // Session configuration
         public void AddSession()
         {
             string sessionName = sessionAddInputField.GetData();
@@ -161,10 +173,40 @@ namespace Vortices
 
             return "OK";
         }
+
+        // Id Configuration
+        public void SetUserId()
+        {
+            int userId = userIdInputField.GetDataInt();
+            if (userId > -1)
+            {
+                this.selectedUserId = userId;
+            }
+
+        }
+
+        // Environment Configuration
+
+        public void SetEnvironment(Toggle environmentToggle)
+        {
+            string environmentName = environmentToggle.transform.Find("Environment Name").GetComponent<TextMeshProUGUI>().text;
+
+            // Add other environments when created
+            if (environmentName == "Circular")
+            {
+                selectedEnvironment = environmentName;
+            }
+            else if (environmentName == "Museum")
+            {
+                selectedEnvironment = environmentName;
+            }
+        }
+
+        // All Configuration
         public void UnlockContinueButton()
         {
             // Only works with session but user Id and environment has to be selected THIS
-            if (selectedSession != "")
+            if (selectedSession != "" && selectedUserId > -1 && selectedEnvironment != "")
             {
                 continueButton.interactable = true;
             }
@@ -172,6 +214,13 @@ namespace Vortices
             {
                 continueButton.interactable = false;
             }
+        }
+
+        public void StartSession()
+        {
+            // This assumes all the parameters are set (As of the rules of unlockcontinuebutton)
+            SessionManager sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
+            sessionManager.LaunchSession(selectedSession, selectedUserId, selectedEnvironment);
         }
 
 

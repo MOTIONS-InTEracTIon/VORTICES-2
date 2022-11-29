@@ -32,6 +32,7 @@ namespace Vortices
             categoryName = newName;
 
             this.element = element;
+            changeSelection = true;
         }
 
 

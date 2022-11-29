@@ -24,17 +24,16 @@ namespace Vortices
 
         private void Start()
         {
+            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
+        }
+
+        public void Initialize()
+        {
             allSessionElementCategory = new List<SessionElementCategory>(); // All sessions
             elementCategoriesList = new List<ElementCategory>();
 
-            sessionManager = GameObject.Find("Session").GetComponent<SessionManager>();
-            Initialize(sessionManager.sessionName, sessionManager.userId);
-        }
-
-        public void Initialize(string sessionName, int userId)
-        {
-            this.sessionName = sessionName;
-            this.userId = userId;
+            this.sessionName = sessionManager.sessionName;
+            this.userId = sessionManager.userId;
 
             LoadAllSessionElementCategories();
         }
@@ -158,9 +157,10 @@ namespace Vortices
                     newSessionElementCategory.sessionName = this.sessionName;
                     newSessionElementCategory.userId = this.userId;
                     newSessionElementCategory.elementCategoriesList = new List<ElementCategory>();
-                }
-                
 
+                    allSessionElementCategory.Add(newSessionElementCategory);
+                    SaveAllSessionElementCategories();
+                }
                 
             }
             else

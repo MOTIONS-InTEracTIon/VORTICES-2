@@ -57,7 +57,8 @@ namespace Vortices
         {
             if (normalCollider == null)
             {
-                normalCollider = Instantiate(followerColliderPrefab, frontGroup.transform.position, frontGroup.transform.rotation, transform);
+                Vector3 positionOffset = new Vector3(0, 0, 0.15f);
+                normalCollider = Instantiate(followerColliderPrefab, transform.parent.position + positionOffset, frontGroup.transform.rotation, transform);
                 XRGrabInteractable grabInteractable = normalCollider.GetComponent<XRGrabInteractable>();
                 grabInteractable.selectEntered.AddListener(MoveToCursor);
                 grabInteractable.selectExited.AddListener(StopMoveToCursor);
