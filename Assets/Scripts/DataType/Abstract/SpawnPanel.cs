@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 namespace Vortices
@@ -12,9 +13,8 @@ namespace Vortices
         [SerializeField] protected FilePathController optionFilePath;
         [SerializeField] protected TextInputField optionRootUrl;
 
-        // Display
-        [SerializeField] protected Fade mapFade;
-        [SerializeField] protected Transform spawnGroup;
+        // Send data
+        protected SessionManager sessionManager;
 
         // Panel Properties
         public int actualComponentId { get; set; }
@@ -29,6 +29,7 @@ namespace Vortices
         {
             StartCoroutine(ChangeComponent(componentId));
         }
+
         private IEnumerator ChangeComponent(int componentId)
         {
             // FadeOut actual component
@@ -64,12 +65,25 @@ namespace Vortices
         // Different SpawnPanels block buttons of their components differently
         public abstract void BlockButton(int componentId);
 
-        #endregion
+        public void RestartPanel()
+        {
+            // FadeOut instantly
+            CanvasGroup actualCanvasGroup = uiComponents[actualComponentId].gameObject.GetComponent<CanvasGroup>();
+            actualCanvasGroup.alpha = 0;
+            actualCanvasGroup.blocksRaycasts = false;
+            // Disable actual component
+            uiComponents[actualComponentId].SetActive(false);
+            // Enable new component
 
-        #region Display Multimedia
-        public abstract void GenerateBase();
+            uiComponents[0].SetActive(true);
+            
+            actualComponentId = 0;
+            // FadeIn instantly new component
+            CanvasGroup newCanvasGroup = uiComponents[0].gameObject.GetComponent<CanvasGroup>();
+            newCanvasGroup.alpha = 1;
+            newCanvasGroup.blocksRaycasts = true;
+        }
 
-        public abstract void DestroyBase();
         #endregion
     }
 }

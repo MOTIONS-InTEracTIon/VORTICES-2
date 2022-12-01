@@ -56,11 +56,16 @@ namespace Vortices
         protected bool coordinatorWorking;
         protected bool movingOperationRunning;
 
+        // Auxiliary References
+        protected SessionManager sessionManager;
+
         private void Awake()
         {
             rayInteractors = new List<XRRayInteractor>();
             rayInteractors.Add(GameObject.Find("Ray Interactor Left").GetComponent<XRRayInteractor>());
             rayInteractors.Add(GameObject.Find("Ray Interactor Right").GetComponent<XRRayInteractor>());
+
+            sessionManager = GameObject.FindObjectOfType<SessionManager>();
 
             //Start Coroutine Coordinator
             coroutineQueue = new Queue<IEnumerator>();
@@ -290,42 +295,36 @@ namespace Vortices
         protected virtual IEnumerator GroupSpawnRight()
         {
             // Different bases make multimedia go right differently
-            Debug.Log("Group Spawn Right was not overriden");
             yield return null;
         }
 
         protected virtual IEnumerator GroupSpawnLeft()
         {
             // Different bases make multimedia go left differently
-            Debug.Log("Group Spawn Left was not overriden");
             yield return null;
         }
 
         protected virtual IEnumerator GroupSpawnPull()
         {
             // Different bases make multimedia go into the foreground differently
-            Debug.Log("Group Spawn Pull was not overriden");
             yield return null;
         }
 
         protected virtual IEnumerator GroupSpawnPush()
         {
             // Different bases make multimedia go onto the background differently
-            Debug.Log("Group Spawn Push was not overriden");
             yield return null;
         }
 
         protected virtual IEnumerator GroupSpawnUp()
         {
             // Different bases make multimedia go up differently
-            Debug.Log("Group Spawn Up was not overriden");
             yield return null;
         }
 
         protected virtual IEnumerator GroupSpawnDown()
         {
             // Different bases make multimedia go down differently
-            Debug.Log("Group Spawn Down was not overriden");
             yield return null;
         }
 
@@ -338,44 +337,54 @@ namespace Vortices
         protected virtual IEnumerator GroupRight()
         {
             // Different bases make multimedia go right differently
-            Debug.Log("Group Right was not overriden");
             yield return null;
         }
 
         protected virtual IEnumerator GroupLeft()
         {
             // Different bases make multimedia go left differently
-            Debug.Log("Group Left was not overriden");
             yield return null;
         }
 
         protected virtual IEnumerator GroupPull()
         {
             // Different bases make multimedia go into the foreground differently
-            Debug.Log("Group Pull was not overriden");
             yield return null;
         }
 
         protected virtual IEnumerator GroupPush()
         {
             // Different bases make multimedia go onto the background differently
-            Debug.Log("Group Push was not overriden");
             yield return null;
         }
 
         protected virtual IEnumerator GroupUp()
         {
             // Different bases make multimedia go up differently
-            Debug.Log("Group Up was not overriden");
             yield return null;
         }
 
         protected virtual IEnumerator GroupDown()
         {
             // Different bases make multimedia go down differently
-            Debug.Log("Group Down was not overriden");
             yield return null;
         }
+
+
+        protected void LogMovement(string movementDir)
+        {
+            string controller = "";
+            if (currentlySelecting.gameObject == rayInteractors[0].gameObject)
+            {
+                controller = "Left Hand Controller";
+            }
+            else if (currentlySelecting.gameObject == rayInteractors[1].gameObject)
+            {
+                controller = "Right Hand Controller";
+            }
+            sessionManager.loggingController.LogMovement(movementDir, controller);
+        }
+
         #endregion
     }
 }

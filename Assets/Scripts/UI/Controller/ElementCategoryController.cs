@@ -61,7 +61,7 @@ namespace Vortices
         public void UpdateUICategories()
         {
             // Get all elements in scene
-            elementGameObjects = transform.GetComponentsInChildren<Element>().ToList();
+            elementGameObjects = GameObject.FindObjectsOfType<Element>().ToList();
             foreach(Element element in elementGameObjects)
             {
                 ElementCategory elementCategory = GetSelectedCategories(element.url);

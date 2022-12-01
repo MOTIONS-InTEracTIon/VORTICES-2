@@ -30,7 +30,7 @@ namespace Vortices
         [SerializeField] private GameObject handInteractor;
         [SerializeField] private GameObject categorySelectorUI;
         private IWebView canvasWebView;
-        private CategorySelector categorySelector;
+        private CategoryController categoryController;
         private ElementCategoryController elementCategoryController;
         private HandKeyboard keyboardCanvas;
 
@@ -58,7 +58,7 @@ namespace Vortices
         public void Initialize(string browsingMode, string displayMode, string url, CanvasWebViewPrefab canvas)
         {
             sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
-            categorySelector = sessionManager.categorySelector;
+            categoryController = sessionManager.categoryController;
             elementCategoryController = sessionManager.elementCategoryController;
             keyboardCanvas = GameObject.Find("Keyboard Canvas").GetComponent<HandKeyboard>();
             canvasWebView = canvas.WebView;
@@ -110,7 +110,8 @@ namespace Vortices
         public void AddUICategories()
         {
             // Ask CategoryController for every category to add
-            foreach (string category in categorySelector.selectedCategories)
+            List<string> categories = categoryController.GetCategories();
+            foreach (string category in categories)
             {
                 // Add to UI component
                 AddCategoryToScrollView(category);
@@ -185,6 +186,9 @@ namespace Vortices
 
         public void AddToSelectedCategories(string categoryName)
         {
+            // Log category addition
+            sessionManager.loggingController.LogCategory(url, true, categoryName);
+
             // Add to selected categories
             selectedCategories.Add(categoryName);
             selectedCategories.Sort();
@@ -198,6 +202,9 @@ namespace Vortices
 
         public void RemoveFromSelectedCategories(string categoryName)
         {
+            // Log category addition
+            sessionManager.loggingController.LogCategory(url, false, categoryName);
+
             // Remove from selected categories
             selectedCategories.Remove(categoryName);
             selectedCategories.Sort();
@@ -294,10 +301,24 @@ namespace Vortices
             // Only allow selection when there is no object selected
             if (selectionObject.transform.childCount == 0 && !selectionCoroutineRunning)
             {
+                // Log selection
+                sessionManager.loggingController.LogSelection(url, true);
+
                 unselect.gameObject.SetActive(true);
-                if(displayMode == "Online")
+                if(browsingMode == "Online")
                 {
                     upperControls.gameObject.SetActive(true);
+                }
+
+                // Cant move elements while selecting
+                if (browsingMode == "Local" || browsingMode == "Online") 
+                {
+                    List<GameObject> colliderBoxes = GameObject.FindGameObjectsWithTag("External").ToList();
+                    foreach (GameObject colliderBox in colliderBoxes)
+                    {
+                        BoxCollider boxCollider = colliderBox.GetComponent<BoxCollider>();
+                        boxCollider.enabled = false;
+                    }
                 }
 
                 handInteractor.gameObject.SetActive(false);
@@ -310,11 +331,26 @@ namespace Vortices
             // Only allows deselection if parent is the selector
             if (transform.parent.name == "Selector" && !selectionCoroutineRunning)
             {
+                // Log selection
+                sessionManager.loggingController.LogSelection(url, false);
+
                 unselect.gameObject.SetActive(false);
-                if (displayMode == "Online")
+                if (browsingMode == "Online")
                 {
                     upperControls.gameObject.SetActive(false);
                 }
+
+                // Cant move elements while selecting
+                if (browsingMode == "Local" || browsingMode == "Online")
+                {
+                    List<GameObject> colliderBoxes = GameObject.FindGameObjectsWithTag("External").ToList();
+                    foreach (GameObject colliderBox in colliderBoxes)
+                    {
+                        BoxCollider boxCollider = colliderBox.GetComponent<BoxCollider>();
+                        boxCollider.enabled = true;
+                    }
+                }
+
                 handInteractor.gameObject.SetActive(true);
                 StartCoroutine(RemoveFromSelectedElementCoroutine());
             }

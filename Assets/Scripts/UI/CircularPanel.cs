@@ -9,20 +9,18 @@ using SimpleFileBrowser;
 enum CircularId
 {
     // Change this when order is changed or when new panels are added
-    Introduction = 0,
-    BrowsingMode = 1,
-    BrowsingLocal = 2,
-    FileBrowser = 3,
-    BrowsingOnline = 4,
-    CategorySelection = 5,
-    DisplayMode = 6,
-    DistributionPlane1 = 7,
-    DistributionPlane2 = 8,
-    DistributionPlane3 = 9,
-    DistributionRadial1 = 10,
-    DistributionRadial2 = 11,
-    DistributionRadial3 = 12,
-    Postload = 13
+    BrowsingMode = 0,
+    BrowsingLocal = 1,
+    FileBrowser = 2,
+    BrowsingOnline = 3,
+    DisplayMode = 4,
+    DistributionPlane1 = 5,
+    DistributionPlane2 = 6,
+    DistributionPlane3 = 7,
+    DistributionRadial1 = 8,
+    DistributionRadial2 = 9,
+    DistributionRadial3 = 10,
+    Postload = 11
 
 }
 
@@ -39,14 +37,12 @@ namespace Vortices
         public Vector3Int dimension;
         public string rootUrl { get; set; }
 
-        // Display
-        [SerializeField] List<GameObject> placementBasePrefabs;
-        private GameObject placementBase;
-
-        private void Start()
+        private void OnEnable()
         {
             // Default configs to properties
             rootUrl = "https://www.google.com";
+
+            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
         }
 
         #endregion
@@ -58,16 +54,17 @@ namespace Vortices
             uiComponents[(int)CircularId.FileBrowser] = GameObject.Find("SimpleFileBrowserCanvas(Clone)");
         }
 
+        public void RemoveBrowserFromComponents()
+        {
+            Destroy(uiComponents[(int)CircularId.FileBrowser].gameObject);
+        }
+
         // Handles block next button rules per component
         public override void BlockButton(int componentId)
         {
             bool hasToBlock = true;
             switch (componentId)
             {
-                // Description has no block
-                case (int)CircularId.Introduction:
-                    hasToBlock = false;
-                    break;
                 // Browsing mode has to be selected
                 case (int)CircularId.BrowsingMode:
                     Toggle localToggle = uiComponents[componentId].transform.Find("Content/Horizontal Group/Local Toggle").GetComponentInChildren<Toggle>();
@@ -100,7 +97,6 @@ namespace Vortices
                         hasToBlock = false;
                     }
                     break;
-                // Category Controller unlocks button by its own
                 // Height, Width and layers have to be bigger than 0
                 case (int)CircularId.DistributionPlane1: 
                 case (int)CircularId.DistributionPlane2: 
@@ -124,7 +120,6 @@ namespace Vortices
 
             // Insert here panels that dont need block function
             if (componentId != (int)CircularId.FileBrowser && 
-                componentId != (int)CircularId.CategorySelection &&
                 componentId != (int)CircularId.Postload)
             {
                 Button nextButton = uiComponents[componentId].transform.Find("Footer").transform.GetComponentInChildren<Button>();
@@ -177,12 +172,12 @@ namespace Vortices
                         else
                         {
                             ChangeVisibleComponent((int)CircularId.Postload);
-                            GenerateBase();
+                            SendDataToSessionManager();
                         }
                         break;
                     case 3:
                         ChangeVisibleComponent((int)CircularId.Postload);
-                        GenerateBase();
+                        SendDataToSessionManager();
                         break;
                     default:
                         break;
@@ -210,12 +205,12 @@ namespace Vortices
                         else
                         {
                             ChangeVisibleComponent((int)CircularId.Postload);
-                            GenerateBase();
+                            SendDataToSessionManager();
                         }
                         break;
                     case 3:
                         ChangeVisibleComponent((int)CircularId.Postload);
-                        GenerateBase();
+                        SendDataToSessionManager();
                         break;
                     default:
                         break;
@@ -309,62 +304,43 @@ namespace Vortices
 
         }
 
-        #endregion
-
-        #region Display Multimedia
-        // Places all variables into a base that will display the multimedia objects
-        public override void GenerateBase()
+        public void SendDataToSessionManager()
         {
-            // Plane mode
+            // Sends Circular Data setting variables
+            // Display Mode
             if (displayMode == 0)
             {
-                Vector3 positionOffset = new Vector3(0, 0, 0.5f); ;
-                placementBase = Instantiate(placementBasePrefabs[0], spawnGroup.transform.position + positionOffset, placementBasePrefabs[0].transform.rotation, spawnGroup);
-
+                sessionManager.displayMode = "Plane";
             }
-            else if (displayMode == 1)
+            else
             {
-                placementBase = Instantiate(placementBasePrefabs[1], spawnGroup.transform.position, placementBasePrefabs[1].transform.rotation, spawnGroup);
+                sessionManager.displayMode = "Radial";
             }
-            SpawnBase spawnBase = placementBase.GetComponent<SpawnBase>();
+            // Browsing Mode
             if (browsingMode == 0)
             {
-                spawnBase.browsingMode = "Local";
-                spawnBase.filePaths = optionFilePath.filePaths;
+                sessionManager.browsingMode = "Local";
+                sessionManager.filePaths = optionFilePath.filePaths;
             }
             else
             {
-                spawnBase.browsingMode = "Online";
-                spawnBase.rootUrl = rootUrl;
+                sessionManager.browsingMode = "Online";
+                sessionManager.rootUrl = rootUrl;
             }
-            if (displayMode == 0)
-            {
-                spawnBase.displayMode = "Plane";
-            }
-            else
-            {
-                spawnBase.displayMode = "Radial";
-            }
-            spawnBase.volumetric = volumetric;
+            // Dimension (If needed)
             if (volumetric == false || dimension.z == 0)
             {
                 dimension.z = 1;
             }
-            spawnBase.dimension = dimension;
-            spawnBase.StartGenerateSpawnGroup();
-            mapFade.lowerAlpha = 0.1f;
-            mapFade.FadeOut();
+            sessionManager.dimension = dimension;
+            // Volumetric (if needed)
+            sessionManager.volumetric = volumetric;
+
+            sessionManager.LaunchSession();
         }
 
-        public override void DestroyBase()
-        {
-            if (placementBase != null)
-            {
-                SpawnBase spawnBase = placementBase.GetComponent<SpawnBase>();
-                StartCoroutine(spawnBase.DestroyBase());
-            }
-
-        }
         #endregion
+
+
     }
 }

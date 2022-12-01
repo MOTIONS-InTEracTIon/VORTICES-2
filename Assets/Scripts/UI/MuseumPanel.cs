@@ -5,17 +5,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using SimpleFileBrowser;
+using UnityEditor.Search;
 
 enum MuseumId
 {
     // Change this when order is changed or when new panels are added
-    Introduction = 0,
-    BrowsingMode = 1,
-    BrowsingLocal = 2,
-    FileBrowser = 3,
-    BrowsingOnline = 4,
-    CategorySelection = 5,
-    Postload = 6
+    BrowsingMode = 0,
+    BrowsingLocal = 1,
+    FileBrowser = 2,
+    BrowsingOnline = 3,
+    Postload = 4
 
 }
 
@@ -37,6 +36,8 @@ namespace Vortices
         {
             // Default configs to properties
             rootUrl = "https://www.google.com";
+
+            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
         }
 
         #endregion
@@ -54,10 +55,6 @@ namespace Vortices
             bool hasToBlock = true;
             switch (componentId)
             {
-                // Description has no block
-                case (int)MuseumId.Introduction:
-                    hasToBlock = false;
-                    break;
                 // Browsing mode has to be selected
                 case (int)MuseumId.BrowsingMode:
                     Toggle localToggle = uiComponents[componentId].transform.Find("Content/Horizontal Group/Local Toggle").GetComponentInChildren<Toggle>();
@@ -118,7 +115,10 @@ namespace Vortices
         public void ChangeComponentBase()
         {
             ChangeVisibleComponent((int)MuseumId.Postload);
-            GenerateBase();
+        }
+        public void RemoveBrowserFromComponents()
+        {
+            Destroy(uiComponents[(int)MuseumId.FileBrowser].gameObject);
         }
 
         // Sets starting Url for online mode
@@ -147,41 +147,26 @@ namespace Vortices
 
         }
 
-        #endregion
-
-        #region Display Multimedia
-        // Places all variables into a base that will display the multimedia objects
-        public override void GenerateBase()
+        public void SendDataToSessionManager()
         {
-            // Museum base wont instantiate as it has a premade spatial distribution (This can be changed to create more multimedia arrangements)
-            placementBase = placementBasePrefabs[0];
-
-            MuseumSpawnBase spawnBase = placementBase.GetComponent<MuseumSpawnBase>();
+            // Sends Museum Data setting variables
+            // Browsing Mode
             if (browsingMode == 0)
             {
-                spawnBase.browsingMode = "Local";
-                spawnBase.filePaths = optionFilePath.filePaths;
+                sessionManager.browsingMode = "Local";
+                sessionManager.filePaths = optionFilePath.filePaths;
             }
             else
             {
-                spawnBase.browsingMode = "Online";
-                spawnBase.rootUrl = rootUrl;
+                sessionManager.browsingMode = "Online";
+                sessionManager.rootUrl = rootUrl;
             }
+            sessionManager.displayMode = "Museum";
 
-            StartCoroutine(spawnBase.StartGenerateSpawnElements());
-            mapFade.lowerAlpha = 0.1f;
-            mapFade.FadeOut();
+            sessionManager.LaunchSession();
         }
 
-        public override void DestroyBase()
-        {
-            if (placementBase != null)
-            {
-                MuseumSpawnBase spawnBase = placementBase.GetComponent<MuseumSpawnBase>();
-                StartCoroutine(spawnBase.DestroyBase());
-            }
-
-        }
         #endregion
+
     }
 }

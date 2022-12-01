@@ -16,7 +16,6 @@ namespace Vortices
         // Movement variables
         private bool lerpToPositionRunning;
 
-
         #region Group Spawn
 
         public override void StartGenerateSpawnGroup()
@@ -57,7 +56,7 @@ namespace Vortices
         {
             if (normalCollider == null)
             {
-                Vector3 positionOffset = new Vector3(0, 0, 0.6f);
+                Vector3 positionOffset = new Vector3(0, 0, 0.44f);
                 normalCollider = Instantiate(followerColliderPrefab, transform.parent.position + positionOffset, frontGroup.transform.rotation, transform);
                 XRGrabInteractable grabInteractable = normalCollider.GetComponent<XRGrabInteractable>();
                 grabInteractable.selectEntered.AddListener(MoveToCursor);
@@ -100,6 +99,7 @@ namespace Vortices
                         {
                             coroutineQueue.Enqueue(GroupPull());
                         }
+
                     }
                 }
                 // This means the base has been pushed and will spawn outwards
@@ -190,6 +190,10 @@ namespace Vortices
         protected override IEnumerator GroupSpawnDown()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Down");
+
             int movingCoroutinesRunning = 0;
 
             for (int i = 0; i < dimension.z; i++)
@@ -217,6 +221,10 @@ namespace Vortices
         protected override IEnumerator GroupSpawnUp()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Up");
+
             int movingCoroutinesRunning = 0;
 
             for (int i = 0; i < dimension.z; i++)
@@ -245,6 +253,10 @@ namespace Vortices
         protected override IEnumerator GroupSpawnPull()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Pull");
+
             // Destroy group in front
             GameObject planeInFront = groupList[0];
             groupList.Remove(planeInFront);
@@ -282,6 +294,10 @@ namespace Vortices
         protected override IEnumerator GroupSpawnPush()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Push");
+
             // Destroy group in back
             GameObject planeInBack = groupList[groupList.Count - 1];
             groupList.Remove(planeInBack);
@@ -327,6 +343,10 @@ namespace Vortices
         protected override IEnumerator GroupRight()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Right");
+
             PlaneGroup planeGroup = frontGroup.GetComponent <PlaneGroup>();
             yield return StartCoroutine(planeGroup.SwapRowsHorizontally("Right"));
             movingOperationRunning = false;
@@ -335,6 +355,10 @@ namespace Vortices
         protected override IEnumerator GroupLeft()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Left");
+
             PlaneGroup planeGroup = frontGroup.GetComponent<PlaneGroup>();
             yield return StartCoroutine(planeGroup.SwapRowsHorizontally("Left"));
             movingOperationRunning = false;
@@ -343,6 +367,10 @@ namespace Vortices
         protected override IEnumerator GroupPull()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Pull");
+
             // Bring group in front to back
             GameObject planeGroupInFront = groupList[0];
             ListUtils.Move(groupList, 0, groupList.Count - 1);
@@ -381,6 +409,10 @@ namespace Vortices
         protected override IEnumerator GroupPush()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Push");
+
             // Bring group in back to front
             GameObject planeGroupInFront = groupList[groupList.Count - 1];
             ListUtils.Move(groupList, groupList.Count - 1, 0);
@@ -421,6 +453,10 @@ namespace Vortices
         protected override IEnumerator GroupUp()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Up");
+
             PlaneGroup planeGroup = frontGroup.GetComponent<PlaneGroup>();
             yield return StartCoroutine(planeGroup.SwapRowsVertically("Up"));
             movingOperationRunning = false;
@@ -429,6 +465,10 @@ namespace Vortices
         protected override IEnumerator GroupDown()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Down");
+
             PlaneGroup planeGroup = frontGroup.GetComponent<PlaneGroup>();
             yield return StartCoroutine(planeGroup.SwapRowsVertically("Down"));
             movingOperationRunning = false;

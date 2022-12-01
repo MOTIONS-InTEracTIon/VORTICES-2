@@ -376,8 +376,12 @@ namespace SimpleFileBrowser
 
 		[SerializeField]
 		private bool worldView;
-
 		[SerializeField]
+		private float worldWidth = 750f;
+        [SerializeField]
+		private float worldHeight = 540f;
+
+        [SerializeField]
 		private string parentNameWorldView;
 
 		[SerializeField]
@@ -829,7 +833,7 @@ namespace SimpleFileBrowser
 				rect.pivot = new Vector2(0.5f, 0.5f);
 				rect.anchorMax = new Vector2(0.5f, 0.5f);
 				rect.anchorMin = new Vector2(0.5f, 0.5f);
-				rect.sizeDelta = new Vector2(750f, 700f);
+				rect.sizeDelta = new Vector2(worldWidth, worldHeight);
 				rect.localScale = new Vector3(1.60f, 1.60f, 1.60f);
 				GetComponent<Canvas>().overrideSorting = true;
 			}

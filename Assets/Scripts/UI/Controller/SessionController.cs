@@ -12,11 +12,13 @@ namespace Vortices
     public class SessionController : MonoBehaviour
     {
         // Other references
+        [SerializeField] private MainMenuPanel mainMenuPanel;
         [SerializeField] private GameObject scrollviewContent;
         [SerializeField] private TextInputField sessionAddInputField;
         [SerializeField] private TextInputField userIdInputField;
         [SerializeField] private GameObject UISessionPrefab;
         [SerializeField] private Button continueButton;
+        [SerializeField] private SessionManager sessionManager;
 
         // Data
         public List<string> sessions;
@@ -31,11 +33,14 @@ namespace Vortices
             UnlockContinueButton();
         }
 
-        private void Start()
+        public void Initialize()
         {
             selectedSession = "";
             sessions = new List<string>();
             UISessions = new List<UISession>();
+
+            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
+
             selectedUserId = -1;
             selectedEnvironment = "";
             // When initialized will try to load sessions, will create a new session list otherwise
@@ -216,11 +221,13 @@ namespace Vortices
             }
         }
 
-        public void StartSession()
+        public void GoToCategoryConfig()
         {
-            // This assumes all the parameters are set (As of the rules of unlockcontinuebutton)
-            SessionManager sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
-            sessionManager.LaunchSession(selectedSession, selectedUserId, selectedEnvironment);
+            sessionManager.sessionName = selectedSession;
+            sessionManager.userId = selectedUserId;
+            sessionManager.environmentName = selectedEnvironment;
+            sessionManager.categoryController.Initialize();
+            mainMenuPanel.ChangeVisibleComponent((int)MainMenuId.CategorySelection);
         }
 
 

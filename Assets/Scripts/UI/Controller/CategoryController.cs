@@ -14,7 +14,7 @@ namespace Vortices
         private List<SessionCategory> allSessionCategory; // All sessions
         public List<string> categoriesList; // For this session
         public List<string> selectedCategoriesList;
-        public CategorySelector categorySelector;
+        private CategorySelector categorySelector;
 
         // Settings
         private string sessionName { get; set; }
@@ -23,15 +23,14 @@ namespace Vortices
         // Auxiliary references
         private SessionManager sessionManager;
 
-        private void Start()
-        {
-            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
-        }
         public void Initialize()
         {
             allSessionCategory = new List<SessionCategory>(); // All sessions
             categoriesList = new List<string>();
             selectedCategoriesList = new List<string>();
+
+            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
+            categorySelector = GameObject.FindObjectOfType<CategorySelector>(true);
 
             this.sessionName = sessionManager.sessionName;
             this.userId = sessionManager.userId;

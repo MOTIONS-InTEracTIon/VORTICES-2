@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 using UnityEngine.UI;
@@ -11,8 +12,11 @@ namespace Vortices
         // Change this when order is changed or when new panels are added
         Main = 0,
         Session = 1,
-        Options = 2,
-        About = 3
+        CategorySelection = 2,
+        CircularPanel = 3,
+        MuseumPanel = 4,
+        Options = 5,
+        About = 6
     }
 
     public class MainMenuPanel : MonoBehaviour
@@ -32,10 +36,17 @@ namespace Vortices
         private bool isChangePanelRunning;
 
         // Auxiliary References
-        [SerializeField] private SceneTransitionManager transitionManager;
+        private SceneTransitionManager transitionManager;
+        private SessionManager sessionManager;
 
 
         #region User Input
+
+        private void OnEnable()
+        {
+            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
+            transitionManager = GameObject.Find("TransitionManager").GetComponent<SceneTransitionManager>();
+        }
 
         // UI Components will change according to user configurations one by one
         public void ChangeVisibleComponent(int componentId)
@@ -56,6 +67,19 @@ namespace Vortices
             FadeUI newComponentFader = optionScreenUiComponents[componentId].GetComponent<FadeUI>();
             yield return StartCoroutine(newComponentFader.FadeIn());
 
+        }
+
+        // Changes to panel based on environment selection
+        public void ChangePanelEnvironment()
+        {
+            if(sessionManager.environmentName == "Circular")
+            {
+                ChangeVisibleComponent((int)MainMenuId.CircularPanel);
+            }
+            else if (sessionManager.environmentName == "Museum")
+            {
+                ChangeVisibleComponent((int)MainMenuId.MuseumPanel);
+            }
         }
 
         public void ChangePanelToggle(Toggle toggle)
@@ -83,6 +107,24 @@ namespace Vortices
                 }
 
                 panelToggle.interactable = false;
+            }
+
+            bool circularStatus = optionScreenUiComponents[(int)MainMenuId.CircularPanel].activeInHierarchy;
+            bool museumStatus = optionScreenUiComponents[(int)MainMenuId.MuseumPanel].activeInHierarchy;
+
+            // If a configuration panel was running, it has to be resetted
+            if (circularStatus || museumStatus)
+            {
+                if (circularStatus)
+                {
+                    CircularPanel circularPanel = optionScreenUiComponents[(int)MainMenuId.CircularPanel].GetComponent<CircularPanel>();
+                    circularPanel.RestartPanel();
+                }
+                else if (museumStatus)
+                {
+                    MuseumPanel museumPanel = optionScreenUiComponents[(int)MainMenuId.MuseumPanel].GetComponent<MuseumPanel>();
+                    museumPanel.RestartPanel();
+                }
             }
 
             // Change component using toggle parent name

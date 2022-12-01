@@ -119,7 +119,7 @@ namespace Vortices
                     foreach (Material material in materialList)
                     {
                         // Special Cases
-                        if (material.name == "screen (Instance)" && alphaOut < 1)
+                        if ((material.name == "screen (Instance)" || material.name == "base color (Instance)") && alphaOut < 1)
                         {
                             MaterialUtils.SetupBlendMode(material, MaterialUtils.BlendMode.Transparent);
                         }

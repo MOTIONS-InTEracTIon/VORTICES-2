@@ -68,9 +68,9 @@ namespace Vortices
             followerCollider = new List<GameObject>();
             // We create one collider for each hand
             GameObject sourceLeft = rayInteractors[0].transform.parent.gameObject;
-            followerCollider.Add(Instantiate(followerColliderPrefab, sourceLeft.transform.forward * (layoutGroup.Radius / 2) + sourceLeft.transform.position, sourceLeft.transform.rotation, sourceLeft.transform));
+            followerCollider.Add(Instantiate(followerColliderPrefab, sourceLeft.transform.forward * (layoutGroup.Radius / 4) + sourceLeft.transform.position, sourceLeft.transform.rotation, sourceLeft.transform));
             GameObject sourceRight = rayInteractors[1].transform.parent.gameObject;
-            followerCollider.Add(Instantiate(followerColliderPrefab, sourceRight.transform.forward * (layoutGroup.Radius / 2) + sourceRight.transform.position, sourceRight.transform.rotation, sourceRight.transform));
+            followerCollider.Add(Instantiate(followerColliderPrefab, sourceRight.transform.forward * (layoutGroup.Radius / 4) + sourceRight.transform.position, sourceRight.transform.rotation, sourceRight.transform));
             foreach (GameObject collider in followerCollider)
             {
                 XRGrabInteractable grabInteractable = collider.GetComponent<XRGrabInteractable>();
@@ -268,6 +268,10 @@ namespace Vortices
         protected override IEnumerator GroupSpawnDown()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Down");
+
             int spawnCoroutinesRunning = 0;
 
             for (int i = 0; i < dimension.z; i++)
@@ -295,6 +299,10 @@ namespace Vortices
         protected override IEnumerator GroupSpawnUp()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Up");
+
             int spawnCoroutinesRunning = 0;
 
             for (int i = 0; i < dimension.z; i++)
@@ -324,6 +332,10 @@ namespace Vortices
         protected override IEnumerator GroupSpawnPull()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Pull");
+
             // Destroy group in front
             GameObject radialGroupInFront = groupList[0];
             groupList.Remove(radialGroupInFront);
@@ -381,6 +393,10 @@ namespace Vortices
         protected override IEnumerator GroupSpawnPush()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Push");
+
             // Destroy group in back
             GameObject radialGroupInBack = groupList[groupList.Count - 1];
             groupList.Remove(radialGroupInBack);
@@ -438,6 +454,10 @@ namespace Vortices
         protected override IEnumerator GroupSpawnRight()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Right");
+
             RadialGroup radialGroup = frontGroup.GetComponent<RadialGroup>();
             yield return StartCoroutine(radialGroup.RotateSpawnGroup("Right"));
             movingOperationRunning = false;
@@ -446,10 +466,15 @@ namespace Vortices
         protected override IEnumerator GroupSpawnLeft()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Left");
+
             RadialGroup radialGroup = frontGroup.GetComponent<RadialGroup>();
             yield return StartCoroutine(radialGroup.RotateSpawnGroup("Left"));
             movingOperationRunning = false;
         }
+
         #endregion
 
         #region Movement
@@ -457,6 +482,10 @@ namespace Vortices
         protected override IEnumerator GroupRight()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Right");
+
             RadialGroup radialGroup = frontGroup.GetComponent<RadialGroup>();
             yield return StartCoroutine(radialGroup.RotateSpawnGroup("Right"));
             movingOperationRunning = false;
@@ -465,6 +494,10 @@ namespace Vortices
         protected override IEnumerator GroupLeft()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Left");
+
             RadialGroup radialGroup = frontGroup.GetComponent<RadialGroup>();
             yield return StartCoroutine(radialGroup.RotateSpawnGroup("Left"));
             movingOperationRunning = false;
@@ -473,6 +506,10 @@ namespace Vortices
         protected override IEnumerator GroupPull()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Pull");
+
             // Bring group in front to back
             GameObject radialGroupInFront = groupList[0];
             ListUtils.Move(groupList, 0, groupList.Count - 1);
@@ -540,6 +577,10 @@ namespace Vortices
         protected override IEnumerator GroupPush()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Push");
+
             // Bring group in back to front
             GameObject radialGroupInFront = groupList[groupList.Count - 1];
             ListUtils.Move(groupList, groupList.Count - 1, 0);
@@ -610,6 +651,9 @@ namespace Vortices
         {
             movingOperationRunning = true;
 
+            // Log Action
+            LogMovement("Up");
+
             int movingCoroutinesRunning = 0;
 
             for (int i = 0; i < dimension.z; i++)
@@ -631,6 +675,9 @@ namespace Vortices
         protected override IEnumerator GroupDown()
         {
             movingOperationRunning = true;
+
+            // Log Action
+            LogMovement("Down");
 
             int movingCoroutinesRunning = 0;
 

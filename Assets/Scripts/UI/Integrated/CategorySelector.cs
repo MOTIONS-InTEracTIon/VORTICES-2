@@ -19,13 +19,16 @@ namespace Vortices
         [SerializeField] private Button continueButton;
         [SerializeField] private GameObject horizontalLayoutPrefab;
         [SerializeField] private GameObject UICategoryPrefab;
-        [SerializeField] private CategoryController categoryController;
+        private CategoryController categoryController;
+        private SessionController sessionController;
 
         // Data
         public List<string> categories;
         public List<string> selectedCategories;
         private List<UICategory> UICategories;
 
+        // Auxiliary References
+        SessionManager sessionManager;
 
         private GameObject lastHorizontalGroup;
 
@@ -39,6 +42,11 @@ namespace Vortices
             selectedCategories = new List<string>();
             UICategories = new List<UICategory>();
             categories = new List<string>();
+
+            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
+            categoryController = GameObject.FindObjectOfType<CategoryController>();
+            sessionController = GameObject.FindObjectOfType<SessionController>();
+
             // When initialized will try to load categories, will create a new category list otherwise
             categories = categoryController.GetCategories();
             // Categories will be added to UI Components
