@@ -54,7 +54,7 @@ namespace Vortices
         // Coroutine
         protected Queue<IEnumerator> coroutineQueue;
         protected bool coordinatorWorking;
-        protected bool movingOperationRunning;
+        public bool movingOperationRunning;
 
         // Auxiliary References
         protected SessionManager sessionManager;
@@ -373,16 +373,7 @@ namespace Vortices
 
         protected void LogMovement(string movementDir)
         {
-            string controller = "";
-            if (currentlySelecting.gameObject == rayInteractors[0].gameObject)
-            {
-                controller = "Left Hand Controller";
-            }
-            else if (currentlySelecting.gameObject == rayInteractors[1].gameObject)
-            {
-                controller = "Right Hand Controller";
-            }
-            sessionManager.loggingController.LogMovement(movementDir, controller);
+            sessionManager.loggingController.LogMovement(movementDir);
         }
 
         #endregion

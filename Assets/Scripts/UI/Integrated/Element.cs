@@ -33,6 +33,7 @@ namespace Vortices
         private CategoryController categoryController;
         private ElementCategoryController elementCategoryController;
         private HandKeyboard keyboardCanvas;
+        private SpawnBase spawnBase;
 
         // Data
         public ElementCategory elementCategory; // This element categories object
@@ -47,6 +48,7 @@ namespace Vortices
         private string browsingMode;
         private string displayMode;
         private float selectionTime = 3.0f;
+        private bool initialized;
 
         // Coroutine
         private bool toggleComponentRunning;
@@ -63,6 +65,11 @@ namespace Vortices
             keyboardCanvas = GameObject.Find("Keyboard Canvas").GetComponent<HandKeyboard>();
             canvasWebView = canvas.WebView;
             selectionObject = GameObject.Find("Selector").gameObject;
+            if(sessionManager.environmentName == "Circular")
+            {
+                spawnBase = GameObject.Find("Information Object Group").GetComponentInChildren<SpawnBase>();
+
+            }
 
 
             browserControls.SetActive(true);
@@ -103,7 +110,7 @@ namespace Vortices
             categorySwitch.SetActive(true);
 
             canvasWebView = GetComponentInChildren<CanvasWebViewPrefab>().WebView;
-
+            initialized= true;
         }
 
         #region Data Operations
@@ -298,20 +305,19 @@ namespace Vortices
 
         public void SetAsSelectedElement()
         {
-            // Only allow selection when there is no object selected
-            if (selectionObject.transform.childCount == 0 && !selectionCoroutineRunning)
+            bool canSelect = true;
+            // If circular only allow movement when there is no movement
+            if(sessionManager.environmentName == "Circular" && spawnBase.movingOperationRunning)
             {
-                // Log selection
-                sessionManager.loggingController.LogSelection(url, true);
-
-                unselect.gameObject.SetActive(true);
-                if(browsingMode == "Online")
-                {
-                    upperControls.gameObject.SetActive(true);
-                }
+                canSelect = false;
+                spawnBase.movingOperationRunning = true;
+            }
+            // Only allow selection when there is no object selected
+            if (canSelect && initialized && selectionObject.transform.childCount == 0 && !selectionCoroutineRunning)
+            {
 
                 // Cant move elements while selecting
-                if (browsingMode == "Local" || browsingMode == "Online") 
+                if (browsingMode == "Local" || browsingMode == "Online")
                 {
                     List<GameObject> colliderBoxes = GameObject.FindGameObjectsWithTag("External").ToList();
                     foreach (GameObject colliderBox in colliderBoxes)
@@ -319,6 +325,15 @@ namespace Vortices
                         BoxCollider boxCollider = colliderBox.GetComponent<BoxCollider>();
                         boxCollider.enabled = false;
                     }
+                }
+
+                // Log selection
+                sessionManager.loggingController.LogSelection(url, true);
+
+                unselect.gameObject.SetActive(true);
+                if(browsingMode == "Online")
+                {
+                    upperControls.gameObject.SetActive(true);
                 }
 
                 handInteractor.gameObject.SetActive(false);
@@ -393,6 +408,11 @@ namespace Vortices
             while (movementCoroutinesRunning > 0)
             {
                 yield return null;
+            }
+
+            if (sessionManager.environmentName == "Circular")
+            {
+                spawnBase.movingOperationRunning = false;
             }
 
             selectionCoroutineRunning = false;

@@ -60,7 +60,7 @@ namespace Vortices
             WriteToLog(newEntry);
         }
 
-        public void LogMovement(string movementDir, string controller)
+        public void LogMovement(string movementDir)
         {
             // Check if input is valid
             // movementDir check
@@ -81,7 +81,7 @@ namespace Vortices
             newEntry = LogEntryInitialize(newEntry);
             // Set type and detail
             newEntry.type = "Element Movement";
-            newEntry.detail = controller + ";" + movementDir + ";";
+            newEntry.detail = movementDir + ";";
             // Entry is ready, write it to file
             WriteToLog(newEntry);
         }
@@ -131,8 +131,9 @@ namespace Vortices
             {
                 newEntry.detail = "Removed" + ";";
             }
-            newEntry.detail += "Name: " + categoryName + ";";
-            newEntry.detail += "Url: " + categorizedUrl;
+            newEntry.detail += "Url: " + categorizedUrl + ";";
+            newEntry.detail += "Name: " + categoryName;
+
 
             // Entry is ready, write it to file
             WriteToLog(newEntry);

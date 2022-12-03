@@ -106,21 +106,13 @@ namespace Vortices
             GameObject sourceRight = rayInteractors[1].transform.parent.gameObject;
             if (currentlySelecting.gameObject == rayInteractors[0].gameObject)
             {
-                followerCollider[0].transform.position = sourceLeft.transform.forward * (layoutGroup.Radius / 2) + sourceLeft.transform.position;
+                followerCollider[0].transform.position = sourceLeft.transform.forward * (layoutGroup.Radius / 4) + sourceLeft.transform.position;
             }
             else if (currentlySelecting.gameObject == rayInteractors[1].gameObject)
             {
-                followerCollider[1].transform.position = sourceRight.transform.forward * (layoutGroup.Radius / 2) + sourceRight.transform.position;
+                followerCollider[1].transform.position = sourceRight.transform.forward * (layoutGroup.Radius / 4) + sourceRight.transform.position;
             }
 
-        }
-
-        private void OnDrawGizmos()
-        {
-            GameObject sourceLeft = rayInteractors[1].transform.parent.gameObject;
-            Vector3 position = sourceLeft.transform.forward * (layoutGroup.Radius / 2) + sourceLeft.transform.position;
-            Gizmos.color = new Color(0f, 1f, 1f, 0.75f);
-            Gizmos.DrawSphere(position, 0.15f);
         }
 
         #endregion

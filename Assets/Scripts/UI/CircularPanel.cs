@@ -172,12 +172,10 @@ namespace Vortices
                         else
                         {
                             ChangeVisibleComponent((int)CircularId.Postload);
-                            SendDataToSessionManager();
                         }
                         break;
                     case 3:
                         ChangeVisibleComponent((int)CircularId.Postload);
-                        SendDataToSessionManager();
                         break;
                     default:
                         break;
@@ -205,12 +203,10 @@ namespace Vortices
                         else
                         {
                             ChangeVisibleComponent((int)CircularId.Postload);
-                            SendDataToSessionManager();
                         }
                         break;
                     case 3:
                         ChangeVisibleComponent((int)CircularId.Postload);
-                        SendDataToSessionManager();
                         break;
                     default:
                         break;
