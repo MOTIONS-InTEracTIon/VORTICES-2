@@ -1125,11 +1125,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 8500452566129274839}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 7037682828390097055}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &1093240853548744733
 GameObject:
   m_ObjectHideFlags: 0
@@ -1230,11 +1231,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 3644108558437056845}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 6254819916444387652}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &1162075152987439118
 GameObject:
   m_ObjectHideFlags: 0
@@ -2387,11 +2389,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 5419385778236888558}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 4464843859227168332}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &2268758889089388666
 GameObject:
   m_ObjectHideFlags: 0
@@ -2492,11 +2495,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 5694727461049292318}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 3003555105885438415}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &2395602424686268929
 GameObject:
   m_ObjectHideFlags: 0
@@ -3102,11 +3106,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 7766457023249400972}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 8219151827536243570}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &2884247101866242219
 GameObject:
   m_ObjectHideFlags: 0
@@ -3612,8 +3617,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_AnchoredPosition: {x: 0, y: 318}
+  m_SizeDelta: {x: 20, y: 316}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &8830455769996564822
 CanvasRenderer:
@@ -3696,8 +3701,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 321960923366169584}
   m_HandleRect: {fileID: 4362777221954854846}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 0.9999994
+  m_Size: 0.28455877
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4111,11 +4116,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 6622617929300636097}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 3206616649985784558}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &4002855839438012591
 GameObject:
   m_ObjectHideFlags: 0
@@ -4569,11 +4575,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 5830550713516277961}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 161135239395484919}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &4382467307541630904
 GameObject:
   m_ObjectHideFlags: 0
@@ -4907,11 +4914,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 40339791558334917}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 6505329288082151062}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &4544139993329155230
 GameObject:
   m_ObjectHideFlags: 0
@@ -5414,8 +5422,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 551.14996}
-  m_SizeDelta: {x: 0, y: 1079.9}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &5731156543411387686
 GameObject:
@@ -6022,11 +6030,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 8932180438471645676}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 456774646869545048}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &6365181038563456191
 GameObject:
   m_ObjectHideFlags: 0
@@ -6225,7 +6234,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 352.2, y: 0}
-  m_SizeDelta: {x: 342, y: 1290}
+  m_SizeDelta: {x: 342, y: 433.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3142195144210536713
 CanvasRenderer:
@@ -6283,7 +6292,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 15
   m_ChildAlignment: 1
-  m_Spacing: 50
+  m_Spacing: 70
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -6782,11 +6791,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 7907524522802277735}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 7299658709843258732}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &6892581805539517823
 GameObject:
   m_ObjectHideFlags: 0
@@ -6963,11 +6973,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 5267064321489253111}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 5616716021835134755}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &6974574236204266790
 GameObject:
   m_ObjectHideFlags: 0
@@ -7068,11 +7079,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 7992437823808463274}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 4062611604179719242}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &7443262042192660922
 GameObject:
   m_ObjectHideFlags: 0
@@ -8129,11 +8141,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 3749969081044829925}
-  categoryController: {fileID: 0}
+  categorySelector: {fileID: 0}
   removeButton: {fileID: 0}
   selectToggle: {fileID: 1501313435793880966}
   horizontalGroup: {fileID: 0}
   categoryName: 
+  changeSelection: 0
 --- !u!1 &8772885392443243034
 GameObject:
   m_ObjectHideFlags: 0

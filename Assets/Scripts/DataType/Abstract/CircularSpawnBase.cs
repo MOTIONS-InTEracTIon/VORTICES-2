@@ -8,7 +8,7 @@ using Vuplex.WebView;
 
 namespace Vortices
 {
-    public abstract class SpawnBase : MonoBehaviour
+    public abstract class CircularSpawnBase : MonoBehaviour
     {
         // Other references
         protected List<XRRayInteractor> rayInteractors;
@@ -163,7 +163,7 @@ namespace Vortices
 
         #region Input
 
-        private void Update()
+        public void Update()
         {
             // If spawn is done, this makes sure the cooldown applies
             if (afterSpawnTime < spawnCooldownZ)

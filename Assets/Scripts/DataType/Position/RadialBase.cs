@@ -5,7 +5,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Vortices
 {
-    public class RadialBase : SpawnBase
+    public class RadialBase : CircularSpawnBase
     {
         // Other references
         [SerializeField] private GameObject linearRailPrefab;
@@ -23,9 +23,27 @@ namespace Vortices
         public float angleStep = 15.0f;
         public float rotationAngleStep = 15.0f;
 
+        // Auxiliary References
+        private SpawnController spawnController;
+
+        private void Update()
+        {
+            base.Update();
+            if (movingOperationRunning == true && spawnController != null && spawnController.movingOperationRunning == false)
+            {
+                spawnController.movingOperationRunning = true;
+            }
+            else if (movingOperationRunning == false && spawnController != null &&
+                     spawnController.movingOperationRunning == true)
+            {
+                spawnController.movingOperationRunning = false;
+            }
+        }
+
         #region Group Spawn
         public override void StartGenerateSpawnGroup()
         {
+            spawnController = GameObject.FindObjectOfType<SpawnController>();
             globalIndex = -1;
             rotationAngleStep = 360 / dimension.x;
             lastLoadForward = true;
@@ -133,6 +151,7 @@ namespace Vortices
                         afterSpawnTime = 0;
                         if (browsingMode == "Local")
                         {
+                            spawnController.ResetElements();
                             coroutineQueue.Enqueue(GroupSpawnPull());
                         }
                         else if (browsingMode == "Online")
@@ -149,6 +168,7 @@ namespace Vortices
                         afterSpawnTime = 0;
                         if (browsingMode == "Local")
                         {
+                            spawnController.ResetElements();
                             coroutineQueue.Enqueue(GroupSpawnPush());
                         }
                         else if (browsingMode == "Online")
@@ -162,9 +182,11 @@ namespace Vortices
                 {
                     if (afterSpawnTime >= spawnCooldownX && !rotateFrontSpawnGroupRunning)
                     {
+
                         afterSpawnTime = 0;
                         if (browsingMode == "Local")
                         {
+                            spawnController.ResetElements();
                             coroutineQueue.Enqueue(GroupSpawnLeft());
                         }
                         else if (browsingMode == "Online")
@@ -181,6 +203,7 @@ namespace Vortices
                         afterSpawnTime = 0;
                         if (browsingMode == "Local")
                         {
+                            spawnController.ResetElements();
                             coroutineQueue.Enqueue(GroupSpawnRight());
                         }
                         else if (browsingMode == "Online")
@@ -260,6 +283,7 @@ namespace Vortices
         protected override IEnumerator GroupSpawnDown()
         {
             movingOperationRunning = true;
+
 
             // Log Action
             LogMovement("Down");

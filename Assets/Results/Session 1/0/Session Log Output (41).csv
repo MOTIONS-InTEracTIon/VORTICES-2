@@ -1,0 +1,8 @@
+Timestamp;Date;Type;Detail
+02:19:24.4350881;21/12/2022;Session Status;Start;Environment: Circular;Display Mode: Plane;Dimension: 3,3,3;Browsing Mode: Local;;
+02:19:28.3177866;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_005.jpg;
+02:19:32.2911797;21/12/2022;Element Movement;Push;;
+02:19:32.3081948;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_005.jpg;
+02:19:34.9826429;21/12/2022;Element Movement;Pull;;
+02:19:37.6096922;21/12/2022;Element Movement;Pull;;
+02:19:39.7865700;21/12/2022;Element Movement;Push;;

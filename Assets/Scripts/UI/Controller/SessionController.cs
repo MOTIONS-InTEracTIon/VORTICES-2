@@ -97,6 +97,13 @@ namespace Vortices
 
         private void UpdateSessions()
         {
+            // Clear past UI Categories
+            foreach (Transform child in scrollviewContent.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+
             // If UISessions is empty this means we create new objects to hold the sessions
             if (UISessions.Count == 0)
             {
@@ -243,12 +250,12 @@ namespace Vortices
 
             string json = JsonUtility.ToJson(newSessionSaveData);
 
-            File.WriteAllText(Application.persistentDataPath + "/sessions.json", json);
+            File.WriteAllText(Application.persistentDataPath + "/Sessions.json", json);
         }
 
         public void LoadSessions()
         {
-            string path = Application.persistentDataPath + "/sessions.json";
+            string path = Application.persistentDataPath + "/Sessions.json";
             if (File.Exists(path))
             {
                 string json = File.ReadAllText(path);

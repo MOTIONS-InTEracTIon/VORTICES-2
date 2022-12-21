@@ -1,0 +1,12 @@
+Timestamp;Date;Type;Detail
+18:25:00.8026724;21/12/2022;Session Status;Start;Environment: Circular;Display Mode: Plane;Dimension: 3,3,3;Browsing Mode: Local;;
+18:25:19.3819832;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_005.jpg;
+18:25:31.8842201;21/12/2022;Category;Added;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_005.jpg;Name: Cat 3;
+18:25:34.0998899;21/12/2022;Category;Added;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_005.jpg;Name: Cat 2;
+18:25:35.2718296;21/12/2022;Category;Added;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_005.jpg;Name: Cat 1;
+18:28:43.3176656;21/12/2022;Element Movement;Push;;
+18:28:46.4519212;21/12/2022;Element Movement;Push;;
+18:28:50.7061581;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_187.jpg;
+18:28:53.5066456;21/12/2022;Element Movement;Pull;;
+18:28:54.9008099;21/12/2022;Element Movement;Pull;;
+18:28:59.4277288;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_005.jpg;

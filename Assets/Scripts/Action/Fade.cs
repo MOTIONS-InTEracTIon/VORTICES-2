@@ -128,6 +128,11 @@ namespace Vortices
                             MaterialUtils.SetupBlendMode(material, MaterialUtils.BlendMode.Opaque);
                         }
                         // Ignore
+                        if ((material.name == "Highlight (Instance)"))
+                        {
+                            newAlpha = actualColor.a;
+                            alphaOut = actualColor.a;
+                        }
 
                         material.color = new Color(actualColor.r, actualColor.g, actualColor.b, newAlpha);
                     }

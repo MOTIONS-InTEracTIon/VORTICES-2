@@ -14,11 +14,13 @@ namespace Vortices
 
         // Auxiliary References
         private SessionManager sessionManager;
+        private SpawnController spawnController;
 
 
         private void Start()
         {
             sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
+            spawnController = GameObject.FindObjectOfType<SpawnController>(true);
             StartCoroutine(WaitForInit());
         }
 
@@ -31,7 +33,7 @@ namespace Vortices
         public void Spawn ()
         {
             // Start the logger
-            sessionManager.StartSession();
+            spawnController.StartSession();
             sessionManager.loggingController.LogSessionStatus("Start");
         }
 
@@ -39,7 +41,7 @@ namespace Vortices
         {
             // Stop the logger
             sessionManager.loggingController.LogSessionStatus("Stop");
-            sessionManager.StopSession();
+            StartCoroutine(spawnController.StopSession());
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Vortices
 {
     enum MainMenuId
     {
-        // Change this when order is changed or when new panels are added
+        // Change this when order is changed or when new submenus are added
         Main = 0,
         Session = 1,
         CategorySelection = 2,
@@ -66,7 +66,6 @@ namespace Vortices
             // FadeIn new component
             FadeUI newComponentFader = optionScreenUiComponents[componentId].GetComponent<FadeUI>();
             yield return StartCoroutine(newComponentFader.FadeIn());
-
         }
 
         // Changes to panel based on environment selection

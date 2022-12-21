@@ -11,7 +11,7 @@ namespace Vortices
     {
         // Other references
         [SerializeField] private TextMeshProUGUI nameText;
-        [SerializeField] private Element element;
+        [SerializeField] private RighthandTools righthandTools;
 
         [SerializeField] private Toggle selectToggle;
 
@@ -21,7 +21,7 @@ namespace Vortices
 
 
         #region Data Operation
-        public void Init(string name, Element element)
+        public void Init(string name, RighthandTools righthandTools)
         {
             string newName = name.ToLower();
             char[] a = newName.ToCharArray();
@@ -31,7 +31,7 @@ namespace Vortices
             nameText.text = newName;
             categoryName = newName;
 
-            this.element = element;
+            this.righthandTools = righthandTools;
             changeSelection = true;
         }
 
@@ -48,13 +48,13 @@ namespace Vortices
             // to save them correctly
             if (changeSelection)
             {
-                if (element.selectedCategories.Contains(categoryName))
+                if (righthandTools.elementSelectedCategories.Contains(categoryName))
                 {
-                    element.RemoveFromSelectedCategories(categoryName);
+                    righthandTools.RemoveFromSelectedCategories(categoryName);
                 }
                 else
                 {
-                    element.AddToSelectedCategories(categoryName);
+                    righthandTools.AddToSelectedCategories(categoryName);
                 }
             }
         }

@@ -10,13 +10,14 @@ using System.Linq;
 using UnityEngine.XR.Interaction.Toolkit;
 using TMPro;
 using UnityEngine.UIElements;
+using static UnityEditor.Rendering.FilterWindow;
+using System;
 
 namespace Vortices
 {
     public class Element : MonoBehaviour
     {
         // Other references
-        [SerializeField] private GameObject UIElementCategoryPrefab;
         [SerializeField] private GameObject dummyPrefab;
 
         [SerializeField] private GameObject browserControls;
@@ -24,24 +25,17 @@ namespace Vortices
         [SerializeField] private GameObject webUrl;
         [SerializeField] private GameObject goBack;
         [SerializeField] private GameObject goForward;
-        [SerializeField] private GameObject unselect;
-        [SerializeField] private GameObject categorySwitch;
-        [SerializeField] private GameObject categorySelectorContent;
-        [SerializeField] private GameObject handInteractor;
+        [SerializeField] public GameObject handInteractor;
         [SerializeField] private GameObject categorySelectorUI;
+        [SerializeField] private GameObject categorizedYes;
+        [SerializeField] private GameObject categorizedNo;
         private IWebView canvasWebView;
-        private CategoryController categoryController;
-        private ElementCategoryController elementCategoryController;
-        private HandKeyboard keyboardCanvas;
-        private SpawnBase spawnBase;
 
-        // Data
-        public ElementCategory elementCategory; // This element categories object
-        public List<string> selectedCategories; // This element selected
-        public List<UIElementCategory> UIElementCategories;
-        // Selection Data
-        private GameObject selectionObject; // Object located in XROrigin
-        private GameObject placedTransform;
+        private HandKeyboard keyboardCanvas;
+        private CircularSpawnBase circularSpawnBase;
+        private SpawnController spawnController;
+
+        private RighthandTools righthandTools;
 
         // Settings
         public string url;
@@ -49,27 +43,28 @@ namespace Vortices
         private string displayMode;
         private float selectionTime = 3.0f;
         private bool initialized;
+        public bool selected;
 
         // Coroutine
         private bool toggleComponentRunning;
-        private bool selectionCoroutineRunning;
+        public bool selectionCoroutineRunning;
 
         // Auxiliary references
         private SessionManager sessionManager;
 
         public void Initialize(string browsingMode, string displayMode, string url, CanvasWebViewPrefab canvas)
         {
-            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
-            categoryController = sessionManager.categoryController;
-            elementCategoryController = sessionManager.elementCategoryController;
+            sessionManager = GameObject.FindObjectOfType<SessionManager>();
+            righthandTools = GameObject.FindObjectOfType<RighthandTools>();
             keyboardCanvas = GameObject.Find("Keyboard Canvas").GetComponent<HandKeyboard>();
+            spawnController = GameObject.FindObjectOfType<SpawnController>();
             canvasWebView = canvas.WebView;
-            selectionObject = GameObject.Find("Selector").gameObject;
             if(sessionManager.environmentName == "Circular")
             {
-                spawnBase = GameObject.Find("Information Object Group").GetComponentInChildren<SpawnBase>();
+                circularSpawnBase = GameObject.Find("Information Object Group").GetComponentInChildren<CircularSpawnBase>();
 
             }
+
 
 
             browserControls.SetActive(true);
@@ -77,17 +72,21 @@ namespace Vortices
             this.url = url;
             this.displayMode = displayMode;
 
-            selectedCategories = new List<string>();
-            UIElementCategories = new List<UIElementCategory>();
-            // Element will search for the categories to be used in CategoryController and it will add them to categorySelector UI object
-            AddUICategories();
-            SortUICategories();
-            // Element will search for its categories in ElementCategoryController and will apply them to the categorySelector UI object
-            GetSelectedCategories();
+            // Set categorized to true or false
+            if (sessionManager.elementCategoryController.GetSelectedCategories(url).elementCategories.Count > 0)
+            {
+                SetCategorized(true);
+            }
+            else
+            {
+                SetCategorized(false);
+            }
 
             // Enable Online controls
             if (browsingMode == "Online")
             {
+                // Enable browser controls
+                upperControls.SetActive(true);
                 // Subscribe to keyboard event for it to show
                 TMP_InputField webUrlInputfield = webUrl.transform.Find("InputField").GetComponent<TMP_InputField>();
                 webUrlInputfield.onSelect.AddListener(delegate { keyboardCanvas.SetInputField(webUrlInputfield); });
@@ -98,7 +97,8 @@ namespace Vortices
                 canvasWebView.UrlChanged += (sender, eventArgs) =>
                 {
                     this.url = canvasWebView.Url;
-                    GetSelectedCategories();
+                    sessionManager.loggingController.LogUrlChanged(url);
+                    righthandTools.UpdateCategorizeSubMenu(this);
                 };
             }
             // Enable Local controls
@@ -106,122 +106,20 @@ namespace Vortices
             {
                 
             }
-            // Enable both controls
-            categorySwitch.SetActive(true);
 
             canvasWebView = GetComponentInChildren<CanvasWebViewPrefab>().WebView;
-            initialized= true;
+
+            Renderer selectionBoxRenderer = handInteractor.GetComponent<Renderer>();
+            Color selectionRendererColor = selectionBoxRenderer.material.color;
+
+            selectionBoxRenderer.material.color = new Color(selectionRendererColor.r,
+                selectionRendererColor.g,
+                selectionRendererColor.b, 0f);
+
+            initialized = true;
         }
 
         #region Data Operations
-        public void AddUICategories()
-        {
-            // Ask CategoryController for every category to add
-            List<string> categories = categoryController.GetCategories();
-            foreach (string category in categories)
-            {
-                // Add to UI component
-                AddCategoryToScrollView(category);
-            }
-        }
-
-        private void AddCategoryToScrollView(string categoryName)
-        {
-            CreateCategory(categoryName);
-            // Updates rows
-            SortUICategories();
-        }
-
-        private void SortUICategories()
-        {
-            UIElementCategories = UIElementCategories.OrderBy(category => category.categoryName).ToList();
-            for (int i = 0; i < UIElementCategories.Count; i++)
-            {
-                UIElementCategories[i].transform.SetSiblingIndex(i);
-            }
-        }
-
-        private void CreateCategory(string categoryName)
-        {
-            UIElementCategory newCategory = Instantiate(UIElementCategoryPrefab, categorySelectorContent.transform).GetComponent<UIElementCategory>();
-            // Initialize
-            newCategory.Init(categoryName, this);
-
-            // Add gameobject to list for easy access
-            UIElementCategories.Add(newCategory);
-
-            // Sometimes the UI elements deactivate, activate if so
-            HorizontalLayoutGroup horizontalLayoutGroup = newCategory.GetComponent<HorizontalLayoutGroup>();
-            LayoutElement layoutElement = newCategory.GetComponent<LayoutElement>();
-            if (!horizontalLayoutGroup.isActiveAndEnabled)
-            {
-                horizontalLayoutGroup.gameObject.SetActive(true);
-            }
-            if (!layoutElement.isActiveAndEnabled)
-            {
-                layoutElement.gameObject.SetActive(true);
-            }
-        }
-
-        // Extracts categories from elementCategoryController
-        private void GetSelectedCategories()
-        {
-            // Get selectedCategories if there is any, if there isnt, create a blank entry of Element Category
-            elementCategory = elementCategoryController.GetSelectedCategories(url);
-            selectedCategories = elementCategory.elementCategories;
-            // Update UI Elements with said selected categories
-            // Set all categories to false
-            foreach (UIElementCategory category in UIElementCategories)
-            {
-                category.changeSelection = false;
-                category.SetToggle(false);
-                category.changeSelection = true;
-            }
-            // Set found ones to true
-            foreach (string category in selectedCategories)
-            {
-                UIElementCategory categoryToSelect = UIElementCategories.FirstOrDefault<UIElementCategory>(searchCategory => searchCategory.categoryName == category);
-
-                if(categoryToSelect != null)
-                {
-                    categoryToSelect.changeSelection = false;
-                    categoryToSelect.SetToggle(true);
-                    categoryToSelect.changeSelection = true;
-                }
-            }
-        }
-
-        public void AddToSelectedCategories(string categoryName)
-        {
-            // Log category addition
-            sessionManager.loggingController.LogCategory(url, true, categoryName);
-
-            // Add to selected categories
-            selectedCategories.Add(categoryName);
-            selectedCategories.Sort();
-            // Add to element categories
-            elementCategory.elementCategories = selectedCategories;
-            // Send element categories back to category controller
-            elementCategoryController.UpdateElementCategoriesList(url, elementCategory);
-            // Update all UIObjects of this session to reflect this change
-            elementCategoryController.UpdateUICategories();
-        }
-
-        public void RemoveFromSelectedCategories(string categoryName)
-        {
-            // Log category addition
-            sessionManager.loggingController.LogCategory(url, false, categoryName);
-
-            // Remove from selected categories
-            selectedCategories.Remove(categoryName);
-            selectedCategories.Sort();
-            // Add to element categories
-            elementCategory.elementCategories = selectedCategories;
-            // Send element categories back to category controller
-            elementCategoryController.UpdateElementCategoriesList(url, elementCategory);
-            // Update all UIObjects of this session to reflect this change
-            elementCategoryController.UpdateUICategories();
-        }
 
         public async void GoBack()
         {
@@ -229,6 +127,7 @@ namespace Vortices
             if (canGoBack)
             {
                 canvasWebView.GoBack();
+                url = canvasWebView.Url;
             }
         }
 
@@ -238,263 +137,116 @@ namespace Vortices
             string finalurl = webUrl.GetComponent<TextInputField>().GetData();
             if (finalurl != canvasWebView.Url)
             {
+
                 canvasWebView.LoadUrl(finalurl);
                 url = finalurl;
-                GetSelectedCategories();
+            }
+        }
+
+        public void SetCategorized(bool activate)
+        {
+            if (activate)
+            {
+                categorizedNo.SetActive(false);
+                categorizedYes.SetActive(true);
+            }
+            else
+            {
+                categorizedNo.SetActive(true);
+                categorizedYes.SetActive(false);
             }
         }
 
         #endregion
 
-        #region Component Operations
+        #region Selection
 
-        public void ToggleCategorySelector()
+        public void HoverElement(bool activate)
         {
-            StartCoroutine(ToggleCategorySelectorCoroutine());
-        }
-
-        private IEnumerator ToggleCategorySelectorCoroutine()
-        {
-            if (!toggleComponentRunning)
+            if (sessionManager != null && !spawnController.movingOperationRunning)
             {
-                toggleComponentRunning = true;
-                CanvasGroup categorySelectorCanvasGroup = categorySelectorUI.GetComponent<CanvasGroup>();
-                
-                int fadeCoroutinesRunning = 0;
-                Fade categorySelectorFader = categorySelectorUI.GetComponent<Fade>();
-
-                if (categorySelectorCanvasGroup.alpha == 0)
+                if (activate)
                 {
-                    categorySelectorCanvasGroup.gameObject.SetActive(true);
-                    TaskCoroutine fadeCoroutine = new TaskCoroutine(categorySelectorFader.FadeInCoroutine());
-                    fadeCoroutine.Finished += delegate (bool manual)
+                    if (!selected)
                     {
-                        fadeCoroutinesRunning--;
-                    };
-                    fadeCoroutinesRunning++;
+                        Renderer selectionBoxRenderer = handInteractor.GetComponent<Renderer>();
+                        selectionBoxRenderer.material.color = Color.yellow;
 
-                    while (fadeCoroutinesRunning > 0)
-                    {
-                        yield return null;
+                        Color selectionRendererColor = selectionBoxRenderer.material.color;
+
+                        // If out of hover it becomes invisible
+                        selectionBoxRenderer.material.color = new Color(selectionRendererColor.r,
+                            selectionRendererColor.g,
+                            selectionRendererColor.b, 1f);
+
+                        if (sessionManager.environmentName == "Museum")
+                        {
+                            Renderer frameRenderer = transform.parent.GetComponent<Renderer>();
+                            Color frameRendererColor = frameRenderer.material.color;
+
+                            frameRenderer.material.color = new Color(frameRendererColor.r,
+                                frameRendererColor.g,
+                                frameRendererColor.b, 0f);
+
+                        }
                     }
+                    spawnController.elementsHovered++;
                 }
-                else if (categorySelectorCanvasGroup.alpha == 1)
+                else 
                 {
-                    TaskCoroutine fadeCoroutine = new TaskCoroutine(categorySelectorFader.FadeOutCoroutine());
-                    fadeCoroutine.Finished += delegate (bool manual)
+                    if(!selected)
                     {
-                        fadeCoroutinesRunning--;
-                    };
-                    fadeCoroutinesRunning++;
+                        Renderer selectionBoxRenderer = handInteractor.GetComponent<Renderer>();
+                        selectionBoxRenderer.material.color = Color.yellow;
+                        Color selectionRendererColor = selectionBoxRenderer.material.color;
 
-                    while (fadeCoroutinesRunning > 0)
-                    {
-                        yield return null;
+                        // If out of hover it becomes invisible
+                        selectionBoxRenderer.material.color = new Color(selectionRendererColor.r,
+                            selectionRendererColor.g,
+                            selectionRendererColor.b, 0f);
+
+
+                        if (sessionManager.environmentName == "Museum")
+                        {
+                            Renderer frameRenderer = transform.parent.GetComponent<Renderer>();
+                            Color frameRendererColor = frameRenderer.material.color;
+
+                            frameRenderer.material.color = new Color(frameRendererColor.r,
+                                frameRendererColor.g,
+                                frameRendererColor.b, 1f);
+                        }
                     }
-
-                    categorySelectorCanvasGroup.gameObject.SetActive(false);
+                    
+                    spawnController.elementsHovered--;
                 }
 
-                toggleComponentRunning = false;
-            }
-        }
-
-        #endregion
-
-        #region Movement
-
-        public void SetAsSelectedElement()
-        {
-            bool canSelect = true;
-            // If circular only allow movement when there is no movement
-            if(sessionManager.environmentName == "Circular" && spawnBase.movingOperationRunning)
-            {
-                canSelect = false;
-                spawnBase.movingOperationRunning = true;
-            }
-            // Only allow selection when there is no object selected
-            if (canSelect && initialized && selectionObject.transform.childCount == 0 && !selectionCoroutineRunning)
-            {
-
-                // Cant move elements while selecting
-                if (browsingMode == "Local" || browsingMode == "Online")
-                {
-                    List<GameObject> colliderBoxes = GameObject.FindGameObjectsWithTag("External").ToList();
-                    foreach (GameObject colliderBox in colliderBoxes)
-                    {
-                        BoxCollider boxCollider = colliderBox.GetComponent<BoxCollider>();
-                        boxCollider.enabled = false;
-                    }
-                }
-
-                // Log selection
-                sessionManager.loggingController.LogSelection(url, true);
-
-                unselect.gameObject.SetActive(true);
-                if(browsingMode == "Online")
-                {
-                    upperControls.gameObject.SetActive(true);
-                }
-
-                handInteractor.gameObject.SetActive(false);
-                StartCoroutine(SetAsSelectedElementCoroutine());
             }
         }
 
-        public void RemoveFromSelectedElement()
+        public void SelectElement()
         {
-            // Only allows deselection if parent is the selector
-            if (transform.parent.name == "Selector" && !selectionCoroutineRunning)
+            if (!selectionCoroutineRunning && !selected && spawnController != null && !spawnController.movingOperationRunning)
             {
-                // Log selection
-                sessionManager.loggingController.LogSelection(url, false);
-
-                unselect.gameObject.SetActive(false);
-                if (browsingMode == "Online")
-                {
-                    upperControls.gameObject.SetActive(false);
-                }
-
-                // Cant move elements while selecting
-                if (browsingMode == "Local" || browsingMode == "Online")
-                {
-                    List<GameObject> colliderBoxes = GameObject.FindGameObjectsWithTag("External").ToList();
-                    foreach (GameObject colliderBox in colliderBoxes)
-                    {
-                        BoxCollider boxCollider = colliderBox.GetComponent<BoxCollider>();
-                        boxCollider.enabled = true;
-                    }
-                }
-
-                handInteractor.gameObject.SetActive(true);
-                StartCoroutine(RemoveFromSelectedElementCoroutine());
+                selectionCoroutineRunning = true;
+                selected = true;
+                StartCoroutine(SelectElementCoroutine());
             }
         }
 
-        private IEnumerator SetAsSelectedElementCoroutine()
+        public IEnumerator SelectElementCoroutine()
         {
-            selectionCoroutineRunning = true;
-            if(displayMode == "Radial")
-            {
-                GetComponent<RotateToObject>().enabled = false;
-            }
-            // Swap element with a dummy so the layouts wont move
-            placedTransform = Instantiate(dummyPrefab, transform.position, transform.rotation, transform.parent.transform);
-            placedTransform.transform.position = transform.position;
-            placedTransform.transform.rotation = transform.rotation;
-            placedTransform.transform.localScale = transform.localScale;
-            transform.SetParent(selectionObject.transform);
-            // Launch Position and Rotation Lerp Task at the same time so it goes from bases to selection object
-            int movementCoroutinesRunning = 0;
-            TaskCoroutine positionLerpCoroutine = new TaskCoroutine(LerpToSelectedPosition(selectionObject.transform.position));
-            positionLerpCoroutine.Finished += delegate (bool manual)
-            {
-                movementCoroutinesRunning--;
-            };
-            movementCoroutinesRunning++;
-            TaskCoroutine rotationLerpCoroutine = new TaskCoroutine(LerpToSelectedRotation(selectionObject.transform.rotation));
-            rotationLerpCoroutine.Finished += delegate (bool manual)
-            {
-                movementCoroutinesRunning--;
-            };
-            movementCoroutinesRunning++;
-            TaskCoroutine scaleLerpCoroutine = new TaskCoroutine(LerpToSelectedScale(placedTransform.transform.localScale));
-            scaleLerpCoroutine.Finished += delegate (bool manual)
-            {
-                movementCoroutinesRunning--;
-            };
-            movementCoroutinesRunning++;
+            Renderer selectionBoxRenderer = handInteractor.GetComponent<Renderer>();
+            selectionBoxRenderer.material.color = Color.green;
+            sessionManager.loggingController.LogSelection(url, true);
 
-            while (movementCoroutinesRunning > 0)
-            {
-                yield return null;
-            }
+            righthandTools.UpdateCategorizeSubMenu(this);
 
-            if (sessionManager.environmentName == "Circular")
-            {
-                spawnBase.movingOperationRunning = false;
-            }
-
+            yield return new WaitForSeconds(3.0f);
             selectionCoroutineRunning = false;
-        }
- 
-        private IEnumerator RemoveFromSelectedElementCoroutine()
-        {
-            selectionCoroutineRunning = true;
-            // Set as child of last parent
-            transform.SetParent(placedTransform.transform.parent.transform);
-            // Launch Position and Rotation Lerp Task at the same time so it goes from selection object to base
-            int movementCoroutinesRunning = 0;
-            TaskCoroutine positionLerpCoroutine = new TaskCoroutine(LerpToSelectedPosition(placedTransform.transform.position));
-            positionLerpCoroutine.Finished += delegate (bool manual)
-            {
-                movementCoroutinesRunning--;
-            };
-            movementCoroutinesRunning++;
-            TaskCoroutine rotationLerpCoroutine = new TaskCoroutine(LerpToSelectedRotation(placedTransform.transform.rotation));
-            rotationLerpCoroutine.Finished += delegate (bool manual)
-            {
-                movementCoroutinesRunning--;
-            };
-            movementCoroutinesRunning++;
-            TaskCoroutine scaleLerpCoroutine = new TaskCoroutine(LerpToSelectedScale(placedTransform.transform.localScale));
-            scaleLerpCoroutine.Finished += delegate (bool manual)
-            {
-                movementCoroutinesRunning--;
-            };
-            movementCoroutinesRunning++;
 
-            if (displayMode == "Radial")
-            {
-                GetComponent<RotateToObject>().enabled = true;
-            }
 
-            while (movementCoroutinesRunning > 0)
-            {
-                yield return null;
-            }
-
-            // Swap with dummy and destroy it
-            Destroy(placedTransform.gameObject);
-
-            selectionCoroutineRunning = false;
         }
 
-        private IEnumerator LerpToSelectedPosition(Vector3 finalPosition)
-        {
-            float timeElapsed = 0;
-            while (timeElapsed < selectionTime)
-            {
-                timeElapsed += Time.deltaTime;
-                transform.position = Vector3.Lerp(transform.position, finalPosition, timeElapsed / selectionTime);
-               
-                yield return null;
-            }
-        }
-
-        private IEnumerator LerpToSelectedRotation(Quaternion finalRotation)
-        {
-            float timeElapsed = 0;
-            while (timeElapsed < selectionTime)
-            {
-                timeElapsed += Time.deltaTime;
-                transform.rotation = Quaternion.Lerp(transform.rotation, finalRotation, timeElapsed / selectionTime);
-                
-                yield return null;
-            }
-        }
-
-        private IEnumerator LerpToSelectedScale(Vector3 finalScale)
-        {
-            float timeElapsed = 0;
-            while (timeElapsed < selectionTime)
-            {
-                timeElapsed += Time.deltaTime;
-                transform.localScale = Vector3.Lerp(transform.localScale, finalScale , timeElapsed / selectionTime);
-
-                yield return null;
-            }
-        }
 
         #endregion
     }

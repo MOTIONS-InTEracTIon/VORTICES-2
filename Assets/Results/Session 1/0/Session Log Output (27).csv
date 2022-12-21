@@ -1,0 +1,23 @@
+Timestamp;Date;Type;Detail
+00:16:56.9456803;21/12/2022;Session Status;Start;Environment: Circular;Display Mode: Plane;Dimension: 3,3,3;Browsing Mode: Local;;
+00:17:03.3869654;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_005.jpg;
+00:17:03.6703444;21/12/2022;Element Movement;Pull;;
+00:17:03.9028491;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_014.jpg;
+00:17:06.6447464;21/12/2022;Element Movement;Pull;;
+00:17:09.6965258;21/12/2022;Element Movement;Pull;;
+00:17:11.9097793;21/12/2022;Element Movement;Push;;
+00:17:14.0466901;21/12/2022;Element Movement;Push;;
+00:17:16.2040948;21/12/2022;Element Movement;Push;;
+00:17:20.3669369;21/12/2022;Element Movement;Push;;
+00:17:21.7731398;21/12/2022;Element Movement;Push;;
+00:17:22.9687701;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_187.jpg;
+00:17:23.2203150;21/12/2022;Element Movement;Push;;
+00:17:24.7915133;21/12/2022;Element Movement;Push;;
+00:17:29.7086036;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_169.jpg;
+00:17:30.4492800;21/12/2022;Element Movement;Left;;
+00:17:31.7805299;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_170.jpg;
+00:17:32.1060000;21/12/2022;Element Movement;Right;;
+00:17:42.3188268;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_169.jpg;
+00:17:42.7619828;21/12/2022;Element Movement;Right;;
+00:17:44.3982552;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_168.jpg;
+00:17:44.5650304;21/12/2022;Element Movement;Left;;

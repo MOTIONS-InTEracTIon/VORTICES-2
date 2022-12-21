@@ -1,0 +1,9 @@
+Timestamp;Date;Type;Detail
+19:23:30.9145474;21/12/2022;Session Status;Start;Environment: Museum;Display Mode: Museum;Browsing Mode: Local;;
+19:23:40.0040111;21/12/2022;Selection;Selected;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_027.jpg;
+19:23:50.4007936;21/12/2022;Category;Added;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_027.jpg;Name: Cat 4;
+19:23:51.5075174;21/12/2022;Category;Added;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_027.jpg;Name: Cat 3;
+19:23:51.9926093;21/12/2022;Category;Removed;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_027.jpg;Name: Cat 3;
+19:23:52.8974055;21/12/2022;Category;Removed;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_027.jpg;Name: Cat 4;
+19:23:53.6977826;21/12/2022;Category;Added;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_027.jpg;Name: Cat 4;
+19:23:54.3553471;21/12/2022;Category;Added;Url: file://C:/Users/Moriyarnn/Desktop/test_images/g_imagen_027.jpg;Name: Cat 3;

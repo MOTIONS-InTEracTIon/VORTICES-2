@@ -6,7 +6,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Vortices
 {
-    public class PlaneBase : SpawnBase
+    public class PlaneBase : CircularSpawnBase
     {
         // Other references
         [SerializeField] private GameObject linearRailPrefab;
@@ -16,10 +16,28 @@ namespace Vortices
         // Movement variables
         private bool lerpToPositionRunning;
 
+        // Auxiliary References
+        private SpawnController spawnController;
+
+        private void Update()
+        {
+            base.Update();
+            if (movingOperationRunning == true && spawnController != null && spawnController.movingOperationRunning == false)
+            {
+                spawnController.movingOperationRunning = true;
+            }
+            else if (movingOperationRunning == false && spawnController != null &&
+                     spawnController.movingOperationRunning == true)
+            {
+                spawnController.movingOperationRunning = false;
+            }
+        }
+
         #region Group Spawn
 
         public override void StartGenerateSpawnGroup()
         {
+            spawnController = GameObject.FindObjectOfType<SpawnController>();
             globalIndex = -1;
             lastLoadForward = true;
             // Linear Rail Generation
@@ -82,7 +100,7 @@ namespace Vortices
         // Changed so it only spawns when pulling or pushing
         protected override void PerformAction()
         {
-            if (drag && dragDir != "")
+            if (drag && dragDir != "" )
             {
                 Vector3 center = frontGroup.transform.position;
                 // This means the base has been pulled and will spawn inwards
@@ -93,6 +111,7 @@ namespace Vortices
                         afterSpawnTime = 0;
                         if (browsingMode == "Local")
                         {
+                            spawnController.ResetElements();
                             coroutineQueue.Enqueue(GroupSpawnPull());
                         }
                         else if (browsingMode == "Online")
@@ -110,6 +129,7 @@ namespace Vortices
                         afterSpawnTime = 0;
                         if (browsingMode == "Local")
                         {
+                            spawnController.ResetElements();
                             coroutineQueue.Enqueue(GroupSpawnPush());
                         }
                         else if (browsingMode == "Online")

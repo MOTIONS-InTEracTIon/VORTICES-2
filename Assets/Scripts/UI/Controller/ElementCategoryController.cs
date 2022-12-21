@@ -57,38 +57,6 @@ namespace Vortices
                 return elementCategory;
             }
         }
-
-        public void UpdateUICategories()
-        {
-            // Get all elements in scene
-            elementGameObjects = GameObject.FindObjectsOfType<Element>().ToList();
-            foreach(Element element in elementGameObjects)
-            {
-                ElementCategory elementCategory = GetSelectedCategories(element.url);
-                List<string> selectedCategories = elementCategory.elementCategories;
-                // Get their selected categories
-                // Set all categories to false
-                foreach (UIElementCategory category in element.UIElementCategories)
-                {
-                    category.changeSelection = false;
-                    category.SetToggle(false);
-                    category.changeSelection = true;
-                }
-                // Set found ones to true
-                foreach (string category in selectedCategories)
-                {
-                    UIElementCategory categoryToSelect = element.UIElementCategories.FirstOrDefault<UIElementCategory>(searchCategory => searchCategory.categoryName == category);
-
-                    if (categoryToSelect != null)
-                    {
-                        categoryToSelect.changeSelection = false;
-                        categoryToSelect.SetToggle(true);
-                        categoryToSelect.changeSelection = true;
-                    }
-                }
-            } 
-        }
-
         public void UpdateElementCategoriesList(string url, ElementCategory updatedElementCategory)
         {
             Debug.Log("Im updating");

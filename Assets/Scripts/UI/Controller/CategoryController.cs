@@ -227,6 +227,7 @@ namespace Vortices
         #region Persistance classes
 
         // Deals with all the  categories from all sessions and user Ids, it has to be filtered into the correct session and user Id for use
+
         [System.Serializable]
         public class CategorySaveData
         {
@@ -244,6 +245,8 @@ namespace Vortices
 
         #endregion
     }
+
+
 }
 
 

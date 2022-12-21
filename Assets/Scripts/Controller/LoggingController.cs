@@ -139,6 +139,23 @@ namespace Vortices
             WriteToLog(newEntry);
         }
 
+        public void LogUrlChanged(string finalUrl)
+        {
+            // Check if input is valid
+            // No checks
+
+            LogEntry newEntry = new LogEntry();
+            // Initialize entry
+            newEntry = LogEntryInitialize(newEntry);
+            // Set type and detail
+            newEntry.type = "URL Change";
+
+            newEntry.detail += "Url: " + finalUrl;
+
+            // Entry is ready, write it to file
+            WriteToLog(newEntry);
+        }
+
 
 
         // Configures global variables of a LogEntry
