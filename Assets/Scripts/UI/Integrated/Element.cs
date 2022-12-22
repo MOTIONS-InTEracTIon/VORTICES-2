@@ -10,7 +10,6 @@ using System.Linq;
 using UnityEngine.XR.Interaction.Toolkit;
 using TMPro;
 using UnityEngine.UIElements;
-using static UnityEditor.Rendering.FilterWindow;
 using System;
 
 namespace Vortices

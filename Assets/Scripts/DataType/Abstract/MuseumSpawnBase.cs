@@ -91,11 +91,11 @@ namespace Vortices
                 element.SetActive(false);
             }
 
-            if (browsingMode == "Online")
+            /*if (browsingMode == "Online")
             {
                 yield return StartCoroutine(StandaloneWebView.TerminateBrowserProcess().AsIEnumerator());
                 //Web.ClearAllData();
-            }
+            }*/
 
         }
 

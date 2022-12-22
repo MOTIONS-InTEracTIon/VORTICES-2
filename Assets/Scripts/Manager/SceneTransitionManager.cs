@@ -54,22 +54,22 @@ namespace Vortices
         }
 
         // Handle application exit
-        private async void OnApplicationQuit()
+        /*private async void OnApplicationQuit()
         {
             await StandaloneWebView.TerminateBrowserProcess();
-        }
+        }*/
 
 
         private void OnQuitting()
         {
-            StartCoroutine(ClearWebData());
+            /*StartCoroutine(ClearWebData());*/
         }
 
-        private IEnumerator ClearWebData()
+        /*private IEnumerator ClearWebData()
         {
             yield return StartCoroutine(StandaloneWebView.TerminateBrowserProcess().AsIEnumerator());
-        }
+        }*/
 
 
     }
-}
+    }

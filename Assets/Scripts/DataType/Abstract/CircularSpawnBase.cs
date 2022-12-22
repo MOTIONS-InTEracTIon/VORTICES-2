@@ -150,11 +150,11 @@ namespace Vortices
                 yield return null;
             }
 
-            if (browsingMode == "Online")
+            /*if (browsingMode == "Online")
             {
                 yield return StartCoroutine(StandaloneWebView.TerminateBrowserProcess().AsIEnumerator());
                 //Web.ClearAllData();
-            }
+            }*/
 
             Destroy(gameObject);
         }

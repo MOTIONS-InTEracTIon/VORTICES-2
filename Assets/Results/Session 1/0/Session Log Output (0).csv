@@ -1,9 +1,0 @@
-Timestamp;Date;Type;Detail
-19:15:01.7901888;02/12/2022;Session Status;Start;Environment: Circular;Display Mode: Radial;Dimension: 3,3,3;Browsing Mode: Online;Root URL: https://www.google.com;;
-19:15:28.7224807;02/12/2022;Element Movement;Left;;
-19:15:33.7612039;02/12/2022;Element Movement;Push;;
-19:15:36.7618653;02/12/2022;Element Movement;Push;;
-19:15:39.7658930;02/12/2022;Element Movement;Push;;
-19:16:04.5352924;02/12/2022;Category;Added;Url: https://www.google.com;Name: Cat 3;
-19:16:05.3321278;02/12/2022;Category;Added;Url: https://www.google.com;Name: Cat 2;
-19:16:06.1788451;02/12/2022;Category;Added;Url: https://www.google.com;Name: Cat 1;
