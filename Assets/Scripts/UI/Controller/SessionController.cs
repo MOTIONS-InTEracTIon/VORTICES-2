@@ -46,7 +46,7 @@ namespace Vortices
             // When initialized will try to load sessions, will create a new session list otherwise
             LoadSessions();
             // Categories will be added to UI Components
-            UpdateSessions();
+            UpdateSessions(true);
         }
 
         #region Data Operation;
@@ -73,7 +73,7 @@ namespace Vortices
         {
             CreateSession(sessionName, true);
             // Updates rows
-            UpdateSessions();
+            UpdateSessions(false);
         }
 
         private void RemoveSessionFromScrollView(UISession session)
@@ -92,17 +92,20 @@ namespace Vortices
             // Destroys UI Session
             UISessions.Remove(session);
             // Updates rows
-            UpdateSessions();
+            UpdateSessions(false);
         }
 
-        private void UpdateSessions()
+        private void UpdateSessions(bool clear)
         {
             // Clear past UI Categories
-            foreach (Transform child in scrollviewContent.transform)
+            if (clear)
             {
-                Destroy(child.gameObject);
-            }
+                foreach (Transform child in scrollviewContent.transform)
+                {
+                    Destroy(child.gameObject);
+                }
 
+            }
 
             // If UISessions is empty this means we create new objects to hold the sessions
             if (UISessions.Count == 0)
