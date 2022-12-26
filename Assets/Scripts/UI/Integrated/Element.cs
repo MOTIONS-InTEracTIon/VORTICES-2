@@ -42,6 +42,8 @@ namespace Vortices
         private float selectionTime = 3.0f;
         private bool initialized;
         public bool selected;
+        public float hapticIntensity = 3.0f;
+        public float hapticDuration = 1.0f;
 
         // Coroutine
         private bool toggleComponentRunning;
@@ -269,6 +271,10 @@ namespace Vortices
             {
                 selectionCoroutineRunning = true;
                 selected = true;
+                // Send haptic impulse
+                XRBaseInteractable interactableElement = handInteractor.GetComponent<XRSimpleInteractable>();
+                interactableElement.selectEntered.AddListener(TriggerHaptic);
+                // Start selection
                 StartCoroutine(SelectElementCoroutine());
             }
         }
@@ -285,6 +291,22 @@ namespace Vortices
             selectionCoroutineRunning = false;
 
 
+        }
+
+        public void TriggerHaptic(BaseInteractionEventArgs eventArgs)
+        {
+            if (eventArgs.interactorObject is XRBaseControllerInteractor controllerInteractor)
+            {
+                TriggerHaptic(controllerInteractor.xrController);
+            }
+        }
+
+        public void TriggerHaptic(XRBaseController controller)
+        {
+            if (hapticIntensity > 0)
+            {
+                controller.SendHapticImpulse(hapticIntensity, hapticDuration);
+            }
         }
 
 
