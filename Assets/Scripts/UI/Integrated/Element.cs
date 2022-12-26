@@ -9,7 +9,6 @@ using UnityEngine.UI;
 using System.Linq;
 using UnityEngine.XR.Interaction.Toolkit;
 using TMPro;
-using UnityEngine.UIElements;
 using System;
 
 namespace Vortices
@@ -81,6 +80,7 @@ namespace Vortices
                 SetCategorized(false);
             }
 
+            upperControls.SetActive(false);
             // Enable Online controls
             if (browsingMode == "Online")
             {
@@ -89,6 +89,7 @@ namespace Vortices
                 // Subscribe to keyboard event for it to show
                 TMP_InputField webUrlInputfield = webUrl.transform.Find("InputField").GetComponent<TMP_InputField>();
                 webUrlInputfield.onSelect.AddListener(delegate { keyboardCanvas.SetInputField(webUrlInputfield); });
+                webUrl.gameObject.SetActive(true);
 
                 StartCoroutine(keyboardCanvas.SetKeyboardOn());
 
@@ -99,11 +100,31 @@ namespace Vortices
                     sessionManager.loggingController.LogUrlChanged(url);
                     righthandTools.UpdateCategorizeSubMenu(this);
                 };
+                // Add event for upper controls
+                Button goBackButton = goBack.GetComponent<Button>();
+                goBackButton.onClick.AddListener(delegate { GoBackOnline(); });
+                goBackButton.gameObject.SetActive(true);
+                Button goForwardButton = goForward.GetComponent<Button>();
+                goForwardButton.onClick.AddListener(delegate { GoForwardOnline(); });
+                goForwardButton.gameObject.SetActive(true);
+
             }
             // Enable Local controls
             else if (browsingMode == "Local")
             {
-                
+                if (sessionManager.environmentName == "Museum")
+                {
+                    // Enable browser controls
+                    upperControls.SetActive(true);
+                    webUrl.SetActive(false);
+                    // Subscribe to image swapping
+                    Button goBackButton = goBack.GetComponent<Button>();
+                    goBackButton.onClick.AddListener(delegate { GoBackLocalMuseum(); });
+                    goBackButton.gameObject.SetActive(true);
+                    Button goForwardButton = goForward.GetComponent<Button>();
+                    goForwardButton.onClick.AddListener(delegate { GoForwardLocalMuseum(); });
+                    goForwardButton.gameObject.SetActive(true);
+                }
             }
 
             canvasWebView = GetComponentInChildren<CanvasWebViewPrefab>().WebView;
@@ -120,7 +141,7 @@ namespace Vortices
 
         #region Data Operations
 
-        public async void GoBack()
+        public async void GoBackOnline()
         {
             bool canGoBack = await canvasWebView.CanGoBack();
             if (canGoBack)
@@ -130,7 +151,7 @@ namespace Vortices
             }
         }
 
-        public void GoForward()
+        public void GoForwardOnline()
         {
             // Get Url from gameobject
             string finalurl = webUrl.GetComponent<TextInputField>().GetData();
@@ -139,6 +160,26 @@ namespace Vortices
 
                 canvasWebView.LoadUrl(finalurl);
                 url = finalurl;
+            }
+        }
+
+        public void GoBackLocalMuseum()
+        {
+            if (initialized)
+            {
+                initialized = false;
+                MuseumElement museumElement = transform.parent.transform.parent.GetComponent<MuseumElement>();
+                StartCoroutine(museumElement.ChangeElement(false));
+            }
+        }
+
+        public void GoForwardLocalMuseum()
+        {
+            if (initialized)
+            {
+                initialized = false;
+                MuseumElement museumElement = transform.parent.transform.parent.GetComponent<MuseumElement>();
+                StartCoroutine(museumElement.ChangeElement(true));
             }
         }
 

@@ -26,7 +26,7 @@ namespace Vortices
 
         private IEnumerator WaitForInit()
         {
-            yield return new WaitForSeconds(sessionManager.initializeTime + 1.0f);
+            yield return new WaitForSeconds(sessionManager.initializeTime + 3.0f);
             startButton.interactable = true;
         }
 

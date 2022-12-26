@@ -54,6 +54,16 @@ namespace Vortices
             yield return StartCoroutine(ObjectSpawn(0, startingLoad, true));
         }
 
+        public IEnumerator ChangeElement(bool forwards)
+        {
+            // Startup
+            loadPaths = new List<string>();
+            unloadObjects = new List<GameObject>();
+            loadObjects = new List<GameObject>();
+
+            yield return StartCoroutine(ObjectSpawn(1, 1, forwards));
+        }
+
         // Spawns files using overriden GenerateExitObjects and GenerateEnterObjects
         protected IEnumerator ObjectSpawn(int unloadNumber, int loadNumber, bool forwards)
         {

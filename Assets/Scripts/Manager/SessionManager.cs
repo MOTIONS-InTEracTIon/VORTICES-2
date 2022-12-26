@@ -24,7 +24,7 @@ namespace Vortices
         public string rootUrl;
         public List<string> filePaths;
         // Session Manager settings
-        public float initializeTime = 3.0f;
+        public float initializeTime = 2.0f;
 
         // Controllers
         [SerializeField] private SceneTransitionManager actualTransitionManager;

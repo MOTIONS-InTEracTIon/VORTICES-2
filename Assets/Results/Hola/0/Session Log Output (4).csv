@@ -1,0 +1,12 @@
+Timestamp;Date;Type;Detail
+01:15:07.1504488;26/12/2022;Session Status;Start;Environment: Museum;Display Mode: Museum;Browsing Mode: Online;Root URL: https://www.google.com;;
+01:15:22.4780995;26/12/2022;Selection;Selected;Url: https://www.google.com;
+01:15:47.8448574;26/12/2022;URL Change;Url: https://www.google.com;
+01:16:02.0277783;26/12/2022;URL Change;Url: https://www.google.com;
+01:16:08.2242113;26/12/2022;URL Change;Url: https://www.google.com;
+01:16:17.0965797;26/12/2022;URL Change;Url: https://www.google.com;
+01:16:30.1746800;26/12/2022;Category;Added;Url: https://www.google.com/search?q=gato&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiUg6mftpb8AhUWLrkGHXVzDFUQ_AUoAXoECAEQAw&biw=640&bih=640&dpr=1#imgrc=ZOKAEVKnMDeHYM&imgdii=Nn2UnxFnP2-N6M;Name: Gato;
+01:16:55.2317560;26/12/2022;Category;Removed;Url: https://www.google.com/search?q=gato&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiUg6mftpb8AhUWLrkGHXVzDFUQ_AUoAXoECAEQAw&biw=640&bih=640&dpr=1#imgrc=ZOKAEVKnMDeHYM&imgdii=Nn2UnxFnP2-N6M;Name: Gato;
+01:16:56.0103481;26/12/2022;Category;Added;Url: https://www.google.com/search?q=gato&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiUg6mftpb8AhUWLrkGHXVzDFUQ_AUoAXoECAEQAw&biw=640&bih=640&dpr=1#imgrc=ZOKAEVKnMDeHYM&imgdii=Nn2UnxFnP2-N6M;Name: Gato;
+01:17:53.7223529;26/12/2022;URL Change;Url: https://www.google.com;
+01:18:21.3083210;26/12/2022;Category;Added;Url: https://www.elmostrador.cl/revista-jengibre/2022/08/14/mes-de-los-gatos-los-especiales-cuidados-en-agosto-los-beneficios-de-tenerlos-de-mascota/;Name: Gato;

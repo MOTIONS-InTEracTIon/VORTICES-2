@@ -48510,7 +48510,7 @@ MonoBehaviour:
   dimension: {x: 0, y: 0, z: 0}
   rootUrl: 
   filePaths: []
-  initializeTime: 3
+  initializeTime: 2
   actualTransitionManager: {fileID: 0}
   categoryController: {fileID: 1104882593}
   elementCategoryController: {fileID: 0}
