@@ -87,8 +87,9 @@ namespace Vortices
             WriteToLog(newEntry);
         }
 
-        public void LogTeleportation()
+        public IEnumerator LogTeleportation()
         {
+            yield return new WaitForSeconds(0.5f);
             LogEntry newEntry = new LogEntry();
             // Initialize entry
             newEntry = LogEntryInitialize(newEntry);

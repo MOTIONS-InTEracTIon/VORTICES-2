@@ -97,9 +97,9 @@ namespace Vortices
                 TeleportationArea area2 = GameObject.Find("Floor_Hall_01").GetComponent<TeleportationArea>();
                 TeleportationArea area3 = GameObject.Find("Ground_01").GetComponent<TeleportationArea>();
 
-                area1.teleporting.AddListener(delegate { sessionManager.loggingController.LogTeleportation(); });
-                area2.teleporting.AddListener(delegate { sessionManager.loggingController.LogTeleportation(); });
-                area3.teleporting.AddListener(delegate { sessionManager.loggingController.LogTeleportation(); });
+                area1.teleporting.AddListener(delegate { StartCoroutine(sessionManager.loggingController.LogTeleportation()); });
+                area2.teleporting.AddListener(delegate { StartCoroutine(sessionManager.loggingController.LogTeleportation()); });
+                area3.teleporting.AddListener(delegate { StartCoroutine(sessionManager.loggingController.LogTeleportation()); });
             }
 
         }
