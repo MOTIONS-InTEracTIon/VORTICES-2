@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static System.Collections.Specialized.BitVector32;
 
 
@@ -82,6 +83,19 @@ namespace Vortices
             // Set type and detail
             newEntry.type = "Element Movement";
             newEntry.detail = movementDir + ";";
+            // Entry is ready, write it to file
+            WriteToLog(newEntry);
+        }
+
+        public void LogTeleportation()
+        {
+            LogEntry newEntry = new LogEntry();
+            // Initialize entry
+            newEntry = LogEntryInitialize(newEntry);
+            // Set type and detail
+            newEntry.type = "User Movement";
+            Vector3 newPosition = GameObject.Find("XR Origin").transform.position;
+            newEntry.detail = "New position: " + "(" + newPosition.x + "," + newPosition.y + "," + newPosition.z + ")" + ";";
             // Entry is ready, write it to file
             WriteToLog(newEntry);
         }

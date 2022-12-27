@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 using System.Linq;
 using TMPro;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Vortices
 {
@@ -87,6 +88,19 @@ namespace Vortices
 
             // Initialize tools
             InitializeToolsCategories();
+
+            // Initialze teleportation if environment needs it
+            if (sessionManager.environmentName == "Museum")
+            {
+                // For each floor item subscribe teleportation to logging
+                TeleportationArea area1 = GameObject.Find("Floor_01").GetComponent<TeleportationArea>();
+                TeleportationArea area2 = GameObject.Find("Floor_Hall_01").GetComponent<TeleportationArea>();
+                TeleportationArea area3 = GameObject.Find("Ground_01").GetComponent<TeleportationArea>();
+
+                area1.teleporting.AddListener(delegate { sessionManager.loggingController.LogTeleportation(); });
+                area2.teleporting.AddListener(delegate { sessionManager.loggingController.LogTeleportation(); });
+                area3.teleporting.AddListener(delegate { sessionManager.loggingController.LogTeleportation(); });
+            }
 
         }
 
