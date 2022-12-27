@@ -33,7 +33,7 @@ namespace Vortices
         public void Spawn ()
         {
             // Start the logger
-            spawnController.StartSession();
+            spawnController.StartSession(false, null);
             sessionManager.loggingController.LogSessionStatus("Start");
         }
 

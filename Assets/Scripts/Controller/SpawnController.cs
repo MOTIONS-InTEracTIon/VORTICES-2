@@ -15,7 +15,10 @@ namespace Vortices
         // Display (Prefabs for every base and a list for every environment)
         [SerializeField] List<GameObject> placementCircularBasePrefabs;
         [SerializeField] List<GameObject> placementMuseumBasePrefabs;
+        [SerializeField] GameObject MuseumBaseSortPrefab;
+        
         public GameObject placementBase;
+        public GameObject sortingBase;
 
         // Other references
         private GameObject spawnGroup;
@@ -34,51 +37,98 @@ namespace Vortices
         }
 
         #region Base Spawn
-        public void StartSession()
+        public void StartSession(bool asSortingBase, List<string> customUrls)
         {
-            righthandTools.Initialize();
+            if (!asSortingBase)
+            {
+                righthandTools.Initialize();
+            }
+
             // A fork for every environment possible
             if (sessionManager.environmentName == "Circular")
             {
                 // A fork for every base compatible with environment
                 if (sessionManager.displayMode == "Plane")
                 {
-                    Vector3 positionOffset = new Vector3(0, 0, 0.5f); ;
-                    placementBase = Instantiate(placementCircularBasePrefabs[0], spawnGroup.transform.position + positionOffset, placementCircularBasePrefabs[0].transform.rotation, spawnGroup.transform);
-                    CircularSpawnBase spawnBase = placementBase.GetComponent<CircularSpawnBase>();
-                    spawnBase.displayMode = sessionManager.displayMode;
-                    spawnBase.dimension = sessionManager.dimension;
-                    spawnBase.volumetric = sessionManager.volumetric;
-                    if (sessionManager.browsingMode == "Local")
+                    Vector3 positionOffset = new Vector3(0, 0, 0.5f);
+
+                    if (asSortingBase)
                     {
-                        spawnBase.browsingMode = sessionManager.browsingMode;
-                        spawnBase.filePaths = sessionManager.filePaths;
+                        sortingBase = Instantiate(placementCircularBasePrefabs[0], spawnGroup.transform.position + positionOffset, placementCircularBasePrefabs[0].transform.rotation, spawnGroup.transform);
+                        
+                        CircularSpawnBase spawnBase = sortingBase.GetComponent<CircularSpawnBase>();
+                        spawnBase.displayMode = sessionManager.displayMode;
+                        spawnBase.dimension = sessionManager.dimension;
+                        spawnBase.volumetric = sessionManager.volumetric;
+
+                        spawnBase.browsingMode = "Local";
+                        spawnBase.filePaths = customUrls;
+
+                        spawnBase.StartGenerateSpawnGroup();
                     }
-                    else if (sessionManager.browsingMode == "Online")
+                    else
                     {
-                        spawnBase.browsingMode = sessionManager.browsingMode;
-                        spawnBase.rootUrl = sessionManager.rootUrl;
+                        placementBase = Instantiate(placementCircularBasePrefabs[0], spawnGroup.transform.position + positionOffset, placementCircularBasePrefabs[0].transform.rotation, spawnGroup.transform);
+
+                        CircularSpawnBase spawnBase = placementBase.GetComponent<CircularSpawnBase>();
+                        spawnBase.displayMode = sessionManager.displayMode;
+                        spawnBase.dimension = sessionManager.dimension;
+                        spawnBase.volumetric = sessionManager.volumetric;
+
+                        if (sessionManager.browsingMode == "Local")
+                        {
+                            spawnBase.browsingMode = sessionManager.browsingMode;
+                            spawnBase.filePaths = sessionManager.filePaths;
+                        }
+                        else if (sessionManager.browsingMode == "Online")
+                        {
+                            spawnBase.browsingMode = sessionManager.browsingMode;
+                            spawnBase.rootUrl = sessionManager.rootUrl;
+                        }
+
+                        spawnBase.StartGenerateSpawnGroup();
                     }
-                    spawnBase.StartGenerateSpawnGroup();
+
+
                 }
                 else if (sessionManager.displayMode == "Radial")
                 {
-                    placementBase = Instantiate(placementCircularBasePrefabs[1], spawnGroup.transform.position, placementCircularBasePrefabs[1].transform.rotation, spawnGroup.transform);
-                    CircularSpawnBase spawnBase = placementBase.GetComponent<CircularSpawnBase>();
-                    spawnBase.displayMode = sessionManager.displayMode;
-                    spawnBase.dimension = sessionManager.dimension;
-                    spawnBase.volumetric = sessionManager.volumetric;
-                    if (sessionManager.browsingMode == "Local")
+                    if (asSortingBase)
                     {
-                        spawnBase.browsingMode = sessionManager.browsingMode;
-                        spawnBase.filePaths = sessionManager.filePaths;
+                        sortingBase = Instantiate(placementCircularBasePrefabs[1], spawnGroup.transform.position, placementCircularBasePrefabs[1].transform.rotation, spawnGroup.transform);
+
+                        CircularSpawnBase spawnBase = sortingBase.GetComponent<CircularSpawnBase>();
+                        spawnBase.displayMode = sessionManager.displayMode;
+                        spawnBase.dimension = sessionManager.dimension;
+                        spawnBase.volumetric = sessionManager.volumetric;
+
+                        spawnBase.browsingMode = "Local";
+                        spawnBase.filePaths = customUrls;
+
+                        spawnBase.StartGenerateSpawnGroup();
                     }
-                    else if (sessionManager.browsingMode == "Online")
+                    else
                     {
-                        spawnBase.browsingMode = sessionManager.browsingMode;
-                        spawnBase.rootUrl = sessionManager.rootUrl;
+                        placementBase = Instantiate(placementCircularBasePrefabs[1], spawnGroup.transform.position, placementCircularBasePrefabs[1].transform.rotation, spawnGroup.transform);
+
+                        CircularSpawnBase spawnBase = placementBase.GetComponent<CircularSpawnBase>();
+                        spawnBase.displayMode = sessionManager.displayMode;
+                        spawnBase.dimension = sessionManager.dimension;
+                        spawnBase.volumetric = sessionManager.volumetric;
+
+                        if (sessionManager.browsingMode == "Local")
+                        {
+                            spawnBase.browsingMode = sessionManager.browsingMode;
+                            spawnBase.filePaths = sessionManager.filePaths;
+                        }
+                        else if (sessionManager.browsingMode == "Online")
+                        {
+                            spawnBase.browsingMode = sessionManager.browsingMode;
+                            spawnBase.rootUrl = sessionManager.rootUrl;
+                        }
+
+                        spawnBase.StartGenerateSpawnGroup();
                     }
-                    spawnBase.StartGenerateSpawnGroup();
                 }
             }
             else if (sessionManager.environmentName == "Museum")
@@ -86,21 +136,55 @@ namespace Vortices
                 // A fork for every base compatible with environment
                 if (sessionManager.displayMode == "Museum")
                 {
-                    // This base wont be instantiated as it has a premade spatial distribution (This can be changed to create more multimedia arrangements
-                    MuseumSpawnBase spawnBase = GameObject.FindObjectOfType<MuseumBase>();
-                    placementBase = spawnBase.gameObject;
-                    if (sessionManager.browsingMode == "Local")
+                    if (!asSortingBase)
                     {
-                        spawnBase.browsingMode = sessionManager.browsingMode;
-                        spawnBase.filePaths = sessionManager.filePaths;
+                        // This base wont be instantiated as it has a premade spatial distribution (This can be changed to create more multimedia arrangements
+                        MuseumSpawnBase spawnBase = GameObject.FindObjectOfType<MuseumBase>();
+                        placementBase = spawnBase.gameObject;
+
+                        if (sessionManager.browsingMode == "Local")
+                        {
+                            spawnBase.browsingMode = sessionManager.browsingMode;
+                            spawnBase.filePaths = sessionManager.filePaths;
+                        }
+                        else if (sessionManager.browsingMode == "Online")
+                        {
+                            spawnBase.browsingMode = sessionManager.browsingMode;
+                            spawnBase.rootUrl = sessionManager.rootUrl;
+                        }
+
+                        StartCoroutine(spawnBase.StartGenerateSpawnElements());
                     }
-                    else if (sessionManager.browsingMode == "Online")
+                    else
                     {
-                        spawnBase.browsingMode = sessionManager.browsingMode;
-                        spawnBase.rootUrl = sessionManager.rootUrl;
+                        //As sorting, it will instantiate a copy of the original Museum distribution
+                        sortingBase = Instantiate(MuseumBaseSortPrefab, spawnGroup.transform);
+
+                        MuseumSpawnBase spawnBase = sortingBase.GetComponent<MuseumSpawnBase>();
+
+                        spawnBase.browsingMode = "Local";
+                        spawnBase.filePaths = customUrls;
+
+                        StartCoroutine(spawnBase.StartGenerateSpawnElements());
                     }
-                    StartCoroutine(spawnBase.StartGenerateSpawnElements());
                 }
+            }
+        }
+
+        public void UpdateSortBase(List<string> customUrls)
+        {
+            if (sortingBase == null)
+            {
+                StartSession(true, customUrls);
+            }
+        }
+
+        public void DestroySortBase()
+        {
+            if (sortingBase != null)
+            {
+                Destroy(sortingBase.gameObject);
+                sortingBase = null;
             }
         }
 

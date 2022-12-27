@@ -5,6 +5,7 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 
 namespace Vortices
 { 
@@ -41,6 +42,7 @@ namespace Vortices
 
         #region Data Operations
 
+        // Get operations
         public ElementCategory GetSelectedCategories(string url)
         {
             ElementCategory elementCategory = elementCategoriesList.FirstOrDefault<ElementCategory>(elementCategories => elementCategories.elementUrl == url);
@@ -57,6 +59,64 @@ namespace Vortices
                 return elementCategory;
             }
         }
+
+        public List<List<string>> GetSessionCategoriesCount()
+        {
+            List<List<string>> listOfCategoriesCount = new List<List<string>>();
+            // Ask categoryController for all the session categories
+            List<string> sessionCategories = sessionManager.categoryController.categoriesList;
+            // Search for categories in elementCategoriesList
+            foreach (string sessionCategory in sessionCategories)
+            {
+                List<string> sessionCategoryList = new List<string>();
+                sessionCategoryList.Add(sessionCategory);
+                int sessionCategoryFound = 0;
+                foreach (ElementCategory elementCategory in elementCategoriesList)
+                {
+                    foreach (string category in elementCategory.elementCategories)
+                    {
+                        if (category == sessionCategory)
+                        {
+                            sessionCategoryFound++;
+                        }
+                    }
+                }
+                sessionCategoryList.Add(sessionCategoryFound.ToString());
+                listOfCategoriesCount.Add(sessionCategoryList);
+            }
+
+            return listOfCategoriesCount;
+        }
+
+        public List<string> GetCategoryUrls(string categoryName)
+        {
+            List<string> categoryUrls = new List<string>();
+            bool hasCategory = false;
+            foreach (ElementCategory elementCategory in elementCategoriesList)
+            {
+                hasCategory = false;
+                foreach (string category in elementCategory.elementCategories)
+                {
+                    if (category == categoryName)
+                    {
+                        hasCategory = true;
+                    }
+                }
+
+                if (hasCategory)
+                {
+                    string cut = @"file://";
+                    string finalUrl = elementCategory.elementUrl.Replace(cut,"");
+                    categoryUrls.Add(finalUrl);
+                }
+            }
+
+            return categoryUrls;
+        }
+
+
+        //
+
         public void UpdateElementCategoriesList(string url, ElementCategory updatedElementCategory)
         {
             Debug.Log("Im updating");

@@ -14,7 +14,7 @@ namespace Vortices
         protected List<XRRayInteractor> rayInteractors;
         protected List<GameObject> groupList;
         protected GameObject normalCollider;
-        protected List<GameObject> followerCollider;
+        public List<GameObject> followerCollider;
         public GameObject followerColliderPrefab;
 
         // SpawnBase Data Components
@@ -59,7 +59,7 @@ namespace Vortices
         // Auxiliary References
         protected SessionManager sessionManager;
 
-        private void Awake()
+        private void OnEnable()
         {
             rayInteractors = new List<XRRayInteractor>();
             rayInteractors.Add(GameObject.Find("Ray Interactor Left").GetComponent<XRRayInteractor>());

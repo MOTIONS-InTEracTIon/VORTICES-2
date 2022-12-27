@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using System.Linq;
+using TMPro;
 
 namespace Vortices
 {
@@ -20,18 +21,25 @@ namespace Vortices
     {
         // Other references
         [SerializeField] private GameObject UIElementCategoryPrefab;
+        [SerializeField] private GameObject UISortCategoryPrefab;
         [SerializeField] private GameObject categorySelectorContent;
+        [SerializeField] private GameObject sortCategoryContent;
 
 
         // Panel UI Components
         [SerializeField] public List<GameObject> toolsUiComponents;
         [SerializeField] public List<Toggle> panelToggles;
 
-        public List<UIElementCategory> UIElementCategories;
 
+        public List<UIElementCategory> UIElementCategories;
+        public List<Toggle> UISortCategories;
 
         // Panel Properties
         public int actualComponentId { get; set; }
+
+        // Data
+        public List<List<string>> sessionCategoriesCount;
+        public string actualSortCategory;
 
         // Selection
         public Element actualSelectedElement;
@@ -40,6 +48,8 @@ namespace Vortices
         public List<string> elementSelectedCategories;
         public bool hadElement;
 
+        // Settings
+        public float sortingTime = 2.5f;
 
         // Other
         Color normalColor = new Color(0.2956568f, 0.3553756f, 0.4150943f, 1.0f);
@@ -48,11 +58,11 @@ namespace Vortices
         // Coroutine
         private bool isChangePanelRunning;
         private bool isUpdateRunning;
+        private bool isSortingRunning;
 
         // Auxiliary References
         private SessionManager sessionManager;
-        private CategoryController categoryController;
-        private ElementCategoryController elementCategoryController;
+
 
         private void Update()
         {
@@ -70,12 +80,14 @@ namespace Vortices
             canvas.worldCamera = Camera.main;
 
             sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
-            categoryController = sessionManager.categoryController;
-            elementCategoryController = sessionManager.elementCategoryController;
 
             // Make visible
             Fade toolsFader = GetComponent<Fade>();
             StartCoroutine(toolsFader.FadeInCoroutine());
+
+            // Initialize tools
+            InitializeToolsCategories();
+
         }
 
         #region User Input
@@ -158,6 +170,95 @@ namespace Vortices
             isChangePanelRunning = false;
         }
 
+        public void ApplySort(Toggle toggle)
+        {
+            // If a sort is applied, unapply
+            if (actualSortCategory == toggle.transform.parent.name)
+            {
+                if (!isSortingRunning)
+                {
+                    StartCoroutine(UnapplySortCoroutine(toggle));
+                }
+            }
+            else
+            {
+                if (!isSortingRunning)
+                {
+                    StartCoroutine(ApplySortCoroutine(toggle));
+                }
+            }
+        }
+
+        public IEnumerator ApplySortCoroutine(Toggle toggle)
+        {
+            isSortingRunning = true;
+
+            // Turn all toggles uninteractable with color disabled 
+            foreach (Toggle panelToggle in UISortCategories)
+            {
+                // They have to have color disabled
+                ColorBlock disabled = toggle.colors;
+                disabled.disabledColor = disabledColor;
+                panelToggle.colors = disabled;
+
+                panelToggle.interactable = false;
+            }
+
+            // DO STUFF REGARDING SORTING
+            // You get the category name
+            string categoryName = toggle.transform.parent.name;
+            // You ask elementCategoryController for all the urls that are in that category
+            List<string> categoryUrls = sessionManager.elementCategoryController.GetCategoryUrls(categoryName);
+            // You disable the main base
+            sessionManager.spawnController.placementBase.gameObject.SetActive(false);
+            // If the displaymode is radial, you deactivate the out of base colliders so the sort ones dont collide
+            if (sessionManager.displayMode == "Radial")
+            {
+                CircularSpawnBase circularBase = sessionManager.spawnController.placementBase.GetComponent<CircularSpawnBase>();
+                circularBase.followerCollider[0].gameObject.SetActive(false);
+                circularBase.followerCollider[1].gameObject.SetActive(false);
+            }
+            // You create sorting base
+            sessionManager.spawnController.UpdateSortBase(categoryUrls);
+
+            actualSortCategory = toggle.transform.parent.name;
+            // After the sort is done, to unsort you click again the toggle
+            yield return new WaitForSeconds(sortingTime);
+            toggle.interactable = true;
+
+            isSortingRunning = false;
+        }
+
+        public IEnumerator UnapplySortCoroutine(Toggle toggle)
+        {
+            isSortingRunning = true;
+
+            // DO STUFF REGARDING SORTING
+            sessionManager.spawnController.DestroySortBase();
+            sessionManager.spawnController.placementBase.gameObject.SetActive(true);
+            // If the displaymode is radial, you activate the out of base colliders
+            if (sessionManager.displayMode == "Radial")
+            {
+                CircularSpawnBase circularBase = sessionManager.spawnController.placementBase.GetComponent<CircularSpawnBase>();
+                circularBase.followerCollider[0].gameObject.SetActive(true);
+                circularBase.followerCollider[1].gameObject.SetActive(true);
+            }
+
+            actualSortCategory = "None";
+            yield return new WaitForSeconds(1.0f);
+            // Turn all toggles interactable with color normal
+            foreach (Toggle panelToggle in UISortCategories)
+            {
+                // They have to have color disabled normal
+                ColorBlock disabledBlack = panelToggle.colors;
+                disabledBlack.disabledColor = disabledColor;
+                panelToggle.colors = disabledBlack;
+                panelToggle.interactable = true;
+            }
+
+            isSortingRunning = false;
+        }
+
         public IEnumerator ChangePanelSelectedCoroutine()
         {
             bool categorizeStatus = toolsUiComponents[(int)Tools.Categorize].activeInHierarchy;
@@ -236,10 +337,7 @@ namespace Vortices
             }
 
             elementSelectedCategories = new List<string>();
-            UIElementCategories = new List<UIElementCategory>();
-            // Search for the categories to be used in CategoryController and it will add them to categorySelector UI object
-            AddUICategories();
-            SortUICategories();
+
             // Element will search for its categories in ElementCategoryController and will apply them to the categorySelector UI object
             GetSelectedCategories(selectedElement);
             actualSelectedElement = selectedElement;
@@ -251,6 +349,16 @@ namespace Vortices
             }
         }
 
+        public void InitializeToolsCategories()
+        {
+            UIElementCategories = new List<UIElementCategory>();
+            UISortCategories = new List<Toggle>();
+            // Search for the categories to be used in CategoryController and it will add them to categorySelector UI object
+            AddUICategories();
+            SortUICategories();
+            AddUISortingCategories();
+        }
+
         public void AddUICategories()
         {
             // Clear past UI Categories
@@ -260,7 +368,7 @@ namespace Vortices
             }
 
             // Ask CategoryController for every category to add
-            List<string> categories = categoryController.GetCategories();
+            List<string> categories = sessionManager.categoryController.GetCategories();
             foreach (string category in categories)
             {
                 // Add to UI component
@@ -307,11 +415,41 @@ namespace Vortices
             }
         }
 
-        // Extracts categories from elementCategoryController
+        public void AddUISortingCategories()
+        {
+            // Clear past UI Categories
+            foreach (Transform child in sortCategoryContent.transform)
+            {
+                Destroy(child.gameObject);
+            }
+            UISortCategories.Clear();
+            // Get actual category count
+            GetAllCategoryCount();
+            // Add category that has elements within it to sorting menu
+            foreach (List<string> categoryCount in sessionCategoriesCount)
+            {
+                if (int.Parse(categoryCount[1]) > 0)
+                {
+                    GameObject UISortingToggle = Instantiate(UISortCategoryPrefab, sortCategoryContent.transform);
+                    Toggle sortingToggle = UISortingToggle.transform.GetComponentInChildren<Toggle>();
+                    sortingToggle.transform.parent.gameObject.name = categoryCount[0];
+                    UISortCategories.Add(sortingToggle);
+                    List<TextMeshProUGUI> sortingToggleTexts = UISortingToggle.transform.GetComponentsInChildren<TextMeshProUGUI>().ToList();
+                    sortingToggleTexts[0].text = categoryCount[0];
+                    sortingToggleTexts[1].text = categoryCount[1];
+
+                    // Subscribe to applysort
+                    sortingToggle.onValueChanged.AddListener(delegate { ApplySort(sortingToggle); });
+                }
+            }
+        }
+
+
+        // Extracts categories from elementCategoryController of an element
         public void GetSelectedCategories(Element selectedElement)
         {
             // Get selectedCategories if there is any, if there isnt, create a blank entry of Element Category
-            elementCategory = elementCategoryController.GetSelectedCategories(selectedElement.url);
+            elementCategory = sessionManager.elementCategoryController.GetSelectedCategories(selectedElement.url);
             elementSelectedCategories = elementCategory.elementCategories;
             // Update UI Elements with said selected categories
             // Set all categories to false
@@ -334,6 +472,12 @@ namespace Vortices
                 }
             }
         }
+        // Extracts categories from elementCategoryController of all elements and counts them
+        public void GetAllCategoryCount()
+        {
+            // Get categories from elementCategoryController
+            sessionCategoriesCount = sessionManager.elementCategoryController.GetSessionCategoriesCount();
+        }
 
         public void AddToSelectedCategories(string categoryName)
         {
@@ -350,7 +494,9 @@ namespace Vortices
                 // Add to element categories
                 elementCategory.elementCategories = elementSelectedCategories;
                 // Send element categories back to category controller
-                elementCategoryController.UpdateElementCategoriesList(actualSelectedElement.url, elementCategory);
+                sessionManager.elementCategoryController.UpdateElementCategoriesList(actualSelectedElement.url, elementCategory);
+                // Update Sorting counters
+                AddUISortingCategories();
             }
         }
 
@@ -366,11 +512,12 @@ namespace Vortices
                 elementSelectedCategories.Sort();
                 // Update Categorized
                 UpdateCategorized();
-                // Add to elemen
                 // Add to element categories
                 elementCategory.elementCategories = elementSelectedCategories;
                 // Send element categories back to category controller
-                elementCategoryController.UpdateElementCategoriesList(actualSelectedElement.url, elementCategory);
+                sessionManager.elementCategoryController.UpdateElementCategoriesList(actualSelectedElement.url, elementCategory);
+                // Update Sorting counters
+                AddUISortingCategories();
             }
         }
 

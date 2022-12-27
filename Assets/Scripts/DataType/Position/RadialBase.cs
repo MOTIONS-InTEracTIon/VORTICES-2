@@ -76,7 +76,7 @@ namespace Vortices
             }
 
             SetMovementBoundBox();
-        }
+            }
 
         protected override void SetMovementBoundBox()
         {

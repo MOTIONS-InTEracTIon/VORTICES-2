@@ -13,25 +13,30 @@ namespace Vortices
 
         public override IEnumerator StartGenerateSpawnElements()
         {
-            // Fade old elements
             int fadeCoroutinesRunning = 0;
-
-            Fade defaultElementFader = defaultPicture.GetComponent<Fade>();
-            defaultElementFader.lowerAlpha = 0;
-            defaultElementFader.upperAlpha = 1;
-            TaskCoroutine fadeCoroutine = new TaskCoroutine(defaultElementFader.FadeOutCoroutine());
-            fadeCoroutine.Finished += delegate (bool manual)
+            // Fade old elements
+            if (defaultPicture != null)
             {
-                fadeCoroutinesRunning--;
-            };
-            fadeCoroutinesRunning++;
+                
 
-            while (fadeCoroutinesRunning > 0)
-            {
-                yield return null;
+                Fade defaultElementFader = defaultPicture.GetComponent<Fade>();
+                defaultElementFader.lowerAlpha = 0;
+                defaultElementFader.upperAlpha = 1;
+                TaskCoroutine fadeCoroutine = new TaskCoroutine(defaultElementFader.FadeOutCoroutine());
+                fadeCoroutine.Finished += delegate (bool manual)
+                {
+                    fadeCoroutinesRunning--;
+                };
+                fadeCoroutinesRunning++;
+
+                while (fadeCoroutinesRunning > 0)
+                {
+                    yield return null;
+                }
+
+                defaultPicture.SetActive(false);
             }
 
-            defaultPicture.SetActive(false);
             // Fill every element in the list 
             int spawnCoroutinesRunning = 0;
 

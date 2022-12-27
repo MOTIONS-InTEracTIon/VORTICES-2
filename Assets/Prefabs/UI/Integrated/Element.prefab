@@ -304,7 +304,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &2040862489700390578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -378,6 +378,8 @@ MonoBehaviour:
   categorizedNo: {fileID: 6402852440958001928}
   url: 
   selected: 0
+  hapticIntensity: 3
+  hapticDuration: 1
   selectionCoroutineRunning: 0
 --- !u!54 &-8441695823765458738
 Rigidbody:
