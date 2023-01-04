@@ -1166,6 +1166,7 @@ MonoBehaviour:
   Radius: 3.29
   StartAngleOffset: -428.3
   AlignToRadius: 1
+  NoCurve: 0
   LayoutAxis: 0
   SecondaryLayoutAxis: 2
   GridLayoutAxis: 1
@@ -1983,6 +1984,7 @@ MonoBehaviour:
   Radius: 3.29
   StartAngleOffset: -428.3
   AlignToRadius: 1
+  NoCurve: 0
   LayoutAxis: 0
   SecondaryLayoutAxis: 2
   GridLayoutAxis: 1
@@ -2181,6 +2183,7 @@ MonoBehaviour:
   Radius: -11.7
   StartAngleOffset: 0
   AlignToRadius: 1
+  NoCurve: 0
   LayoutAxis: 0
   SecondaryLayoutAxis: 2
   GridLayoutAxis: 1
@@ -4770,6 +4773,7 @@ MonoBehaviour:
   Radius: 0
   StartAngleOffset: 0
   AlignToRadius: 0
+  NoCurve: 0
   LayoutAxis: 0
   SecondaryLayoutAxis: 1
   GridLayoutAxis: 0
@@ -5276,6 +5280,7 @@ MonoBehaviour:
   Radius: 8.9
   StartAngleOffset: 27.4
   AlignToRadius: 1
+  NoCurve: 0
   LayoutAxis: 0
   SecondaryLayoutAxis: 2
   GridLayoutAxis: 1
@@ -5732,6 +5737,7 @@ MonoBehaviour:
   Radius: 0
   StartAngleOffset: 0
   AlignToRadius: 0
+  NoCurve: 0
   LayoutAxis: 0
   SecondaryLayoutAxis: 0
   GridLayoutAxis: 0

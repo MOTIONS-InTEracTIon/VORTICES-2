@@ -71,7 +71,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAQEgIAABIBAAAAAAgkAAAAEiAEFAKAQAgICA=</HashCode>
+      <HashCode>AAAAAAAAQEgIAABIBAAAAAAgkAAAAEiAEFAKAQggICA=</HashCode>
       <FileName>Assets\Scripts\DataType\Position\MuseumElement.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -86,7 +86,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAABAAAQAIAQQACAAEAAQICgAAAAAEFgABAAAAAAAA=</HashCode>
+      <HashCode>AAQABAAAYAIAQQACAAEAAQICgAAAAAEFgABAAAAAAAA=</HashCode>
       <FileName>Assets\Scripts\DataType\Position\PlaneBase.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -114,7 +114,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAARAIAQAoABQACgCEAAQICgAAAAEEEAABAwCAAAAI=</HashCode>
+      <HashCode>AAQARAIAYAoABQACgCEAAQICgAAAAEEEAABAwCAAAAI=</HashCode>
       <FileName>Assets\Scripts\DataType\Position\RadialBase.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -150,17 +150,19 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>EAgQAAAgERkiFUBAAjQARxKpAAIIAEEEApQFCCQGAMA=</HashCode>
+      <HashCode>GAAAAAAgMREAEwDAgiQAABYhAAIJUAQBABABSgQAAIA=</HashCode>
       <FileName>Assets\Scripts\UI\Integrated\Element.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Vortices.MainMenuPanel" Collapsed="true">
-    <Position X="6.5" Y="2.5" Width="1.5" />
-    <InheritanceLine Type="UnityEngine.MonoBehaviour" FixedToPoint="true">
+    <Position X="8.25" Y="1.75" Width="1.5" />
+    <InheritanceLine Type="UnityEngine.MonoBehaviour" ManuallyRouted="true" FixedToPoint="true">
       <Path>
         <Point X="5.25" Y="5.25" />
-        <Point X="5.25" Y="2.875" />
-        <Point X="6.5" Y="2.875" />
+        <Point X="5.25" Y="2.475" />
+        <Point X="8.127" Y="2.475" />
+        <Point X="8.127" Y="2.125" />
+        <Point X="8.25" Y="2.125" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -202,7 +204,7 @@
       <Compartment Name="Properties" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>QB+KTAAATEqAFwACADEQA4JKQBAgAUEMABRCEAAgAGA=</HashCode>
+      <HashCode>QB+KTAAATEqAFwACADEQA4JKQBAgAUEMABRCEAAgCCA=</HashCode>
       <FileName>Assets\Scripts\DataType\Abstract\CircularSpawnBase.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -222,8 +224,38 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAAAgCEAAAAAAAAAAAAAIAAAAQAAAAA=</HashCode>
+      <HashCode>AAAAAAAAICAAAAAAgCEAAAAAAAAAAAAAIAAAAQAAAAA=</HashCode>
       <FileName>Assets\Scripts\UI\InfoPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Vortices.HandKeyboard" Collapsed="true">
+    <Position X="6.5" Y="2.5" Width="1.5" />
+    <InheritanceLine Type="UnityEngine.MonoBehaviour" FixedToPoint="true">
+      <Path>
+        <Point X="5.25" Y="5.25" />
+        <Point X="5.25" Y="2.812" />
+        <Point X="6.5" Y="2.812" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAIMACAAAMAAAAAJAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\UI\HandKeyboard.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Vortices.RighthandTools" Collapsed="true">
+    <Position X="8.25" Y="2.5" Width="1.5" />
+    <InheritanceLine Type="UnityEngine.MonoBehaviour" ManuallyRouted="true">
+      <Path>
+        <Point X="5.25" Y="5.25" />
+        <Point X="5.25" Y="3.299" />
+        <Point X="8.116" Y="3.299" />
+        <Point X="8.116" Y="2.812" />
+        <Point X="8.25" Y="2.812" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AASAAQAkCADChQIAKjICTxAMAAAEgAREggRgASAAFAA=</HashCode>
+      <FileName>Assets\Scripts\UI\RighthandTools.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
