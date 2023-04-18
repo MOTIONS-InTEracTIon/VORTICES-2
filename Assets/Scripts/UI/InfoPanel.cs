@@ -11,6 +11,7 @@ namespace Vortices
     {
         // Other references
         [SerializeField] Button startButton;
+        [SerializeField] Button returnButton;
 
         // Auxiliary References
         private SessionManager sessionManager;
@@ -28,6 +29,7 @@ namespace Vortices
         {
             yield return new WaitForSeconds(sessionManager.initializeTime + 3.0f);
             startButton.interactable = true;
+            returnButton.interactable = true;
         }
 
         public void Spawn ()

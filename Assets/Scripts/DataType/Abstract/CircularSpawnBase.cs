@@ -11,26 +11,15 @@ namespace Vortices
     public abstract class CircularSpawnBase : MonoBehaviour
     {
         // Other references
-        protected List<XRRayInteractor> rayInteractors;
         protected List<GameObject> groupList;
-        protected GameObject normalCollider;
-        public List<GameObject> followerCollider;
-        public GameObject followerColliderPrefab;
 
         // SpawnBase Data Components
         [HideInInspector] public List<string> filePaths;
         [HideInInspector] public string rootUrl { get; set; }
 
         // Movement variables
-        protected XRRayInteractor currentlySelecting;
         protected int globalIndex;
         protected bool lastLoadForward;
-        protected Vector3 initialDragPos;
-        protected Vector3 initialDragDist;
-        protected bool hasAxis;
-        public string dragDir;
-        protected bool drag;
-        protected Vector3 offset = Vector3.zero;
 
         // Settings
         [HideInInspector] public Vector3Int dimension { get; set; }
@@ -44,6 +33,7 @@ namespace Vortices
         public float timeLerp = 1f;
         public float softFadeUpperAlpha = 0.6f;
         protected float movementOffset = 0.1f;
+        public string moveElementDirection;
 
         // Bounds
         protected LayoutGroup3D layoutGroup;
@@ -61,11 +51,9 @@ namespace Vortices
 
         private void OnEnable()
         {
-            rayInteractors = new List<XRRayInteractor>();
-            rayInteractors.Add(GameObject.Find("Ray Interactor Left").GetComponent<XRRayInteractor>());
-            rayInteractors.Add(GameObject.Find("Ray Interactor Right").GetComponent<XRRayInteractor>());
-
             sessionManager = GameObject.FindObjectOfType<SessionManager>();
+
+            moveElementDirection = "";
 
             //Start Coroutine Coordinator
             coroutineQueue = new Queue<IEnumerator>();
@@ -76,9 +64,6 @@ namespace Vortices
 
         // Every base creates its first set of spawn groups differently
         public abstract void StartGenerateSpawnGroup();
-
-        // Every base creates its control movement box collider differently
-        protected abstract void SetMovementBoundBox();
 
         protected void MoveGlobalIndex(bool forwards)
         {
@@ -171,106 +156,16 @@ namespace Vortices
                 afterSpawnTime += Time.deltaTime;
             }
 
-            if (frontGroup != null)
+            if (frontGroup != null && moveElementDirection != "")
             {
-                if (drag)
-                {
-                    GetMotionInput();
-                }
                 // Execute action assigned to drag direction
-                PerformAction();
+                PerformAction(moveElementDirection);
             }
         }
 
-        private void GetMotionInput()
-        {
-            Vector3 position; Vector3 normal; int positionInLine; bool isValidTarget;
-            if (currentlySelecting.TryGetHitInfo(out position, out normal, out positionInLine, out isValidTarget))
-            {
-                // This makes sure the dragging of elements is in one axis only
-                if (!hasAxis)
-                {
-                    Vector3 distanceXY = position - initialDragPos;
-                    Vector3 distanceZ = position - currentlySelecting.rayOriginTransform.position;
 
-                    if (distanceZ.magnitude > (initialDragDist.magnitude + movementOffset))
-                    {
-                        hasAxis = true;
-                        dragDir = "Pull";
-                    }
-                    else if (distanceZ.magnitude < (initialDragDist.magnitude - movementOffset))
-                    {
-                        hasAxis = true;
-                        dragDir = "Push";
-                    }
-                    else if (Mathf.Abs(distanceXY.x) > Mathf.Abs(distanceXY.y))
-                    {
-                        if (distanceXY.x < -movementOffset)
-                        {
-                            dragDir = "Left";
-                            hasAxis = true;
-                        }
-                        else if (distanceXY.x > movementOffset)
-                        {
-                            dragDir = "Right";
-                            hasAxis = true;
-                        }
-                    }
-                    else if (Mathf.Abs(distanceXY.x) < Mathf.Abs(distanceXY.y))
-                    {
-                        if (distanceXY.y < -movementOffset)
-                        {
-                            dragDir = "Down";
-                            hasAxis = true;
-                        }
-                        else if (distanceXY.y > movementOffset)
-                        {
-                            dragDir = "Up";
-                            hasAxis = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Different bases do different things according to the actual dragDir
-        protected abstract void PerformAction();
-
-        // Initializes drag operation when grabbing base collider
-        public void MoveToCursor(SelectEnterEventArgs args)
-        {
-            if (rayInteractors[0].isSelectActive)
-            {
-                currentlySelecting = rayInteractors[0];
-            }
-            else if (rayInteractors[1].isSelectActive)
-            {
-                currentlySelecting = rayInteractors[1];
-            }
-
-            Vector3 position;
-            Vector3 normal;
-            int positionInLine;
-            bool isValidTarget;
-            if (currentlySelecting.TryGetHitInfo(out position, out normal, out positionInLine, out isValidTarget))
-            {
-                initialDragPos = position;
-                initialDragDist = currentlySelecting.rayOriginTransform.position - position;
-                position.z = transform.position.z;
-                offset = transform.position - position;
-                drag = true;
-            }
-        }
-
-        // Disables drag operation and resets variables for the next drag operation
-        public void StopMoveToCursor(SelectExitEventArgs args)
-        {
-            currentlySelecting = null;
-            drag = false;
-            offset = Vector3.zero;
-            hasAxis = false;
-            dragDir = "";
-        }
+        // Different bases do different things according to the actual dragDir (Element movement)
+        protected abstract void PerformAction(string moveDir);
 
         private IEnumerator CoroutineCoordinator()
         {

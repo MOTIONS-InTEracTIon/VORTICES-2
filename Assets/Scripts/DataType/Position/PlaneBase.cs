@@ -66,138 +66,109 @@ namespace Vortices
                 }
                 StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, softFadeIn));
             }
-
-            SetMovementBoundBox();
-        }
-
-        protected override void SetMovementBoundBox()
-        {
-            if (normalCollider == null)
-            {
-                Vector3 positionOffset = new Vector3(0, 1.5f, 0.47f); // sacale la mano cambiar orden url
-                normalCollider = Instantiate(followerColliderPrefab, positionOffset, frontGroup.transform.rotation, transform);
-                XRGrabInteractable grabInteractable = normalCollider.GetComponent<XRGrabInteractable>();
-                grabInteractable.selectEntered.AddListener(MoveToCursor);
-                grabInteractable.selectExited.AddListener(StopMoveToCursor);
-            }
-            // Uses first plane layout to set bound box
-            layoutGroup = frontGroup.GetComponent<LayoutGroup3D>();
-            // Generates Collider Box for moving
-            BoxCollider boxCollider = normalCollider.GetComponent<BoxCollider>();
-            boxCollider.center = Vector3.zero;
-            boxCollider.size = new Vector3((layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * dimension.x, (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * dimension.y, 0.001f);
-            // Generates bounds using dimension given (Box from the left side to its down side)
-            centerPosition = transform.position;
-            bounds.w = -centerPosition.x - (layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * ((dimension.x - 1) / 2);
-            bounds.x = centerPosition.y + (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
-            bounds.y = centerPosition.x + (layoutGroup.ElementDimensions.x + layoutGroup.Spacing) * ((dimension.x - 1) / 2);
-            bounds.z = centerPosition.y - (layoutGroup.ElementDimensions.y + layoutGroup.Spacing) * ((dimension.y - 1) / 2);
         }
 
         #endregion
 
         #region Input
         // Changed so it only spawns when pulling or pushing
-        protected override void PerformAction()
+        protected override void PerformAction(string moveDir)
         {
-            if (drag && dragDir != "" )
+            Vector3 center = frontGroup.transform.position;
+            // This means the base has been pulled and will spawn inwards
+            if (dimension.z > 1 && moveDir == "Pull")
             {
-                Vector3 center = frontGroup.transform.position;
-                // This means the base has been pulled and will spawn inwards
-                if (dimension.z > 1 && dragDir == "Pull")
+                if (afterSpawnTime >= spawnCooldownZ && !movingOperationRunning)
                 {
-                    if (afterSpawnTime >= spawnCooldownZ && !movingOperationRunning)
+                    afterSpawnTime = 0;
+                    if (browsingMode == "Local")
                     {
-                        afterSpawnTime = 0;
-                        if (browsingMode == "Local")
-                        {
-                            spawnController.ResetElements();
-                            coroutineQueue.Enqueue(GroupSpawnPull());
-                        }
-                        else if (browsingMode == "Online")
-                        {
-                            coroutineQueue.Enqueue(GroupPull());
-                        }
+                        spawnController.ResetElements();
+                        coroutineQueue.Enqueue(GroupSpawnPull());
+                    }
+                    else if (browsingMode == "Online")
+                    {
+                        coroutineQueue.Enqueue(GroupPull());
+                    }
 
+                }
+            }
+            // This means the base has been pushed and will spawn outwards
+            else if (dimension.z > 1 && moveDir == "Push")
+            {
+                if (afterSpawnTime >= spawnCooldownZ && !movingOperationRunning)
+                {
+                    afterSpawnTime = 0;
+                    if (browsingMode == "Local")
+                    {
+                        spawnController.ResetElements();
+                        coroutineQueue.Enqueue(GroupSpawnPush());
+                    }
+                    else if (browsingMode == "Online")
+                    {
+                        coroutineQueue.Enqueue(GroupPush());
                     }
                 }
-                // This means the base has been pushed and will spawn outwards
-                else if (dimension.z > 1 && dragDir == "Push")
+            }
+            // This means the base has touched the left bound and will spawn
+            else if (moveDir == "Left")
+            {
+                if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                 {
-                    if (afterSpawnTime >= spawnCooldownZ && drag && !movingOperationRunning)
+                    afterSpawnTime = 0;
+                    if (browsingMode == "Local" /* && ((center.x + boundOffset) > bounds.w && (center.x - boundOffset) > bounds.w)*/)
                     {
-                        afterSpawnTime = 0;
-                        if (browsingMode == "Local")
-                        {
-                            spawnController.ResetElements();
-                            coroutineQueue.Enqueue(GroupSpawnPush());
-                        }
-                        else if (browsingMode == "Online")
-                        {
-                            coroutineQueue.Enqueue(GroupPush());
-                        }
+                        coroutineQueue.Enqueue(GroupLeft());
+                    }
+                    else if (browsingMode == "Online")
+                    {
+                        coroutineQueue.Enqueue(GroupLeft());
                     }
                 }
-                // This means the base has touched the left bound and will spawn
-                else if (dragDir == "Left")
+            }
+            // This means the base has touched the right bound and will spawn
+            else if (moveDir == "Right")
+            {
+                if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
                 {
-                    if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
+                    afterSpawnTime = 0;
+                    if (browsingMode == "Local" /* && ((center.x + boundOffset) < bounds.y && (center.x - boundOffset) < bounds.y)*/)
                     {
-                        afterSpawnTime = 0;
-                        if (browsingMode == "Local" /* && ((center.x + boundOffset) > bounds.w && (center.x - boundOffset) > bounds.w)*/)
-                        {
-                            coroutineQueue.Enqueue(GroupLeft());
-                        }
-                        else if (browsingMode == "Online")
-                        {
-                            coroutineQueue.Enqueue(GroupLeft());
-                        }
+                        coroutineQueue.Enqueue(GroupRight());
+                    }
+                    else if (browsingMode == "Online")
+                    {
+                        coroutineQueue.Enqueue(GroupRight());
                     }
                 }
-                // This means the base has touched the right bound and will spawn
-                else if (dragDir == "Right")
+            }
+            else if (moveDir == "Up")
+            {
+                if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
                 {
-                    if (afterSpawnTime >= spawnCooldownX && !movingOperationRunning)
+                    afterSpawnTime = 0;
+                    if (browsingMode == "Local")
                     {
-                        afterSpawnTime = 0;
-                        if (browsingMode == "Local" /* && ((center.x + boundOffset) < bounds.y && (center.x - boundOffset) < bounds.y)*/)
-                        {
-                            coroutineQueue.Enqueue(GroupRight());
-                        }
-                        else if (browsingMode == "Online")
-                        {
-                            coroutineQueue.Enqueue(GroupRight());
-                        }
+                        coroutineQueue.Enqueue(GroupUp());
+                    }
+                    else if (browsingMode == "Online")
+                    {
+                        coroutineQueue.Enqueue(GroupUp());
                     }
                 }
-                else if (dragDir == "Up")
+            }
+            else if (moveDir == "Down")
+            {
+                if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
                 {
-                    if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
+                    afterSpawnTime = 0;
+                    if (browsingMode == "Local")
                     {
-                        afterSpawnTime = 0;
-                        if (browsingMode == "Local")
-                        {
-                            coroutineQueue.Enqueue(GroupUp());
-                        }
-                        else if (browsingMode == "Online")
-                        {
-                            coroutineQueue.Enqueue(GroupUp());
-                        }
+                        coroutineQueue.Enqueue(GroupDown());
                     }
-                }
-                else if (dragDir == "Down")
-                {
-                    if (afterSpawnTime >= spawnCooldownX && !lerpToPositionRunning)
+                    else if (browsingMode == "Online")
                     {
-                        afterSpawnTime = 0;
-                        if (browsingMode == "Local")
-                        {
-                            coroutineQueue.Enqueue(GroupDown());
-                        }
-                        else if (browsingMode == "Online")
-                        {
-                            coroutineQueue.Enqueue(GroupDown());
-                        }
+                        coroutineQueue.Enqueue(GroupDown());
                     }
                 }
             }

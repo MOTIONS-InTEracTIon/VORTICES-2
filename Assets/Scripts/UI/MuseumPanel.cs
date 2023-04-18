@@ -46,6 +46,8 @@ namespace Vortices
         public void AddBrowserToComponents()
         {
             uiComponents[(int)MuseumId.FileBrowser] = GameObject.Find("SimpleFileBrowserCanvas(Clone)");
+            FileBrowser fileBrowser = uiComponents[(int)MuseumId.FileBrowser].GetComponent<FileBrowser>();
+            fileBrowser.SetAsPersistent(false);
         }
 
         // Handles block next button rules per component
@@ -117,7 +119,8 @@ namespace Vortices
         }
         public void RemoveBrowserFromComponents()
         {
-            Destroy(uiComponents[(int)MuseumId.FileBrowser].gameObject);
+            FileBrowser fileBrowser = uiComponents[(int)CircularId.FileBrowser].GetComponent<FileBrowser>();
+            fileBrowser.SetAsPersistent(true);
         }
 
         // Sets starting Url for online mode

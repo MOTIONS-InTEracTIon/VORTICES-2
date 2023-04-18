@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
-
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Vortices
 {
@@ -44,9 +44,11 @@ namespace Vortices
                 righthandTools.Initialize();
             }
 
+
             // A fork for every environment possible
             if (sessionManager.environmentName == "Circular")
             {
+                CircularSpawnBase spawnBase = null;
                 // A fork for every base compatible with environment
                 if (sessionManager.displayMode == "Plane")
                 {
@@ -56,7 +58,7 @@ namespace Vortices
                     {
                         sortingBase = Instantiate(placementCircularBasePrefabs[0], spawnGroup.transform.position + positionOffset, placementCircularBasePrefabs[0].transform.rotation, spawnGroup.transform);
                         
-                        CircularSpawnBase spawnBase = sortingBase.GetComponent<CircularSpawnBase>();
+                        spawnBase = sortingBase.GetComponent<CircularSpawnBase>();
                         spawnBase.displayMode = sessionManager.displayMode;
                         spawnBase.dimension = sessionManager.dimension;
                         spawnBase.volumetric = sessionManager.volumetric;
@@ -70,7 +72,7 @@ namespace Vortices
                     {
                         placementBase = Instantiate(placementCircularBasePrefabs[0], spawnGroup.transform.position + positionOffset, placementCircularBasePrefabs[0].transform.rotation, spawnGroup.transform);
 
-                        CircularSpawnBase spawnBase = placementBase.GetComponent<CircularSpawnBase>();
+                        spawnBase = placementBase.GetComponent<CircularSpawnBase>();
                         spawnBase.displayMode = sessionManager.displayMode;
                         spawnBase.dimension = sessionManager.dimension;
                         spawnBase.volumetric = sessionManager.volumetric;
@@ -88,8 +90,6 @@ namespace Vortices
 
                         spawnBase.StartGenerateSpawnGroup();
                     }
-
-
                 }
                 else if (sessionManager.displayMode == "Radial")
                 {
@@ -97,7 +97,7 @@ namespace Vortices
                     {
                         sortingBase = Instantiate(placementCircularBasePrefabs[1], spawnGroup.transform.position, placementCircularBasePrefabs[1].transform.rotation, spawnGroup.transform);
 
-                        CircularSpawnBase spawnBase = sortingBase.GetComponent<CircularSpawnBase>();
+                        spawnBase = sortingBase.GetComponent<CircularSpawnBase>();
                         spawnBase.displayMode = sessionManager.displayMode;
                         spawnBase.dimension = sessionManager.dimension;
                         spawnBase.volumetric = sessionManager.volumetric;
@@ -111,7 +111,7 @@ namespace Vortices
                     {
                         placementBase = Instantiate(placementCircularBasePrefabs[1], spawnGroup.transform.position, placementCircularBasePrefabs[1].transform.rotation, spawnGroup.transform);
 
-                        CircularSpawnBase spawnBase = placementBase.GetComponent<CircularSpawnBase>();
+                        spawnBase = placementBase.GetComponent<CircularSpawnBase>();
                         spawnBase.displayMode = sessionManager.displayMode;
                         spawnBase.dimension = sessionManager.dimension;
                         spawnBase.volumetric = sessionManager.volumetric;
@@ -130,6 +130,12 @@ namespace Vortices
                         spawnBase.StartGenerateSpawnGroup();
                     }
                 }
+
+                // Enable control of the base via MoveGizmo
+                GameObject.Find("LeftHand Controller").GetComponent<MoveGizmo>().enabled = true;
+                GameObject.Find("LeftHand Controller").GetComponent<MoveGizmo>().Initialize(spawnBase);
+                GameObject.Find("RightHand Controller").GetComponent<MoveGizmo>().enabled = true;
+                GameObject.Find("RightHand Controller").GetComponent<MoveGizmo>().Initialize(spawnBase);
             }
             else if (sessionManager.environmentName == "Museum")
             {
@@ -152,6 +158,9 @@ namespace Vortices
                             spawnBase.browsingMode = sessionManager.browsingMode;
                             spawnBase.rootUrl = sessionManager.rootUrl;
                         }
+                        // Unlock Teleportation
+
+                        GameObject.Find("XR Origin").GetComponent<TeleportationProvider>().enabled = true;
 
                         StartCoroutine(spawnBase.StartGenerateSpawnElements());
                     }
@@ -194,7 +203,7 @@ namespace Vortices
             {
                 if (placementBase != null)
                 {
-                    // Fork for every environment possible 
+                    // Fork for every environment with destroyable elements 
                     if (sessionManager.displayMode == "Circular")
                     {
                         CircularSpawnBase circularSpawnBase = placementBase.GetComponent<CircularSpawnBase>();

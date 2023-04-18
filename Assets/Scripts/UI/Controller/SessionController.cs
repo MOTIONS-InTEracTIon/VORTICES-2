@@ -16,8 +16,10 @@ namespace Vortices
         [SerializeField] private GameObject scrollviewContent;
         [SerializeField] private TextInputField sessionAddInputField;
         [SerializeField] private TextInputField userIdInputField;
+        [SerializeField] private List<Toggle> environmentToggles;
         [SerializeField] private GameObject UISessionPrefab;
         [SerializeField] private Button continueButton;
+        [SerializeField] private TextMeshProUGUI alertText;
         [SerializeField] private SessionManager sessionManager;
 
         // Data
@@ -26,6 +28,13 @@ namespace Vortices
         public string selectedSession;
         public int selectedUserId;
         public string selectedEnvironment;
+
+        // Settings
+        private float alertDuration = 5.0f;
+        private float alertFadeTime = 0.3f;
+
+        // Coroutine
+        private bool alertCoroutineRunning;
 
 
         private void OnEnable()
@@ -42,7 +51,14 @@ namespace Vortices
             sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
 
             selectedUserId = -1;
+            userIdInputField.inputfield.text = "";
+            userIdInputField.placeholder.enabled = true;
             selectedEnvironment = "";
+            foreach(Toggle toggle in environmentToggles)
+            {
+                toggle.isOn = false;
+                toggle.interactable = true;
+            }
             // When initialized will try to load sessions, will create a new session list otherwise
             LoadSessions();
             // Categories will be added to UI Components
@@ -192,12 +208,39 @@ namespace Vortices
         // Id Configuration
         public void SetUserId()
         {
-            int userId = userIdInputField.GetDataInt();
-            if (userId > -1)
+            string userId = userIdInputField.GetData();
+
+            if (userId == "")
             {
-                this.selectedUserId = userId;
+                return;
             }
 
+            // Check if Id is only a number otherwise fail the user set
+            foreach (char c in userId)
+            {
+
+                if (c < '0' || c > '9')
+                {
+                    if(!alertCoroutineRunning)
+                    {
+                        StartCoroutine(SetAlert("User ID must be 0 or higher"));
+                    }
+                    return;
+                }
+            }
+
+            int userIdInt = int.Parse(userId);
+
+            if (userIdInt <= -1)
+            {
+                if(!alertCoroutineRunning)
+                {
+                    StartCoroutine(SetAlert("User ID must be 0 or higher"));
+                }
+                return;
+            }
+
+            this.selectedUserId = userIdInt;
         }
 
         // Environment Configuration
@@ -276,6 +319,46 @@ namespace Vortices
         }
 
         #endregion
+
+        #region UI Alert
+
+        private IEnumerator SetAlert(string alertMessage)
+        {
+            alertCoroutineRunning = true;
+            // Set message to alert
+            alertText.text = alertMessage;
+
+            // Initiate operation to change its opacity to 1 then 0
+            CanvasGroup alertTextCanvasGroup = alertText.gameObject.GetComponent<CanvasGroup>();
+            
+            float timer = 0;
+            while (timer <= alertFadeTime)
+            {
+                float newAlpha = Mathf.Lerp(0, 1, timer / alertFadeTime);
+                alertTextCanvasGroup.alpha = newAlpha;
+
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            alertTextCanvasGroup.alpha = 1;
+
+            yield return new WaitForSeconds(alertDuration);
+
+            timer = 0;
+            while (timer <= alertFadeTime)
+            {
+                float newAlpha = Mathf.Lerp(1, 0, timer / alertFadeTime);
+                alertTextCanvasGroup.alpha = newAlpha;
+
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            alertTextCanvasGroup.alpha = 0;
+            alertCoroutineRunning = false;
+        }
+
+        #endregion
+
 
     }
 

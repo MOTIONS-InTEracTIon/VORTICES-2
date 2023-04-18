@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using TMPro;
 
 using System.Linq;
+using System;
 
 namespace Vortices
 {
@@ -27,6 +28,7 @@ namespace Vortices
 
         public TMP_Dropdown resolutionDropdown;
         public TMP_Dropdown refreshRateDropdown;
+        public TMP_Dropdown qualitySettingsDropdown;
 
         private void Start()
         {
@@ -52,6 +54,10 @@ namespace Vortices
             resolutionDropdown.value = currentResolutionIndex;
             resolutionDropdown.RefreshShownValue();
 
+            qualitySettingsDropdown.value = QualitySettings.GetQualityLevel();
+            Console.WriteLine("quality " + qualitySettingsDropdown.value);
+            qualitySettingsDropdown.RefreshShownValue();
+
             refreshRateDropdown.ClearOptions();
 
             Unity.XR.Oculus.Performance.TryGetAvailableDisplayRefreshRates(out refreshRates);
@@ -59,23 +65,36 @@ namespace Vortices
 
             List<string> rateOptions = new List<string>();
             int currentRateIndex = 0;
-            for(int i = 0; i < refreshRates.Length; i++)
+            if(refreshRates.Length > 0)
             {
-                string option = refreshRates[i].ToString();
-                rateOptions.Add(option);
-
-                float currentRate;
-                Unity.XR.Oculus.Performance.TryGetDisplayRefreshRate(out currentRate);
-                if (refreshRates[i] == currentRate)
+                for (int i = 0; i < refreshRates.Length; i++)
                 {
-                    currentRateIndex = i;
+                    string option = refreshRates[i].ToString();
+                    rateOptions.Add(option);
+
+                    float currentRate;
+                    Unity.XR.Oculus.Performance.TryGetDisplayRefreshRate(out currentRate);
+                    if (refreshRates[i] == currentRate)
+                    {
+                        currentRateIndex = i;
+                    }
                 }
+
+                refreshRateDropdown.AddOptions(rateOptions);
+                refreshRateDropdown.value = currentRateIndex;
+                refreshRateDropdown.RefreshShownValue();
+            }
+            else
+            {
+                rateOptions.Add("Screen Rate");
+                refreshRateDropdown.AddOptions(rateOptions);
+                refreshRateDropdown.RefreshShownValue();
             }
 
-            refreshRateDropdown.AddOptions(rateOptions);
-            refreshRateDropdown.value = currentRateIndex;
-            refreshRateDropdown.RefreshShownValue();
 
+
+   
+            
         }
 
         public void SetResolution(int resolutionIndex)

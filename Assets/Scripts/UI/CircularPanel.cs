@@ -30,12 +30,22 @@ namespace Vortices
     {
         #region Variables and properties
 
+        // Other references
+        [SerializeField] private TextMeshProUGUI alertText;
+
         // Circular Panel Properties
         public int displayMode { get; set; }
         public int browsingMode { get; set; }
         public bool volumetric { get; set; }
         public Vector3Int dimension;
         public string rootUrl { get; set; }
+
+        // Settings
+        private float alertDuration = 5.0f;
+        private float alertFadeTime = 0.3f;
+
+        // Coroutine
+        private bool alertCoroutineRunning;
 
         private void OnEnable()
         {
@@ -52,11 +62,14 @@ namespace Vortices
         public void AddBrowserToComponents()
         {
             uiComponents[(int)CircularId.FileBrowser] = GameObject.Find("SimpleFileBrowserCanvas(Clone)");
+            FileBrowser fileBrowser = uiComponents[(int)CircularId.FileBrowser].GetComponent<FileBrowser>();
+            fileBrowser.SetAsPersistent(false);
         }
 
         public void RemoveBrowserFromComponents()
-        {
-            Destroy(uiComponents[(int)CircularId.FileBrowser].gameObject);
+        { 
+            FileBrowser fileBrowser = uiComponents[(int)CircularId.FileBrowser].GetComponent<FileBrowser>();
+            fileBrowser.SetAsPersistent(true);
         }
 
         // Handles block next button rules per component
@@ -80,12 +93,26 @@ namespace Vortices
                     {
                         hasToBlock = false;
                     }
+                    else if (optionFilePath.filePaths != null && optionFilePath.filePaths.Count == 0)
+                    {
+                        if (!alertCoroutineRunning)
+                        {
+                            StartCoroutine(SetAlert("File path chosen has no compatible extension files"));
+                        }
+                    }
                     break;
                 // Online mode has a default url so it starts enabled, disabled if no url
                 case (int)CircularId.BrowsingOnline:
                     if (optionRootUrl.text.text != "" || optionRootUrl.placeholder.text != "")
                     {
                         hasToBlock = false;
+                    }
+                    else
+                    {
+                        if (!alertCoroutineRunning)
+                        {
+                            StartCoroutine(SetAlert("Url is not valid"));
+                        }
                     }
                     break;
                 // Display mode has to be selected
@@ -97,23 +124,90 @@ namespace Vortices
                         hasToBlock = false;
                     }
                     break;
-                // Height, Width and layers have to be bigger than 0
-                case (int)CircularId.DistributionPlane1: 
-                case (int)CircularId.DistributionPlane2: 
-                case (int)CircularId.DistributionPlane3: 
-                case (int)CircularId.DistributionRadial1: 
-                case (int)CircularId.DistributionRadial2: 
+                // Height, Width and layers have to be bigger than 0...
+                case (int)CircularId.DistributionPlane1:
+                case (int)CircularId.DistributionPlane2:
+                case (int)CircularId.DistributionPlane3:
+                case (int)CircularId.DistributionRadial2:
                 case (int)CircularId.DistributionRadial3:
                     string input = uiComponents[componentId].GetComponentInChildren<TMP_InputField>().text;
+
+                    // Check if Input is only a number otherwise block the button
+                    if (input == "")
+                    {
+                        break;
+                    }
+
+                    foreach (char c in input)
+                    {
+
+                        if (c < '0' || c > '9')
+                        {
+                            if (!alertCoroutineRunning)
+                            {
+                                StartCoroutine(SetAlert("Value must be a number"));
+                            }
+                            break;
+                        }
+                    }
+
                     int value = 0;
                     try
                     {
                         value = int.Parse(input);
                     }
-                    catch {}
-                    if(value > 0)
+                    catch { }
+                    if (value > 0)
                     {
                         hasToBlock = false;
+                    }
+                    else
+                    {
+                        if (!alertCoroutineRunning)
+                        {
+                            StartCoroutine(SetAlert("Value has to be higher than 0"));
+                        }
+                    }
+                    break;
+                // ...Except DistributionRadial1 which needs at least 3 elements in each ring
+                case (int)CircularId.DistributionRadial1:
+                    string radial1input = uiComponents[componentId].GetComponentInChildren<TMP_InputField>().text;
+
+                    if (radial1input == "")
+                    {
+                        break;
+                    }
+
+                    // Check if Input is only a number otherwise block the button
+                    foreach (char c in radial1input)
+                    {
+
+                        if (c < '0' || c > '9')
+                        {
+                            if (!alertCoroutineRunning)
+                            {
+                                StartCoroutine(SetAlert("Value must be a number"));
+                            }
+                            break;
+                        }
+                    }
+
+                    int radial1value = 0;
+                    try
+                    {
+                        radial1value = int.Parse(radial1input);
+                    }
+                    catch { }
+                    if (radial1value > 2)
+                    {
+                        hasToBlock = false;
+                    }
+                    else
+                    {
+                        if (!alertCoroutineRunning)
+                        {
+                            StartCoroutine(SetAlert("Envolving, every ring has to have at least 3 elements"));
+                        }
                     }
                     break;
             }
@@ -333,6 +427,44 @@ namespace Vortices
             sessionManager.volumetric = volumetric;
 
             sessionManager.LaunchSession();
+        }
+
+        #endregion
+
+        #region UI Alert
+        private IEnumerator SetAlert(string alertMessage)
+        {
+            alertCoroutineRunning = true;
+            // Set message to alert
+            alertText.text = alertMessage;
+
+            // Initiate operation to change its opacity to 1 then 0
+            CanvasGroup alertTextCanvasGroup = alertText.gameObject.GetComponent<CanvasGroup>();
+
+            float timer = 0;
+            while (timer <= alertFadeTime)
+            {
+                float newAlpha = Mathf.Lerp(0, 1, timer / alertFadeTime);
+                alertTextCanvasGroup.alpha = newAlpha;
+
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            alertTextCanvasGroup.alpha = 1;
+
+            yield return new WaitForSeconds(alertDuration);
+
+            timer = 0;
+            while (timer <= alertFadeTime)
+            {
+                float newAlpha = Mathf.Lerp(1, 0, timer / alertFadeTime);
+                alertTextCanvasGroup.alpha = newAlpha;
+
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            alertTextCanvasGroup.alpha = 0;
+            alertCoroutineRunning = false;
         }
 
         #endregion

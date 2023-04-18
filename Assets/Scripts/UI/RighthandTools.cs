@@ -221,17 +221,10 @@ namespace Vortices
             // DO STUFF REGARDING SORTING
             // You get the category name
             string categoryName = toggle.transform.parent.name;
-            // You ask elementCategoryController for all the urls that are in that category
+            // You ask elementCategoryController for all the urls that are in that category within that user
             List<string> categoryUrls = sessionManager.elementCategoryController.GetCategoryUrls(categoryName);
             // You disable the main base
             sessionManager.spawnController.placementBase.gameObject.SetActive(false);
-            // If the displaymode is radial, you deactivate the out of base colliders so the sort ones dont collide
-            if (sessionManager.displayMode == "Radial")
-            {
-                CircularSpawnBase circularBase = sessionManager.spawnController.placementBase.GetComponent<CircularSpawnBase>();
-                circularBase.followerCollider[0].gameObject.SetActive(false);
-                circularBase.followerCollider[1].gameObject.SetActive(false);
-            }
             // You create sorting base
             sessionManager.spawnController.UpdateSortBase(categoryUrls);
 
@@ -250,13 +243,9 @@ namespace Vortices
             // DO STUFF REGARDING SORTING
             sessionManager.spawnController.DestroySortBase();
             sessionManager.spawnController.placementBase.gameObject.SetActive(true);
-            // If the displaymode is radial, you activate the out of base colliders
-            if (sessionManager.displayMode == "Radial")
-            {
-                CircularSpawnBase circularBase = sessionManager.spawnController.placementBase.GetComponent<CircularSpawnBase>();
-                circularBase.followerCollider[0].gameObject.SetActive(true);
-                circularBase.followerCollider[1].gameObject.SetActive(true);
-            }
+            // You return the gizmo control to the placementBase
+            GameObject.Find("LeftHand Controller").GetComponent<MoveGizmo>().Initialize(sessionManager.spawnController.placementBase.GetComponent<CircularSpawnBase>());
+            GameObject.Find("RightHand Controller").GetComponent<MoveGizmo>().Initialize(sessionManager.spawnController.placementBase.GetComponent<CircularSpawnBase>());
 
             actualSortCategory = "None";
             yield return new WaitForSeconds(1.0f);

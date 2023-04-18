@@ -905,7 +905,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh35064
+  m_Name: pb_Mesh488274
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -10715,9 +10715,13 @@ MonoBehaviour:
     use the tools in your right hand to categorize or sort information objects.
 
 
-    Press
-    the start button down below, add categories to elements then press the return
-    button to finish. '
+    You
+    can move through the objects by holding grab and then moving the controller towards
+    the gizmo''s shapes.
+
+
+    Press the start button down below, add categories
+    to elements then press the return button to finish. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 862c40f5c16f9ab4a9058cb9e94f2ed3, type: 2}
   m_sharedMaterial: {fileID: 5287465342396467734, guid: 862c40f5c16f9ab4a9058cb9e94f2ed3,
@@ -11695,6 +11699,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Device Simulator
       objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187037, guid: 9f5a24a380916d14db9775daab4fe333,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9f5a24a380916d14db9775daab4fe333, type: 3}
 --- !u!1001 &1702959895
@@ -11998,6 +12007,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startButton: {fileID: 5972163155232691999}
+  returnButton: {fileID: 1898997676}
 --- !u!1 &1742497919
 GameObject:
   m_ObjectHideFlags: 0
@@ -12298,7 +12308,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: -1830385959
+  m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!1001 &1790029910
@@ -14142,7 +14152,7 @@ PrefabInstance:
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
       propertyPath: m_Interactable
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
         type: 3}
@@ -14335,6 +14345,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1898997676 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5534408807066192528, guid: 702b770573a69a040a95864b7ea3aec4,
+    type: 3}
+  m_PrefabInstance: {fileID: 1898997672}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1914770422
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14467,7 +14489,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh205092
+  m_Name: pb_Mesh487972
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -16262,7 +16284,7 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: 100
+  m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 3104
@@ -16401,7 +16423,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.05
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &1677110914307538722
 Transform:
@@ -16433,6 +16455,7 @@ GameObject:
   - component: {fileID: 1677110914307538727}
   - component: {fileID: 1677110914307538720}
   - component: {fileID: 1677110914307538721}
+  - component: {fileID: 1677110914307538728}
   m_Layer: 5
   m_Name: RightHand Controller
   m_TagString: Untagged
@@ -16619,6 +16642,34 @@ MonoBehaviour:
     m_Reference: {fileID: 875253871413052681, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
   m_ButtonPressPoint: 0.5
+--- !u!114 &1677110914307538728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1677110914307538723}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d96b589c36d260846a02945ebc712046, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveGizmoPrefab: {fileID: 5921921165388242575, guid: c85d4d826b531ca4f8757b7c3f0d05d2,
+    type: 3}
+  spawnBase: {fileID: 0}
+  gripPress:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Grip Press
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 92de978d-c182-4682-90e1-31536420d7df
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 187161793506945269, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
 --- !u!4 &1677110914458065290
 Transform:
   m_ObjectHideFlags: 0
@@ -16957,7 +17008,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1677110914500365184}
   m_LocalRotation: {x: 0, y: -0.8870109, z: 0, w: 0.46174863}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.01, y: 0.065, z: -0.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17238,6 +17289,7 @@ GameObject:
   - component: {fileID: 1677110914676591817}
   - component: {fileID: 1677110914676591818}
   - component: {fileID: 1677110914676591819}
+  - component: {fileID: 1677110914676591820}
   m_Layer: 5
   m_Name: LeftHand Controller
   m_TagString: Untagged
@@ -17514,8 +17566,36 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.05
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1677110914676591820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1677110914676591413}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d96b589c36d260846a02945ebc712046, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveGizmoPrefab: {fileID: 5921921165388242575, guid: c85d4d826b531ca4f8757b7c3f0d05d2,
+    type: 3}
+  spawnBase: {fileID: 0}
+  gripPress:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Grip Press
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 9d65e741-7f65-45c0-904c-33246da976af
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -6131295136447488360, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
 --- !u!114 &1677110914710221697
 MonoBehaviour:
   m_ObjectHideFlags: 0

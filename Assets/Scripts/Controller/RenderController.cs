@@ -191,11 +191,20 @@ namespace Vortices
             };
 
             string url = "";
+
+            // Local mode is used for sorting too so if the element is a webpage it has to be put as it is
             if (browsingMode == "Local")
             {
-                url = loadPath.Replace(@"\", "/");
-                url = url.Replace(" ", "%20");
-                url = @"file://" + url;
+                if (loadPath.Contains("://"))
+                {
+                    url = loadPath;
+                }
+                else
+                {
+                    url = loadPath.Replace(@"\", "/");
+                    url = url.Replace(" ", "%20");
+                    url = @"file://" + url;
+                }
             }
             else if (browsingMode == "Online")
             {
