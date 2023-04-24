@@ -4,6 +4,7 @@ using UnityEngine;
 
 using System.IO;
 using System.Linq;
+using UnityEngine.UIElements;
 
 namespace Vortices
 {
@@ -23,13 +24,17 @@ namespace Vortices
         // Auxiliary references
         private SessionManager sessionManager;
 
+        private void Start()
+        {
+            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
+        }
+
         public void Initialize()
         {
             allSessionCategory = new List<SessionCategory>(); // All sessions
             categoriesList = new List<string>();
             selectedCategoriesList = new List<string>();
 
-            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
             categorySelector = GameObject.FindObjectOfType<CategorySelector>(true);
 
             this.sessionName = sessionManager.sessionName;
@@ -116,6 +121,8 @@ namespace Vortices
         #region Persistence
 
         // All sessions category data will be saved and loaded from a file in persistent data folder
+       
+        // SESSION DEPENDANT (Will be used after a session has started)
         public void SaveAllSessionCategories()
         {
             CategorySaveData newCategorySaveData = new CategorySaveData();
@@ -221,6 +228,170 @@ namespace Vortices
             tw.Close();
         }
 
+        // SESSION INDEPENDENT (Can be used without initializing a session)
+
+        public void DeleteCategory(string sessionName, string categoryName)
+        {
+            // Deletes all elements under this category
+            sessionManager.elementCategoryController.DeleteElementsFromCategory(sessionName, categoryName);
+            // Deletes the category itself
+            string path = Application.persistentDataPath + "/Session categories.json";
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+
+                // Loads all session data to eventually edit
+                List<SessionCategory> allSessionCategory = JsonUtility.FromJson<CategorySaveData>(json).allSessionCategory;
+                // Creates new CategorySaveData with all items but the ones with categoryName in their categoriesList/selectedCategoriesList in specific sessionName
+                CategorySaveData newCategorySaveData = new CategorySaveData();
+                newCategorySaveData.allSessionCategory = new List<SessionCategory>();
+
+                // Filter their SessionCategory
+                foreach(SessionCategory sessionData in allSessionCategory)
+                {
+                    if(sessionData.sessionName == sessionName)
+                    {
+                        SessionCategory newSessionCategory = new SessionCategory();
+                        newSessionCategory.sessionName = sessionData.sessionName;
+                        newSessionCategory.userId = sessionData.userId;
+                        newSessionCategory.categoriesList = new List<string>();
+                        newSessionCategory.selectedCategoriesList = new List<string>();
+
+                        foreach(string categoryEntry in sessionData.categoriesList)
+                        {
+                            // Add only the categories that are not from specified category
+                            bool addEntry = true;
+                            if (categoryEntry == categoryName)
+                            {
+                                addEntry = false;
+                            }
+                            if (addEntry)
+                            {
+                                newSessionCategory.categoriesList.Add(categoryEntry);
+                            }
+                        }
+
+                        foreach (string selectedCategoryEntry in sessionData.selectedCategoriesList)
+                        {
+                            // Add only the categories that are not from specified category
+                            bool addEntry = true;
+                            if (selectedCategoryEntry == categoryName)
+                            {
+                                addEntry = false;
+                            }
+                            if (addEntry)
+                            {
+                                newSessionCategory.categoriesList.Add(selectedCategoryEntry);
+                            }
+                        }
+                        newCategorySaveData.allSessionCategory.Add(newSessionCategory);
+                    }
+                    else
+                    {
+                        newCategorySaveData.allSessionCategory.Add(sessionData);
+                    }
+                }
+
+                json = JsonUtility.ToJson(newCategorySaveData);
+
+                File.WriteAllText(Application.persistentDataPath + "/Session categories.json", json);
+                SaveSessionCategoriesToRootFolderGlobal(newCategorySaveData);
+            }
+        }
+
+        public void DeleteCategoriesFromSession(string sessionName)
+        {
+            string path = Application.persistentDataPath + "/Session categories.json";
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+
+                // Loads all session data to eventually edit
+                List<SessionCategory> allSessionCategory = JsonUtility.FromJson<CategorySaveData>(json).allSessionCategory;
+                // Creates new CategorySaveData with all items but the ones with categoryName in their categoriesList/selectedCategoriesList in specific sessionName
+                CategorySaveData newCategorySaveData = new CategorySaveData();
+                newCategorySaveData.allSessionCategory = new List<SessionCategory>();
+
+                foreach(SessionCategory sessionData in allSessionCategory)
+                {
+                    // Add only the sessions with categories that are not sessionName
+                    bool addEntry = true;
+                    if(sessionData.sessionName == sessionName)
+                    {
+                        addEntry = false;
+                    }
+                    
+                    if(addEntry)
+                    {
+                        newCategorySaveData.allSessionCategory.Add(sessionData);
+                    }
+                }
+
+                json = JsonUtility.ToJson(newCategorySaveData);
+
+                File.WriteAllText(Application.persistentDataPath + "/Session categories.json", json);
+                SaveSessionCategoriesToRootFolderGlobal(newCategorySaveData);
+            }
+        }
+
+        public void SaveSessionCategoriesToRootFolderGlobal(CategorySaveData newCategorySaveData)
+        {
+            // Saves all 
+
+            // Saves newElementCategorySaveData which is created without starting a session
+            string filename = "";
+
+            foreach (SessionCategory sessionData in newCategorySaveData.allSessionCategory)
+            {
+                filename = Path.Combine(Application.dataPath + "/Results");
+
+                filename = Path.Combine(filename, sessionData.sessionName);
+
+                if (!Directory.Exists(filename))
+                {
+                    Directory.CreateDirectory(filename);
+                }
+
+                filename = Path.Combine(filename, "Session Categories.csv");
+
+                TextWriter tw = new StreamWriter(filename, false);
+                tw.WriteLine("Categories");
+                tw.Close();
+
+                tw = new StreamWriter(filename, true);
+
+                for (int i = 0; i < sessionData.categoriesList.Count; i++)
+                {
+                    if (!(i == sessionData.categoriesList.Count - 1))
+                    {
+                        tw.Write(sessionData.categoriesList[i] + ";");
+                    }
+                    else
+                    {
+                        tw.Write(sessionData.categoriesList[i]);
+                    }
+                }
+                tw.WriteLine();
+                tw.WriteLine("Selected Categories");
+                for (int i = 0; i < sessionData.selectedCategoriesList.Count; i++)
+                {
+                    if (!(i == sessionData.selectedCategoriesList.Count - 1))
+                    {
+                        tw.Write(sessionData.selectedCategoriesList[i] + ";");
+                    }
+                    else
+                    {
+                        tw.Write(sessionData.selectedCategoriesList[i]);
+                    }
+
+                }
+                tw.WriteLine();
+                tw.Close();
+            }
+        }
+
+
+
         #endregion
 
 
@@ -245,8 +416,6 @@ namespace Vortices
 
         #endregion
     }
-
-
 }
 
 

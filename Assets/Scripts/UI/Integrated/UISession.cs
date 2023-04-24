@@ -13,7 +13,7 @@ namespace Vortices
     public class UISession : MonoBehaviour
     {
         // Other references
-        [SerializeField] private TextMeshProUGUI nameText;
+        [SerializeField] public TextMeshProUGUI nameText;
         [SerializeField] private SessionController sessionController;
 
         [SerializeField] private SessionRemoveButton removeButton;

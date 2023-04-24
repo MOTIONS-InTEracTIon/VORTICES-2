@@ -11,7 +11,7 @@ namespace Vortices
     public class UICategory : MonoBehaviour
     {
         // Other references
-        [SerializeField] private TextMeshProUGUI nameText;
+        [SerializeField] public TextMeshProUGUI nameText;
         [SerializeField] private CategorySelector categorySelector;
 
         [SerializeField] private CategoryRemoveButton removeButton;

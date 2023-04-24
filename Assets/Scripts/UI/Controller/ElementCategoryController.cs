@@ -152,6 +152,8 @@ namespace Vortices
 
         // All sessions data will be saved and loaded from a file in persistent data folder, also will have a function to save as a csv in the program's folder but as separate files in different folders
         // with structure /Session/userId/categories.csv
+
+        // SESSION DEPENDANT (Will be used after a session has started)
         public void SaveAllSessionElementCategories()
         {
             ElementCategorySaveData newElementCategorySaveData = new ElementCategorySaveData();
@@ -209,6 +211,9 @@ namespace Vortices
         public void SaveSessionElementCategoriesToRootFolder()
         {
             string filename = Path.Combine(Application.dataPath + "/Results");
+
+            // Saves only current session and id
+
             // File path depends on session name and user Id
             filename = Path.Combine(filename, sessionName);
             filename = Path.Combine(filename, userId.ToString());
@@ -224,14 +229,14 @@ namespace Vortices
             tw.WriteLine("Url;Categories");
             tw.Close();
 
-            tw= new StreamWriter(filename, true);
+            tw = new StreamWriter(filename, true);
 
-            for(int i = 0; i < elementCategoriesList.Count; i++)
+            for (int i = 0; i < elementCategoriesList.Count; i++)
             {
                 tw.Write(elementCategoriesList[i].elementUrl + ";");
-                for(int j = 0; j < elementCategoriesList[i].elementCategories.Count; j++)
+                for (int j = 0; j < elementCategoriesList[i].elementCategories.Count; j++)
                 {
-                    if(!(j == elementCategoriesList[i].elementCategories.Count - 1))
+                    if (!(j == elementCategoriesList[i].elementCategories.Count - 1))
                     {
                         tw.Write(elementCategoriesList[i].elementCategories[j] + ";");
                     }
@@ -245,8 +250,150 @@ namespace Vortices
             tw.Close();
         }
 
-        #endregion
+        // SESSION INDEPENDENT (Can be used without initializing a session as they will use their own session independent file loaders)
+
+        public void DeleteElementsFromCategory(string sessionName, string categoryName)
+        {
+            string path = Application.persistentDataPath + "/Session element categories.json";
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+
+                // Loads all session data 
+                List<SessionElementCategory> allSessionElementCategoryToDelete = JsonUtility.FromJson<ElementCategorySaveData>(json).allSessionElementCategory;
+
+                // Creates new ElementCategorySaveData with all items but the ones with categoryName in their elementList in sessionName
+                ElementCategorySaveData newElementCategorySaveData = new ElementCategorySaveData();
+                newElementCategorySaveData.allSessionElementCategory = new List<SessionElementCategory>();
+                // This list will contain all the current sessions and we deal with every elementCategoriesList which comes from sessionName, deleting categoryName entries
+
+
+                foreach (SessionElementCategory sessionData in allSessionElementCategoryToDelete)
+                {
+                    if(sessionData.sessionName == sessionName)
+                    {
+                        SessionElementCategory newSessionElementCategory = new SessionElementCategory();
+                        newSessionElementCategory.sessionName = sessionData.sessionName;
+                        newSessionElementCategory.userId = sessionData.userId;
+                        newSessionElementCategory.elementCategoriesList = new List<ElementCategory>();
+
+                        // Filter their ElementCategory
+                        foreach (ElementCategory elementEntry in sessionData.elementCategoriesList)
+                        {
+                            // Add only the elementEntries that are not from the specified category
+                            bool addEntry = true;
+                            foreach (string category in elementEntry.elementCategories)
+                            {
+                                if (category == categoryName)
+                                {
+                                    addEntry = false;
+                                }
+                            }
+                            if (addEntry)
+                            {
+                                newSessionElementCategory.elementCategoriesList.Add(elementEntry);
+                            }
+                        }
+                        newElementCategorySaveData.allSessionElementCategory.Add(newSessionElementCategory);
+                    }
+                    else
+                    {
+                        newElementCategorySaveData.allSessionElementCategory.Add(sessionData);
+                    }
+                }
+
+                json = JsonUtility.ToJson(newElementCategorySaveData);
+
+                File.WriteAllText(Application.persistentDataPath + "/Session element categories.json", json);
+                SaveSessionElementCategoriesToRootFolderGlobal(newElementCategorySaveData);
+            }
+        }
+
+        public void DeleteElementsFromSession(string sessionName)
+        {
+            string path = Application.persistentDataPath + "/Session element categories.json";
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+
+                // Loads all session data 
+                List<SessionElementCategory> allSessionElementCategoryToDelete = JsonUtility.FromJson<ElementCategorySaveData>(json).allSessionElementCategory;
+
+                // Creates new ElementCategorySaveData with all items but the ones in sessionName
+                ElementCategorySaveData newElementCategorySaveData = new ElementCategorySaveData();
+                newElementCategorySaveData.allSessionElementCategory = new List<SessionElementCategory>();
+
+                foreach (SessionElementCategory sessionData in allSessionElementCategoryToDelete)
+                {
+                    // Add only the sessions which are not sessionName
+                    bool addEntry = true;
+                    if (sessionData.sessionName == sessionName)
+                    {
+                        addEntry = false;
+                    }
+                    
+                    if (addEntry)
+                    {
+                        newElementCategorySaveData.allSessionElementCategory.Add(sessionData);
+                    }
+                }
+
+                json = JsonUtility.ToJson(newElementCategorySaveData);
+
+                File.WriteAllText(Application.persistentDataPath + "/Session element categories.json", json);
+                SaveSessionElementCategoriesToRootFolderGlobal(newElementCategorySaveData);
+            }
+        }
+
+        public void SaveSessionElementCategoriesToRootFolderGlobal (ElementCategorySaveData newElementCategorySaveData)
+        {
+            // Saves all 
+
+            // Saves newElementCategorySaveData which is created without starting a session
+            string filename = "";
+
+            foreach (SessionElementCategory sessionData in newElementCategorySaveData.allSessionElementCategory)
+            {
+                filename = Path.Combine(Application.dataPath + "/Results");
+
+                filename = Path.Combine(filename, sessionData.sessionName);
+                filename = Path.Combine(filename, sessionData.userId.ToString());
+
+                if (!Directory.Exists(filename))
+                {
+                    Directory.CreateDirectory(filename);
+                }
+
+                filename = Path.Combine(filename, "Session Element Categories.csv");
+
+                TextWriter tw = new StreamWriter(filename, false);
+                tw.WriteLine("Url;Categories");
+                tw.Close();
+
+                tw = new StreamWriter(filename, true);
+
+                for (int i = 0; i < sessionData.elementCategoriesList.Count; i++)
+                {
+                    tw.Write(sessionData.elementCategoriesList[i].elementUrl + ";");
+                    for (int j = 0; j < sessionData.elementCategoriesList[i].elementCategories.Count; j++)
+                    {
+                        if (!(j == sessionData.elementCategoriesList[i].elementCategories.Count - 1))
+                        {
+                            tw.Write(sessionData.elementCategoriesList[i].elementCategories[j] + ";");
+                        }
+                        else
+                        {
+                            tw.Write(sessionData.elementCategoriesList[i].elementCategories[j]);
+                        }
+                    }
+                    tw.WriteLine();
+                }
+                tw.Close();
+            }
+        }
     }
+    #endregion
+
 
     #region Persistance classes
 

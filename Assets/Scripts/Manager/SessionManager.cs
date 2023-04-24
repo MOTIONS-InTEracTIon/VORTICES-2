@@ -47,6 +47,9 @@ namespace Vortices
                 return;
             }
 
+            categoryController = GameObject.FindObjectOfType<CategoryController>(true);
+            elementCategoryController = GameObject.FindObjectOfType<ElementCategoryController>(true);
+
             instance = this;
             DontDestroyOnLoad(gameObject);
         }

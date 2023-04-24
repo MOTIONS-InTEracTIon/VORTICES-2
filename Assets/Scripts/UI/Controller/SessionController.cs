@@ -25,6 +25,7 @@ namespace Vortices
         // Data
         public List<string> sessions;
         private List<UISession> UISessions;
+        private UISession sessionToDelete;
         public string selectedSession;
         public int selectedUserId;
         public string selectedEnvironment;
@@ -46,6 +47,7 @@ namespace Vortices
         {
             selectedSession = "";
             sessions = new List<string>();
+            UISessions = null;
             UISessions = new List<UISession>();
 
             sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
@@ -94,6 +96,22 @@ namespace Vortices
 
         private void RemoveSessionFromScrollView(UISession session)
         {
+            // Deletion guard
+            if(sessionToDelete == null)
+            {
+                sessionToDelete = session;
+                sessionToDelete.nameText.text = "Erase data? ->";
+                return;
+            }
+            // If other session is selected, return normal name
+            else if (sessionToDelete != session)
+            {
+                sessionToDelete.nameText.text = sessionToDelete.sessionName;
+                sessionToDelete = session;
+                sessionToDelete.nameText.text = "Erase data? ->";
+                return;
+            }
+
             // Searches the UIComponents for session position
             string sessionName = session.sessionName;
 
@@ -103,12 +121,18 @@ namespace Vortices
             {
                 selectedSession = "";
             }
+            // Remove 
             // Destroys said Component
             session.DestroySession();
             // Destroys UI Session
             UISessions.Remove(session);
             // Updates rows
             UpdateSessions(false);
+
+            // Remove from files
+            DeleteSession(session.sessionName);
+
+            sessionToDelete = null;
         }
 
         private void UpdateSessions(bool clear)
@@ -289,6 +313,8 @@ namespace Vortices
         #region Persistence
 
         // Sessions will be saved and loaded from a file in persistent data folder
+
+        // SESSION DEPENDANT (Will be used after the controller has started)
         public void SaveSessions()
         {
             SessionSaveData newSessionSaveData = new SessionSaveData();
@@ -318,6 +344,58 @@ namespace Vortices
             }
         }
 
+        // SESSION INDEPENDENT (Can be used without initializing the controller)
+
+        public void DeleteSession(string sessionName)
+        {
+            // Delete all categories under session 
+            sessionManager.categoryController.DeleteCategoriesFromSession(sessionName);
+
+            // Delete all elements under session
+            sessionManager.elementCategoryController.DeleteElementsFromSession(sessionName);
+
+            // Deletes the session itself
+            string path = Application.persistentDataPath + "/Sessions.json";
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+
+                // Loads all sessions to eventually edit
+                List<string> allSessions = JsonUtility.FromJson<SessionSaveData>(json).sessions;
+                // Creates new SessionSaveData with all items but the specified sessionName
+                SessionSaveData newSessionSaveData = new SessionSaveData();
+                newSessionSaveData.sessions = new List<string>();
+
+                foreach (string session in allSessions)
+                {
+                    // Add only the sessions that are not the specified one
+                    bool addEntry = true;
+                    if (session == sessionName)
+                    {
+                        addEntry = false;
+                    }
+                    if(addEntry)
+                    {
+                        newSessionSaveData.sessions.Add(session);
+                    }
+                }
+
+                json = JsonUtility.ToJson(newSessionSaveData);
+
+                File.WriteAllText(Application.persistentDataPath + "/Sessions.json", json);
+
+                // Delete Results folder
+                string filename = Path.Combine(Application.dataPath + "/Results");
+
+                filename = Path.Combine(filename, sessionName);
+
+                if (Directory.Exists(filename))
+                {
+                    Directory.Delete(filename,true);
+                }
+
+            }
+        }
         #endregion
 
         #region UI Alert

@@ -26,6 +26,7 @@ namespace Vortices
         public List<string> categories;
         public List<string> selectedCategories;
         private List<UICategory> UICategories;
+        private UICategory categoryToDelete;
 
         // Auxiliary References
         SessionManager sessionManager;
@@ -140,6 +141,22 @@ namespace Vortices
 
         private void RemoveCategoryFromScrollView(UICategory category)
         {
+            // Deletion guard
+            if (categoryToDelete == null)
+            {
+                categoryToDelete = category;
+                categoryToDelete.nameText.text = "Erase data? ->";
+                return;
+            }
+            // If other session is selected, return normal name
+            else if (categoryToDelete != category)
+            {
+                categoryToDelete.nameText.text = categoryToDelete.categoryName;
+                categoryToDelete = category;
+                categoryToDelete.nameText.text = "Erase data? ->";
+                return;
+            }
+
             // Searches the UIComponents for category position
             GameObject horizontalGroup = category.horizontalGroup;
             string categoryName = category.categoryName;
@@ -156,6 +173,11 @@ namespace Vortices
             UICategories.Remove(category);
             // Updates rows
             UpdateCategories();
+
+            // Removes category from data
+            sessionManager.categoryController.DeleteCategory(sessionManager.sessionName, category.categoryName);
+
+            categoryToDelete = null;
         }
 
         private void CreateCategory(string categoryName, GameObject horizontalGroup, bool addToList)
