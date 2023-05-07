@@ -226,7 +226,7 @@ namespace Vortices
                 if (!(righthandTools.actualSelectedElement != null &&
                     righthandTools.actualSelectedElement.url == element.url))
                 {
-                    Renderer handInteractorRenderer = element.handInteractor.GetComponent<Renderer>();
+                    Renderer handInteractorRenderer = element.headInteractor.GetComponent<Renderer>();
                     Color rendererColor = handInteractorRenderer.material.color;
 
                     Color newColor = handInteractorRenderer.material.color;

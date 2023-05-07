@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 405012763283342248}
   - component: {fileID: 245332714089107827}
   - component: {fileID: 7743688011796280553}
-  m_Layer: 2
-  m_Name: Hand Interactor
+  m_Layer: 12
+  m_Name: Head Interactor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -117,7 +117,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_InteractionLayers:
-    m_Bits: 2
+    m_Bits: 16
   m_DistanceCalculationMode: 1
   m_SelectMode: 0
   m_CustomReticle: {fileID: 0}
@@ -165,19 +165,7 @@ MonoBehaviour:
       m_Calls: []
   m_SelectEntered:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 592166389463555007}
-        m_TargetAssemblyTypeName: Vortices.Element, Assembly-CSharp
-        m_MethodName: SelectElement
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_SelectExited:
     m_PersistentCalls:
       m_Calls: []
@@ -304,7 +292,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &2040862489700390578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,7 +360,7 @@ MonoBehaviour:
   webUrl: {fileID: 7724214630969663380}
   goBack: {fileID: 7302418606297901868}
   goForward: {fileID: 2061918520366267354}
-  handInteractor: {fileID: 1169225940106020372}
+  headInteractor: {fileID: 1169225940106020372}
   categorySelectorUI: {fileID: 0}
   categorizedYes: {fileID: 8618208929093667024}
   categorizedNo: {fileID: 6402852440958001928}
@@ -412,8 +400,6 @@ MonoBehaviour:
   m_InteractionManager: {fileID: 0}
   m_Colliders:
   - {fileID: 6337559434754253806}
-  - {fileID: 0}
-  - {fileID: 0}
   m_InteractionLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295

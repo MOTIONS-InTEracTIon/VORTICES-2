@@ -23,7 +23,7 @@ namespace Vortices
         [SerializeField] private GameObject webUrl;
         [SerializeField] private GameObject goBack;
         [SerializeField] private GameObject goForward;
-        [SerializeField] public GameObject handInteractor;
+        [SerializeField] public GameObject headInteractor;
         [SerializeField] private GameObject categorySelectorUI;
         [SerializeField] private GameObject categorizedYes;
         [SerializeField] private GameObject categorizedNo;
@@ -131,7 +131,7 @@ namespace Vortices
 
             canvasWebView = GetComponentInChildren<CanvasWebViewPrefab>().WebView;
 
-            Renderer selectionBoxRenderer = handInteractor.GetComponent<Renderer>();
+            Renderer selectionBoxRenderer = headInteractor.GetComponent<Renderer>();
             Color selectionRendererColor = selectionBoxRenderer.material.color;
 
             selectionBoxRenderer.material.color = new Color(selectionRendererColor.r,
@@ -211,7 +211,11 @@ namespace Vortices
                 {
                     if (!selected)
                     {
-                        Renderer selectionBoxRenderer = handInteractor.GetComponent<Renderer>();
+                        // Send element to controller for it to be selected when A is pressed
+                        GameObject.Find("RightHand Controller").GetComponent<HandController>().selectElement = this;
+
+                        //Show box
+                        Renderer selectionBoxRenderer = headInteractor.GetComponent<Renderer>();
                         selectionBoxRenderer.material.color = Color.yellow;
 
                         Color selectionRendererColor = selectionBoxRenderer.material.color;
@@ -236,9 +240,13 @@ namespace Vortices
                 }
                 else 
                 {
-                    if(!selected)
+                    // Return element when hiding
+                    GameObject.Find("RightHand Controller").GetComponent<HandController>().selectElement = null;
+
+                    if (!selected)
                     {
-                        Renderer selectionBoxRenderer = handInteractor.GetComponent<Renderer>();
+                        // Hide box
+                        Renderer selectionBoxRenderer = headInteractor.GetComponent<Renderer>();
                         selectionBoxRenderer.material.color = Color.yellow;
                         Color selectionRendererColor = selectionBoxRenderer.material.color;
 
@@ -272,7 +280,7 @@ namespace Vortices
                 selectionCoroutineRunning = true;
                 selected = true;
                 // Send haptic impulse
-                XRBaseInteractable interactableElement = handInteractor.GetComponent<XRSimpleInteractable>();
+                XRBaseInteractable interactableElement = headInteractor.GetComponent<XRSimpleInteractable>();
                 interactableElement.selectEntered.AddListener(TriggerHaptic);
                 // Start selection
                 StartCoroutine(SelectElementCoroutine());
@@ -281,7 +289,7 @@ namespace Vortices
 
         public IEnumerator SelectElementCoroutine()
         {
-            Renderer selectionBoxRenderer = handInteractor.GetComponent<Renderer>();
+            Renderer selectionBoxRenderer = headInteractor.GetComponent<Renderer>();
             selectionBoxRenderer.material.color = Color.green;
             sessionManager.loggingController.LogSelection(url, true);
 

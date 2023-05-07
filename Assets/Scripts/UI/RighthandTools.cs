@@ -321,7 +321,7 @@ namespace Vortices
             {
                 actualSelectedElement.selected = false;
 
-                Renderer selectionBoxRenderer = actualSelectedElement.handInteractor.GetComponent<Renderer>();
+                Renderer selectionBoxRenderer = actualSelectedElement.headInteractor.GetComponent<Renderer>();
                 selectionBoxRenderer.material.color = Color.yellow;
                 Color selectionRendererColor = selectionBoxRenderer.material.color;
                 // If out of hover it becomes invisible
