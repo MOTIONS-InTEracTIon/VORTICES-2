@@ -10,6 +10,7 @@ using System.Linq;
 using UnityEngine.XR.Interaction.Toolkit;
 using TMPro;
 using System;
+using UnityEngine.InputSystem.XR;
 
 namespace Vortices
 {
@@ -283,8 +284,9 @@ namespace Vortices
                 selectionCoroutineRunning = true;
                 selected = true;
                 // Send haptic impulse to both hands
-                XRController leftController = GameObject.Find("LeftHand Controller").GetComponent<XRController>();
-                XRController rightController = GameObject.Find("RightHand Controller").GetComponent<XRController>();
+                
+                XRBaseControllerInteractor leftController = GameObject.Find("LeftHand Controller").GetComponent<XRBaseControllerInteractor>();
+                XRBaseControllerInteractor rightController = GameObject.Find("RightHand Controller").GetComponent<XRBaseControllerInteractor>();
                 leftController.SendHapticImpulse(hapticIntensity, hapticDuration);
                 rightController.SendHapticImpulse(hapticIntensity, hapticDuration);
                 // Start selection
