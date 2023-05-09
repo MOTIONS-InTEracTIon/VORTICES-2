@@ -32,6 +32,7 @@ namespace Vortices
         {
             allSessionElementCategory = new List<SessionElementCategory>(); // All sessions
             elementCategoriesList = new List<ElementCategory>();
+            elementGameObjects = new List<Element>();
 
             this.sessionName = sessionManager.sessionName;
             this.userId = sessionManager.userId;

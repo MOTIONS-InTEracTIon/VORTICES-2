@@ -44,6 +44,7 @@ namespace Vortices
 
         // Selection
         public Element actualSelectedElement;
+        public List<Element> allElements;
         // Selection Data
         public ElementCategory elementCategory; // This element categories object
         public List<string> elementSelectedCategories;
@@ -317,7 +318,7 @@ namespace Vortices
                 hadElement = true;
             }
 
-            if (actualSelectedElement != null && selectedElement.url != actualSelectedElement.url)
+            if (actualSelectedElement != null && selectedElement != actualSelectedElement)
             {
                 actualSelectedElement.selected = false;
 
@@ -345,7 +346,7 @@ namespace Vortices
             GetSelectedCategories(selectedElement);
             actualSelectedElement = selectedElement;
             // Update Categorized
-            UpdateCategorized();
+            UpdateCategorized(false);
             if (actualComponentId != (int)Tools.Categorize)
             {
                 StartCoroutine(ChangePanelSelectedCoroutine());
@@ -493,7 +494,7 @@ namespace Vortices
                 elementSelectedCategories.Add(categoryName);
                 elementSelectedCategories.Sort();
                 // Update Categorized
-                UpdateCategorized();
+                UpdateCategorized(true);
                 // Add to element categories
                 elementCategory.elementCategories = elementSelectedCategories;
                 // Send element categories back to category controller
@@ -514,7 +515,7 @@ namespace Vortices
                 elementSelectedCategories.Remove(categoryName);
                 elementSelectedCategories.Sort();
                 // Update Categorized
-                UpdateCategorized();
+                UpdateCategorized(true);
                 // Add to element categories
                 elementCategory.elementCategories = elementSelectedCategories;
                 // Send element categories back to category controller
@@ -524,15 +525,35 @@ namespace Vortices
             }
         }
 
-        public void UpdateCategorized()
+        public void UpdateCategorized(bool all)
         {
-            if (elementSelectedCategories.Count > 0)
+            if (all)
             {
-                actualSelectedElement.SetCategorized(true);
+                allElements = sessionManager.elementCategoryController.elementGameObjects;
+                foreach (Element element in allElements)
+                {
+                    List<string> elementCategories = sessionManager.elementCategoryController.GetSelectedCategories(element.url).elementCategories;
+
+                    if (elementCategories.Count > 0)
+                    {
+                        element.SetCategorized(true);
+                    }
+                    else
+                    {
+                        element.SetCategorized(false);
+                    }
+                }
             }
             else
             {
-                actualSelectedElement.SetCategorized(false);
+                if (elementSelectedCategories.Count > 0)
+                {
+                    actualSelectedElement.SetCategorized(true);
+                }
+                else
+                {
+                    actualSelectedElement.SetCategorized(false);
+                }
             }
         }
         #endregion

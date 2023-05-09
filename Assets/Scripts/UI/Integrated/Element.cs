@@ -72,6 +72,9 @@ namespace Vortices
             this.url = url;
             this.displayMode = displayMode;
 
+            // Add element to list of all element for easy access
+            sessionManager.elementCategoryController.elementGameObjects.Add(this);
+
             // Set categorized to true or false
             if (sessionManager.elementCategoryController.GetSelectedCategories(url).elementCategories.Count > 0)
             {
@@ -279,9 +282,11 @@ namespace Vortices
             {
                 selectionCoroutineRunning = true;
                 selected = true;
-                // Send haptic impulse
-                XRBaseInteractable interactableElement = headInteractor.GetComponent<XRSimpleInteractable>();
-                interactableElement.selectEntered.AddListener(TriggerHaptic);
+                // Send haptic impulse to both hands
+                XRController leftController = GameObject.Find("LeftHand Controller").GetComponent<XRController>();
+                XRController rightController = GameObject.Find("RightHand Controller").GetComponent<XRController>();
+                leftController.SendHapticImpulse(hapticIntensity, hapticDuration);
+                rightController.SendHapticImpulse(hapticIntensity, hapticDuration);
                 // Start selection
                 StartCoroutine(SelectElementCoroutine());
             }
@@ -300,24 +305,6 @@ namespace Vortices
 
 
         }
-
-        public void TriggerHaptic(BaseInteractionEventArgs eventArgs)
-        {
-            if (eventArgs.interactorObject is XRBaseControllerInteractor controllerInteractor)
-            {
-                TriggerHaptic(controllerInteractor.xrController);
-            }
-        }
-
-        public void TriggerHaptic(XRBaseController controller)
-        {
-            if (hapticIntensity > 0)
-            {
-                controller.SendHapticImpulse(hapticIntensity, hapticDuration);
-            }
-        }
-
-
         #endregion
     }
 }
