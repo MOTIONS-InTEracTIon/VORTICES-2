@@ -53,6 +53,11 @@ namespace Vortices
         // Auxiliary references
         private SessionManager sessionManager;
 
+        private void OnDisable()
+        {
+            sessionManager.elementCategoryController.elementGameObjects.Remove(this);
+        }
+
         public void Initialize(string browsingMode, string displayMode, string url, CanvasWebViewPrefab canvas)
         {
             sessionManager = GameObject.FindObjectOfType<SessionManager>();
