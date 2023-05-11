@@ -244,9 +244,12 @@ namespace Vortices
             // DO STUFF REGARDING SORTING
             sessionManager.spawnController.DestroySortBase();
             sessionManager.spawnController.placementBase.gameObject.SetActive(true);
-            // You return the gizmo control to the placementBase
-            GameObject.Find("LeftHand Controller").GetComponent<MoveGizmo>().Initialize(sessionManager.spawnController.placementBase.GetComponent<CircularSpawnBase>());
-            GameObject.Find("RightHand Controller").GetComponent<MoveGizmo>().Initialize(sessionManager.spawnController.placementBase.GetComponent<CircularSpawnBase>());
+            // You return the gizmo control to the placementBase in the enviroments that use the gizmo
+            if(sessionManager.environmentName == "Circular")
+            {
+                GameObject.Find("LeftHand Controller").GetComponent<MoveGizmo>().Initialize(sessionManager.spawnController.placementBase.GetComponent<CircularSpawnBase>());
+                GameObject.Find("RightHand Controller").GetComponent<MoveGizmo>().Initialize(sessionManager.spawnController.placementBase.GetComponent<CircularSpawnBase>());
+            }
 
             actualSortCategory = "None";
             yield return new WaitForSeconds(1.0f);
