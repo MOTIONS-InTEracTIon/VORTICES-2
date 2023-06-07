@@ -11,13 +11,12 @@ namespace Vortices
 
         #region Multimedia Spawn
 
-        public void Init(List<string> filePaths, Vector3Int dimension, string browsingMode, string displayMode, string rootUrl, float softFadeUpperAlpha)
+        public void Init(List<string> elementPaths, Vector3Int dimension, string browsingMode, string displayMode, float softFadeUpperAlpha)
         {
-            this.filePaths = filePaths;
+            this.elementPaths = elementPaths;
             this.dimension = dimension;
             this.browsingMode = browsingMode;
             this.displayMode = displayMode;
-            this.rootUrl = rootUrl;
             this.softFadeUpperAlpha = softFadeUpperAlpha;
         }
 

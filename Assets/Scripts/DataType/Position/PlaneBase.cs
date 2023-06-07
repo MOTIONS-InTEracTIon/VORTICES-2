@@ -52,7 +52,7 @@ namespace Vortices
                 GameObject gameObject = Instantiate(planeGroupPrefab, transform.position, transform.rotation, linearRail.transform);
                 groupList.Add(gameObject);
                 PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
-                spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, softFadeUpperAlpha);
+                spawnGroup.Init(elementPaths, dimension, browsingMode, displayMode, softFadeUpperAlpha);
                 bool softFadeIn = true;
                 if (i == 0)
                 {
@@ -272,7 +272,7 @@ namespace Vortices
             GameObject gameObject = Instantiate(planeGroupPrefab, transform.position, transform.rotation, linearRail.transform);
             groupList.Add(gameObject);
             PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
-            spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, softFadeUpperAlpha);
+            spawnGroup.Init(elementPaths, dimension, browsingMode, displayMode, softFadeUpperAlpha);
             yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, true));
 
             while (fadeCoroutinesRunning > 0)
@@ -312,7 +312,7 @@ namespace Vortices
             gameObject.transform.SetSiblingIndex(0);
             groupList.Insert(0, gameObject);
             PlaneGroup spawnGroup = gameObject.GetComponent<PlaneGroup>();
-            spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, softFadeUpperAlpha);
+            spawnGroup.Init(elementPaths, dimension, browsingMode, displayMode, softFadeUpperAlpha);
             yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, false));
 
             // Front Group Operations

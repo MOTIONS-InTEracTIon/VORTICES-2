@@ -113,13 +113,12 @@ namespace Vortices
         #endregion
 
         #region Multimedia Spawn
-        public void Init(List<string> filePaths, Vector3Int dimension, string browsingMode, string displayMode, string rootUrl, GameObject linearRail, float groupRadius, float groupAngleOffset,  float softFadeUpperAlpha, float rotationAngleStep)
+        public void Init(List<string> elementPaths, Vector3Int dimension, string browsingMode, string displayMode, GameObject linearRail, float groupRadius, float groupAngleOffset,  float softFadeUpperAlpha, float rotationAngleStep)
         {
-            this.filePaths = filePaths;
+            this.elementPaths = elementPaths;
             this.dimension = dimension;
             this.browsingMode = browsingMode;
             this.displayMode = displayMode;
-            this.rootUrl = rootUrl;
             this.radialRingLinearRail = linearRail;
             this.groupRadius = groupRadius;
             this.groupAngleOffset = groupAngleOffset;

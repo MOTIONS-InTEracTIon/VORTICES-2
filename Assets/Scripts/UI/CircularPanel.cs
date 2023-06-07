@@ -29,28 +29,15 @@ namespace Vortices
     public class CircularPanel : SpawnPanel
     {
         #region Variables and properties
-
-        // Other references
-        [SerializeField] private TextMeshProUGUI alertText;
-
         // Circular Panel Properties
         public int displayMode { get; set; }
         public int browsingMode { get; set; }
         public bool volumetric { get; set; }
         public Vector3Int dimension;
-        public string rootUrl { get; set; }
-
-        // Settings
-        private float alertDuration = 5.0f;
-        private float alertFadeTime = 0.3f;
-
-        // Coroutine
-        private bool alertCoroutineRunning;
 
         private void OnEnable()
         {
             // Default configs to properties
-            rootUrl = "https://www.google.com";
 
             sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
         }
@@ -101,17 +88,17 @@ namespace Vortices
                         }
                     }
                     break;
-                // Online mode has a default url so it starts enabled, disabled if no url
+                // Online mode has to have a correct set to load
                 case (int)CircularId.BrowsingOnline:
-                    if (optionRootUrl.text.text != "" || optionRootUrl.placeholder.text != "")
+                    if (optionOnlinePath.onlinePaths != null && optionOnlinePath.onlinePaths.Count > 0)
                     {
                         hasToBlock = false;
                     }
-                    else
+                    else if (optionOnlinePath.onlinePaths != null && optionOnlinePath.onlinePaths.Count == 0)
                     {
                         if (!alertCoroutineRunning)
                         {
-                            StartCoroutine(SetAlert("Url is not valid"));
+                            StartCoroutine(SetAlert("File path chosen has no compatible extension files"));
                         }
                     }
                     break;
@@ -368,17 +355,8 @@ namespace Vortices
             }
         }
 
-        // Sets starting Url for online mode
-        public void SetRootUrl()
-        {
-            if (optionRootUrl.GetData() != "")
-            {
-                rootUrl = optionRootUrl.text.text;
-            }
-        }
-
-        // Uses SimpleFileBrowser to obtain a list of paths and apply them to the property filePaths so other components can use them
-        public void OpenFileBrowser()
+        // Uses SimpleFileBrowser to obtain a list of paths and applies them to the property filePaths so other components can use them
+        public void OpenFileBrowserLocal()
         {
             FileBrowser.ShowLoadDialog((paths) =>
                 {
@@ -389,6 +367,23 @@ namespace Vortices
                 },
                 () => {/* Handle closing*/
                     ChangeVisibleComponent((int)CircularId.BrowsingLocal);
+                },
+                FileBrowser.PickMode.FilesAndFolders, true, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), null, "Load", "Select");
+
+        }
+
+        // Uses SimpleFileBrowser to obtain a list of url txt paths, extracts urls and applies them to the property onlinePaths so other components can use them
+        public void OpenFileBrowserOnline()
+        {
+            FileBrowser.ShowLoadDialog((paths) =>
+            {
+                optionOnlinePath.ClearPaths();
+                optionOnlinePath.GetFilePaths(paths);
+                optionOnlinePath.SetUIText();
+                ChangeVisibleComponent((int)CircularId.BrowsingOnline);
+            },
+                () => {/* Handle closing*/
+                    ChangeVisibleComponent((int)CircularId.BrowsingOnline);
                 },
                 FileBrowser.PickMode.FilesAndFolders, true, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), null, "Load", "Select");
 
@@ -410,12 +405,12 @@ namespace Vortices
             if (browsingMode == 0)
             {
                 sessionManager.browsingMode = "Local";
-                sessionManager.filePaths = optionFilePath.filePaths;
+                sessionManager.elementPaths = optionFilePath.filePaths;
             }
             else
             {
                 sessionManager.browsingMode = "Online";
-                sessionManager.rootUrl = rootUrl;
+                sessionManager.elementPaths = optionOnlinePath.onlinePaths;
             }
             // Dimension (If needed)
             if (volumetric == false || dimension.z == 0)
@@ -431,43 +426,7 @@ namespace Vortices
 
         #endregion
 
-        #region UI Alert
-        private IEnumerator SetAlert(string alertMessage)
-        {
-            alertCoroutineRunning = true;
-            // Set message to alert
-            alertText.text = alertMessage;
 
-            // Initiate operation to change its opacity to 1 then 0
-            CanvasGroup alertTextCanvasGroup = alertText.gameObject.GetComponent<CanvasGroup>();
-
-            float timer = 0;
-            while (timer <= alertFadeTime)
-            {
-                float newAlpha = Mathf.Lerp(0, 1, timer / alertFadeTime);
-                alertTextCanvasGroup.alpha = newAlpha;
-
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            alertTextCanvasGroup.alpha = 1;
-
-            yield return new WaitForSeconds(alertDuration);
-
-            timer = 0;
-            while (timer <= alertFadeTime)
-            {
-                float newAlpha = Mathf.Lerp(1, 0, timer / alertFadeTime);
-                alertTextCanvasGroup.alpha = newAlpha;
-
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            alertTextCanvasGroup.alpha = 0;
-            alertCoroutineRunning = false;
-        }
-
-        #endregion
 
 
     }

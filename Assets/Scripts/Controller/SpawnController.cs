@@ -64,7 +64,7 @@ namespace Vortices
                         spawnBase.volumetric = sessionManager.volumetric;
 
                         spawnBase.browsingMode = "Local";
-                        spawnBase.filePaths = customUrls;
+                        spawnBase.elementPaths = customUrls;
 
                         spawnBase.StartGenerateSpawnGroup();
                     }
@@ -77,15 +77,15 @@ namespace Vortices
                         spawnBase.dimension = sessionManager.dimension;
                         spawnBase.volumetric = sessionManager.volumetric;
 
+                        spawnBase.elementPaths = sessionManager.elementPaths;
+
                         if (sessionManager.browsingMode == "Local")
                         {
                             spawnBase.browsingMode = sessionManager.browsingMode;
-                            spawnBase.filePaths = sessionManager.filePaths;
                         }
                         else if (sessionManager.browsingMode == "Online")
                         {
                             spawnBase.browsingMode = sessionManager.browsingMode;
-                            spawnBase.rootUrl = sessionManager.rootUrl;
                         }
 
                         spawnBase.StartGenerateSpawnGroup();
@@ -103,7 +103,7 @@ namespace Vortices
                         spawnBase.volumetric = sessionManager.volumetric;
 
                         spawnBase.browsingMode = "Local";
-                        spawnBase.filePaths = customUrls;
+                        spawnBase.elementPaths = customUrls;
 
                         spawnBase.StartGenerateSpawnGroup();
                     }
@@ -116,15 +116,15 @@ namespace Vortices
                         spawnBase.dimension = sessionManager.dimension;
                         spawnBase.volumetric = sessionManager.volumetric;
 
+                        spawnBase.elementPaths = sessionManager.elementPaths;
+
                         if (sessionManager.browsingMode == "Local")
                         {
                             spawnBase.browsingMode = sessionManager.browsingMode;
-                            spawnBase.filePaths = sessionManager.filePaths;
                         }
                         else if (sessionManager.browsingMode == "Online")
                         {
                             spawnBase.browsingMode = sessionManager.browsingMode;
-                            spawnBase.rootUrl = sessionManager.rootUrl;
                         }
 
                         spawnBase.StartGenerateSpawnGroup();
@@ -148,15 +148,15 @@ namespace Vortices
                         MuseumSpawnBase spawnBase = GameObject.FindObjectOfType<MuseumBase>();
                         placementBase = spawnBase.gameObject;
 
+                        spawnBase.elementPaths = sessionManager.elementPaths;
+
                         if (sessionManager.browsingMode == "Local")
                         {
                             spawnBase.browsingMode = sessionManager.browsingMode;
-                            spawnBase.filePaths = sessionManager.filePaths;
                         }
                         else if (sessionManager.browsingMode == "Online")
                         {
                             spawnBase.browsingMode = sessionManager.browsingMode;
-                            spawnBase.rootUrl = sessionManager.rootUrl;
                         }
                         // Unlock Teleportation
 
@@ -172,7 +172,7 @@ namespace Vortices
                         MuseumSpawnBase spawnBase = sortingBase.GetComponent<MuseumSpawnBase>();
 
                         spawnBase.browsingMode = "Local";
-                        spawnBase.filePaths = customUrls;
+                        spawnBase.elementPaths = customUrls;
 
                         StartCoroutine(spawnBase.StartGenerateSpawnElements());
                     }

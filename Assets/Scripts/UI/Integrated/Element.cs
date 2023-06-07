@@ -21,8 +21,8 @@ namespace Vortices
 
         [SerializeField] private GameObject browserControls;
         [SerializeField] private GameObject upperControls;
-        [SerializeField] private GameObject webUrl;
         [SerializeField] private GameObject goBack;
+        [SerializeField] private GameObject webUrl;
         [SerializeField] private GameObject goForward;
         [SerializeField] public GameObject headInteractor;
         [SerializeField] private GameObject categorySelectorUI;
@@ -97,46 +97,47 @@ namespace Vortices
             {
                 // Enable browser controls
                 upperControls.SetActive(true);
-                // Subscribe to keyboard event for it to show
-                TMP_InputField webUrlInputfield = webUrl.transform.Find("InputField").GetComponent<TMP_InputField>();
-                webUrlInputfield.onSelect.AddListener(delegate { keyboardCanvas.SetInputField(webUrlInputfield); });
-                webUrl.gameObject.SetActive(true);
 
-                StartCoroutine(keyboardCanvas.SetKeyboardOn());
+                // Enables the permanent keyboard in online mode, activate if asked
+                //StartCoroutine(keyboardCanvas.SetKeyboardOn());
 
+                // Updates the url of the element if user interacts with web view, with new online mode this is no longer needed, activate if asked
                 // Add event so it updates categories when navigating
-                canvasWebView.UrlChanged += (sender, eventArgs) =>
+                /*canvasWebView.UrlChanged += (sender, eventArgs) =>
                 {
                     this.url = canvasWebView.Url;
                     sessionManager.loggingController.LogUrlChanged(url);
                     righthandTools.UpdateCategorizeSubMenu(this);
                 };
+                */
                 // Add event for upper controls
                 Button goBackButton = goBack.GetComponent<Button>();
                 goBackButton.onClick.AddListener(delegate { GoBackOnline(); });
                 goBackButton.gameObject.SetActive(true);
-                Button goForwardButton = goForward.GetComponent<Button>();
-                goForwardButton.onClick.AddListener(delegate { GoForwardOnline(); });
-                goForwardButton.gameObject.SetActive(true);
+                // With new online mode, url bar is no longer needed nor go forward online
+                //Button goForwardButton = goForward.GetComponent<Button>();
+                //goForwardButton.onClick.AddListener(delegate { GoForwardOnline(); });
+                //goForwardButton.gameObject.SetActive(true);
 
             }
             // Enable Local controls
-            else if (browsingMode == "Local")
-            {
+            // With new online mode, swapping controllers are put even when using online browsers
+            //else if (browsingMode == "Local")
+            //{
                 if (sessionManager.environmentName == "Museum")
                 {
                     // Enable browser controls
                     upperControls.SetActive(true);
-                    webUrl.SetActive(false);
-                    // Subscribe to image swapping
+                    //webUrl.SetActive(false);
+                    // Subscribe to element swapping
                     Button goBackButton = goBack.GetComponent<Button>();
-                    goBackButton.onClick.AddListener(delegate { GoBackLocalMuseum(); });
+                    goBackButton.onClick.AddListener(delegate { GoBackMuseum(); });
                     goBackButton.gameObject.SetActive(true);
                     Button goForwardButton = goForward.GetComponent<Button>();
-                    goForwardButton.onClick.AddListener(delegate { GoForwardLocalMuseum(); });
+                    goForwardButton.onClick.AddListener(delegate { GoForwardMuseum(); });
                     goForwardButton.gameObject.SetActive(true);
                 }
-            }
+            //}
 
             canvasWebView = GetComponentInChildren<CanvasWebViewPrefab>().WebView;
 
@@ -174,7 +175,7 @@ namespace Vortices
             }
         }
 
-        public void GoBackLocalMuseum()
+        public void GoBackMuseum()
         {
             if (initialized)
             {
@@ -184,7 +185,7 @@ namespace Vortices
             }
         }
 
-        public void GoForwardLocalMuseum()
+        public void GoForwardMuseum()
         {
             if (initialized)
             {

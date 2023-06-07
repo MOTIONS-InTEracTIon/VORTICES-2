@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Vortices
 {
-    public class FilePathController : MonoBehaviour
+    public class OnlinePathController : MonoBehaviour
     {
         #region Variables and properties
         [SerializeField] private TextMeshProUGUI placeholderText;
@@ -15,15 +15,17 @@ namespace Vortices
         [SerializeField] private List<TextMeshProUGUI> dataCounters;
 
         // Filter
-        private bool hasH264Codec = false;
+        private List<string> onlinePathsRaw;
         private List<string> supportedExtensions;
-        private List<string> filePathsRaw;
+        private List<string> onlinePathsFiltered;
 
         // Data
-        public List<string> filePaths { get; private set; }
-        public int numberOfFolders { get; private set; }
+        public List<string> onlinePaths { get; private set; }
+        public int numberOfUrlFiles { get; private set; }
         public int numberOfSupported { get; private set; }
         public int numberOfUnsupported { get; private set; }
+        public int numberOfFolders { get; private set; }
+        public int numberOfUrlLoaded { get; private set; }
         #endregion
 
         private void Start()
@@ -34,7 +36,7 @@ namespace Vortices
         }
 
         #region Path extraction
-        // Filters paths obtained from SimpleFileBrowser turning folders into files
+        // Filters paths obtained from SimpleFileBrowser turning text files into urls
         public void GetFilePaths(string[] originPaths)
         {
             // Get files from each folder
@@ -43,22 +45,40 @@ namespace Vortices
                 if (Directory.Exists(path))
                 {
                     numberOfFolders++;
-                    filePathsRaw.AddRange(Directory.GetFiles(path, "*.*", SearchOption.AllDirectories));
+                    onlinePathsRaw.AddRange(Directory.GetFiles(path, "*.txt", SearchOption.AllDirectories));
                 }
                 else
                 {
-                    filePathsRaw.Add(path);
+                    onlinePathsRaw.Add(path);
                 }
 
             }
+
             // Filter by extension
-            foreach (string path in filePathsRaw)
+            foreach (string path in onlinePathsRaw)
             {
                 if (CheckExtensionSupport(path))
                 {
-                    filePaths.Add(path);
+                    onlinePathsFiltered.Add(path);
+                    numberOfUrlFiles++;
                 }
             }
+
+            // After getting all .txt files, expand them into urls
+            foreach (string path in onlinePathsFiltered)
+            {
+                StreamReader inp_stm = new StreamReader(path);
+
+                while (!inp_stm.EndOfStream)
+                {
+                    string inp_ln = inp_stm.ReadLine();
+                    onlinePaths.Add(inp_ln);
+                    numberOfUrlLoaded++;
+                }
+
+                inp_stm.Close();
+            }
+
         }
 
         // Updates the UI texts after getting the paths
@@ -69,13 +89,22 @@ namespace Vortices
             selectionText.gameObject.SetActive(true);
 
             string selection;
-            if (filePaths.Count > 1 || filePaths.Count == 0)
+            if (onlinePaths.Count > 1 || onlinePaths.Count == 0)
             {
-                selection = filePaths.Count + " files selected from ";
+                selection = onlinePaths.Count + " urls extracted from ";
             }
             else
             {
-                selection = filePaths.Count + " file selected from ";
+                selection = onlinePaths.Count + " url extracted from ";
+            }
+
+            if (numberOfUrlFiles > 1 || numberOfUrlFiles == 0)
+            {
+                selection += numberOfUrlFiles + " files in ";
+            }
+            else
+            {
+                selection += numberOfUrlFiles + " file in ";
             }
 
             if (numberOfFolders > 1)
@@ -107,17 +136,19 @@ namespace Vortices
         // Clears the information everytime the list of folders or files is changed
         public void ClearPaths()
         {
-            filePathsRaw = new List<string>();
-            filePaths = new List<string>();
+            onlinePathsRaw = new List<string>();
+            onlinePaths = new List<string>();
+            onlinePathsFiltered = new List<string>();
             numberOfFolders = 0;
             numberOfSupported = 0;
             numberOfUnsupported = 0;
+            numberOfUrlFiles = 0;
+            numberOfUrlLoaded = 0;
         }
 
         #endregion
 
         #region Path filter
-
         private bool CheckExtensionSupport(string path)
         {
             bool addToFilePaths = false;
@@ -140,32 +171,7 @@ namespace Vortices
         private void AddSupportedExtensions()
         {
             // Add here supported extensions
-            supportedExtensions.Add(".mp3");
-            supportedExtensions.Add(".ogv");
-            supportedExtensions.Add(".ogg");
-            supportedExtensions.Add(".oga");
-            supportedExtensions.Add(".webm");
-            supportedExtensions.Add(".wav");
             supportedExtensions.Add(".txt");
-            supportedExtensions.Add(".pdf");
-            supportedExtensions.Add(".bmp");
-            supportedExtensions.Add(".gif");
-            supportedExtensions.Add(".jpg");
-            supportedExtensions.Add(".jpeg");
-            supportedExtensions.Add(".png");
-            supportedExtensions.Add(".webp");
-            supportedExtensions.Add(".ico");
-            supportedExtensions.Add(".webp");
-            supportedExtensions.Add(".json");
-
-            if (hasH264Codec)
-            {
-                supportedExtensions.Add(".3gp");
-                supportedExtensions.Add(".mp4");
-                supportedExtensions.Add(".m4a");
-                supportedExtensions.Add(".m4v");
-            }
-
         }
         #endregion
     }

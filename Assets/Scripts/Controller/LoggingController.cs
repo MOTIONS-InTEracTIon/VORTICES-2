@@ -51,10 +51,6 @@ namespace Vortices
                     newEntry.detail += "Dimension: " + sessionManager.dimension.x + "," + sessionManager.dimension.y + "," + sessionManager.dimension.z + ";";
                 }
                 newEntry.detail += "Browsing Mode: " + sessionManager.browsingMode + ";";
-                if (sessionManager.browsingMode == "Online")
-                {
-                    newEntry.detail += "Root URL: " + sessionManager.rootUrl + ";";
-                }
             }
 
             // Entry is ready, write it to file

@@ -44,7 +44,7 @@ namespace Vortices
             {
                 element.SetActive(true);
                 MuseumElement elementComponent = element.GetComponent<MuseumElement>();
-                elementComponent.Init(filePaths, browsingMode, rootUrl);
+                elementComponent.Init(elementPaths, browsingMode);
                 TaskCoroutine spawnCoroutine = new TaskCoroutine(elementComponent.StartSpawnOperation(globalIndex++));
                 spawnCoroutine.Finished += delegate (bool manual)
                 {

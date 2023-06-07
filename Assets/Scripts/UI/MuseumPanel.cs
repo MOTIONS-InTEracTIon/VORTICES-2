@@ -71,12 +71,26 @@ namespace Vortices
                     {
                         hasToBlock = false;
                     }
+                    else if (optionFilePath.filePaths != null && optionFilePath.filePaths.Count == 0)
+                    {
+                        if (!alertCoroutineRunning)
+                        {
+                            StartCoroutine(SetAlert("File path chosen has no compatible extension files"));
+                        }
+                    }
                     break;
-                // Online mode has a default url so it starts enabled, disabled if no url
+                // Online mode has to have a correct set to load
                 case (int)MuseumId.BrowsingOnline:
-                    if (optionRootUrl.text.text != "" || optionRootUrl.placeholder.text != "")
+                    if (optionOnlinePath.onlinePaths != null && optionOnlinePath.onlinePaths.Count > 0)
                     {
                         hasToBlock = false;
+                    }
+                    else if (optionOnlinePath.onlinePaths != null && optionOnlinePath.onlinePaths.Count == 0)
+                    {
+                        if (!alertCoroutineRunning)
+                        {
+                            StartCoroutine(SetAlert("File path chosen has no compatible extension files"));
+                        }
                     }
                     break;
                 // Category Controller unlocks button by its own
@@ -123,17 +137,8 @@ namespace Vortices
             fileBrowser.SetAsPersistent(true);
         }
 
-        // Sets starting Url for online mode
-        public void SetRootUrl()
-        {
-            if (optionRootUrl.GetData() != "")
-            {
-                rootUrl = optionRootUrl.text.text;
-            }
-        }
-
         // Uses SimpleFileBrowser to obtain a list of paths and apply them to the property filePaths so other components can use them
-        public void OpenFileBrowser()
+        public void OpenFileBrowserLocal()
         {
             FileBrowser.ShowLoadDialog((paths) =>
                 {
@@ -149,6 +154,23 @@ namespace Vortices
 
         }
 
+        // Uses SimpleFileBrowser to obtain a list of url txt paths, extracts urls and applies them to the property onlinePaths so other components can use them
+        public void OpenFileBrowserOnline()
+        {
+            FileBrowser.ShowLoadDialog((paths) =>
+            {
+                optionOnlinePath.ClearPaths();
+                optionOnlinePath.GetFilePaths(paths);
+                optionOnlinePath.SetUIText();
+                ChangeVisibleComponent((int)CircularId.BrowsingOnline);
+            },
+                () => {/* Handle closing*/
+                    ChangeVisibleComponent((int)CircularId.BrowsingOnline);
+                },
+                FileBrowser.PickMode.FilesAndFolders, true, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), null, "Load", "Select");
+
+        }
+
         public void SendDataToSessionManager()
         {
             // Sends Museum Data setting variables
@@ -156,12 +178,12 @@ namespace Vortices
             if (browsingMode == 0)
             {
                 sessionManager.browsingMode = "Local";
-                sessionManager.filePaths = optionFilePath.filePaths;
+                sessionManager.elementPaths = optionFilePath.filePaths;
             }
             else
             {
                 sessionManager.browsingMode = "Online";
-                sessionManager.rootUrl = rootUrl;
+                sessionManager.elementPaths = optionOnlinePath.onlinePaths;
             }
             sessionManager.displayMode = "Museum";
 

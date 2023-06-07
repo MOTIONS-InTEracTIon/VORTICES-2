@@ -21,8 +21,7 @@ namespace Vortices
         public string browsingMode;
         public bool volumetric;
         public Vector3Int dimension;
-        public string rootUrl;
-        public List<string> filePaths;
+        public List<string> elementPaths;
         // Session Manager settings
         public float initializeTime = 2.0f;
 

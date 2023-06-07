@@ -9,7 +9,7 @@ namespace Vortices
     public abstract class MuseumSpawnBase : MonoBehaviour
     {
         // SpawnBaseMuseum Data Components
-        [HideInInspector] public List<string> filePaths;
+        [HideInInspector] public List<string> elementPaths;
         [HideInInspector] public string rootUrl { get; set; }
         [SerializeField] public GameObject defaultPicture;
         [SerializeField] public List<GameObject> elementList;

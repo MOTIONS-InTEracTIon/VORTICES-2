@@ -60,7 +60,7 @@ namespace Vortices
                 railLayout.PrimaryAlignment = Alignment.Center;
                 // Radial Group Setting
                 RadialGroup spawnGroup = gameObject.GetComponent<RadialGroup>();
-                spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, linearRail,
+                spawnGroup.Init(elementPaths, dimension, browsingMode, displayMode, linearRail,
                     startingRadius + radiusStep * i, startingAngle + angleStep * i, softFadeUpperAlpha, rotationAngleStep);
                 bool softFadeIn = true;
                 if (i == 0)
@@ -334,7 +334,7 @@ namespace Vortices
             railLayout.LayoutAxis = LayoutAxis3D.Y;
             railLayout.PrimaryAlignment = Alignment.Center;
             RadialGroup spawnGroup = gameObject.GetComponent<RadialGroup>();
-            spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, linearRail,
+            spawnGroup.Init(elementPaths, dimension, browsingMode, displayMode, linearRail,
                 startingRadius + radiusStep * (groupList.Count - 1), angleStep * pullPushCount, softFadeUpperAlpha, rotationAngleStep);
             yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, true));
 
@@ -395,7 +395,7 @@ namespace Vortices
             railLayout.LayoutAxis = LayoutAxis3D.Y;
             railLayout.PrimaryAlignment = Alignment.Center;
             RadialGroup spawnGroup = gameObject.GetComponent<RadialGroup>();
-            spawnGroup.Init(filePaths, dimension, browsingMode, displayMode, rootUrl, linearRail,
+            spawnGroup.Init(elementPaths, dimension, browsingMode, displayMode, linearRail,
                 startingRadius, angleStep * pullPushCount, softFadeUpperAlpha, rotationAngleStep);
             yield return StartCoroutine(spawnGroup.StartSpawnOperation(globalIndex, false));
 

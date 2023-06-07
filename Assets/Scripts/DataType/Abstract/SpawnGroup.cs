@@ -14,8 +14,7 @@ namespace Vortices
         protected List<GameObject> rowList;
 
         // Data variables
-        [HideInInspector] public List<string> filePaths;
-        [HideInInspector] public string rootUrl { get; set; }
+        [HideInInspector] public List<string> elementPaths;
 
         // Utility
         public int globalIndex;
@@ -154,15 +153,9 @@ namespace Vortices
             {
                 globalIndex++;
                 string actualPath = "";
-                // Uses rootUrl for online mode and searches filePaths in circular manner for local mode
-                if (browsingMode == "Online")
-                {
-                    actualPath = rootUrl;
-                }
-                else if (browsingMode == "Local")
-                {
-                    actualPath = CircularList.GetElement<string>(filePaths, globalIndex);
-                }
+
+                actualPath = CircularList.GetElement<string>(elementPaths, globalIndex);
+
                 // Look if that path is in memory X
                 loadPaths.Add(actualPath);
 

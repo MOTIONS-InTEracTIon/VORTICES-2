@@ -10,9 +10,7 @@ namespace Vortices
         private GameObject elementFrame;
 
         // Data variables
-        [HideInInspector] public List<string> filePaths;
-        [HideInInspector] public string rootUrl { get; set; }
-
+        [HideInInspector] public List<string> elementPaths;
 
         // Utility
         public int globalIndex;
@@ -31,12 +29,11 @@ namespace Vortices
 
 
         #region Multimedia Spawn
-        public void Init(List<string> filePaths, string browsingMode, string rootUrl)
+        public void Init(List<string> elementPaths, string browsingMode)
         {
             elementFrame = transform.GetChild(0).gameObject;
-            this.filePaths = filePaths;
+            this.elementPaths = elementPaths;
             this.browsingMode = browsingMode;
-            this.rootUrl = rootUrl;
         }
 
         public IEnumerator StartSpawnOperation(int offsetGlobalIndex)
@@ -159,15 +156,9 @@ namespace Vortices
             }
                 
             string actualPath = "";
-            // Uses rootUrl for online mode and searches filePaths in circular manner for local mode
-            if (browsingMode == "Online")
-            {
-                actualPath = rootUrl;
-            }
-            else if (browsingMode == "Local")
-            {
-                actualPath = CircularList.GetElement<string>(filePaths, globalIndex);
-            }
+
+            actualPath = CircularList.GetElement<string>(elementPaths, globalIndex);
+
             loadPaths.Add(actualPath);
 
             index++;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using TMPro;
 using UnityEngine;
 
 namespace Vortices
@@ -8,10 +9,14 @@ namespace Vortices
     public abstract class SpawnPanel : MonoBehaviour
     {
         #region Variables and properties
+
+        // Other references
+        [SerializeField] public TextMeshProUGUI alertText;
+
         // Panel UI Components
         [SerializeField] protected List<GameObject> uiComponents;
         [SerializeField] protected FilePathController optionFilePath;
-        [SerializeField] protected TextInputField optionRootUrl;
+        [SerializeField] protected OnlinePathController optionOnlinePath;
 
         // Send data
         protected SessionManager sessionManager;
@@ -19,11 +24,18 @@ namespace Vortices
         // Panel Properties
         public int actualComponentId { get; set; }
 
+        // Settings
+        protected float alertDuration = 5.0f;
+        protected float alertFadeTime = 0.3f;
+
+        // Coroutine
+        protected bool alertCoroutineRunning;
+
         #endregion
 
         #region User Input
         // This set of functions are used so the system can take user input while changing panel components
-        
+
         // UI Components will change according to user configurations one by one
         public void ChangeVisibleComponent(int componentId)
         {
@@ -82,6 +94,44 @@ namespace Vortices
             CanvasGroup newCanvasGroup = uiComponents[0].gameObject.GetComponent<CanvasGroup>();
             newCanvasGroup.alpha = 1;
             newCanvasGroup.blocksRaycasts = true;
+        }
+
+        #endregion
+
+        #region UI Alert
+        protected IEnumerator SetAlert(string alertMessage)
+        {
+            alertCoroutineRunning = true;
+            // Set message to alert
+            alertText.text = alertMessage;
+
+            // Initiate operation to change its opacity to 1 then 0
+            CanvasGroup alertTextCanvasGroup = alertText.gameObject.GetComponent<CanvasGroup>();
+
+            float timer = 0;
+            while (timer <= alertFadeTime)
+            {
+                float newAlpha = Mathf.Lerp(0, 1, timer / alertFadeTime);
+                alertTextCanvasGroup.alpha = newAlpha;
+
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            alertTextCanvasGroup.alpha = 1;
+
+            yield return new WaitForSeconds(alertDuration);
+
+            timer = 0;
+            while (timer <= alertFadeTime)
+            {
+                float newAlpha = Mathf.Lerp(1, 0, timer / alertFadeTime);
+                alertTextCanvasGroup.alpha = newAlpha;
+
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            alertTextCanvasGroup.alpha = 0;
+            alertCoroutineRunning = false;
         }
 
         #endregion

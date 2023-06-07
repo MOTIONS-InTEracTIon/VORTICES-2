@@ -14,8 +14,7 @@ namespace Vortices
         protected List<GameObject> groupList;
 
         // SpawnBase Data Components
-        [HideInInspector] public List<string> filePaths;
-        [HideInInspector] public string rootUrl { get; set; }
+        [HideInInspector] public List<string> elementPaths;
 
         // Movement variables
         protected int globalIndex;
