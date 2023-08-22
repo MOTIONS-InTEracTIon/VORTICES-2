@@ -6876,7 +6876,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh32448
+  m_Name: pb_Mesh118112
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -29352,23 +29352,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf0fbbc0c2b25c74ca611e9419a6ad3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputActions:
-  - {fileID: 7862207684358717888, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: -530380113134220495, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: -530380113134220495, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: -2024308242397127297, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: 8248158260566104461, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: -8785819595477538065, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: -5982496924579745919, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: -6131295136447488360, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: 1010738217276881514, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: -3326005586356538449, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: 5101698808175986029, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: -8222252007134549311, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: 83097790271614945, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: 187161793506945269, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: -6493913391331992944, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  - {fileID: 8516845896354028060, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  inputActionAssets:
+  - {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
 --- !u!1 &1106063412
 GameObject:
   m_ObjectHideFlags: 0
@@ -44752,7 +44737,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh32226
+  m_Name: pb_Mesh117912
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -49100,7 +49085,6 @@ MonoBehaviour:
   elementCategoryController: {fileID: 0}
   spawnController: {fileID: 0}
   loggingController: {fileID: 0}
-  inputController: {fileID: 0}
   righthandTools: {fileID: 0}
   sessionLaunchRunning: 0
 --- !u!4 &1936390245

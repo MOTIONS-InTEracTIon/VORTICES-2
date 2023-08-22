@@ -1,0 +1,324 @@
+{
+    "allInputActionModeData": [
+        {
+            "modeName": "VrController",
+            "inputActions": [
+                {
+                    "actionMap": "XRI Head",
+                    "actionName": "Position",
+                    "actionType": "Value",
+                    "controlType": "Vector3",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI Head",
+                    "actionName": "Rotation",
+                    "actionType": "Value",
+                    "controlType": "Quaternion",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand",
+                    "actionName": "Position",
+                    "actionType": "Value",
+                    "controlType": "Vector3",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand",
+                    "actionName": "Rotation",
+                    "actionType": "Value",
+                    "controlType": "Quaternion",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand",
+                    "actionName": "Tracking State",
+                    "actionType": "Value",
+                    "controlType": "Integer",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand",
+                    "actionName": "Haptic Device",
+                    "actionType": "PassThrough",
+                    "controlType": "",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Interaction",
+                    "actionName": "Select",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Interaction",
+                    "actionName": "Select Value",
+                    "actionType": "Value",
+                    "controlType": "Axis",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Interaction",
+                    "actionName": "Activate",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Interaction",
+                    "actionName": "Activate Value",
+                    "actionType": "Value",
+                    "controlType": "Axis",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Interaction",
+                    "actionName": "UI Press",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Interaction",
+                    "actionName": "UI Press Value",
+                    "actionType": "Value",
+                    "controlType": "Axis",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Interaction",
+                    "actionName": "Rotate Anchor",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Interaction",
+                    "actionName": "Translate Anchor",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Locomotion",
+                    "actionName": "Teleport Select",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Locomotion",
+                    "actionName": "Teleport Mode Activate",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Locomotion",
+                    "actionName": "Teleport Mode Cancel",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Locomotion",
+                    "actionName": "Turn",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI LeftHand Locomotion",
+                    "actionName": "Move",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand",
+                    "actionName": "Position",
+                    "actionType": "Value",
+                    "controlType": "Vector3",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand",
+                    "actionName": "Rotation",
+                    "actionType": "Value",
+                    "controlType": "Quaternion",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand",
+                    "actionName": "Tracking State",
+                    "actionType": "Value",
+                    "controlType": "Integer",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand",
+                    "actionName": "Haptic Device",
+                    "actionType": "PassThrough",
+                    "controlType": "",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Interaction",
+                    "actionName": "Select",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Interaction",
+                    "actionName": "Select Value",
+                    "actionType": "Value",
+                    "controlType": "Axis",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Interaction",
+                    "actionName": "Activate",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Interaction",
+                    "actionName": "Activate Value",
+                    "actionType": "Value",
+                    "controlType": "Axis",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Interaction",
+                    "actionName": "UI Press",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Interaction",
+                    "actionName": "UI Press Value",
+                    "actionType": "Value",
+                    "controlType": "Axis",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Interaction",
+                    "actionName": "Rotate Anchor",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Interaction",
+                    "actionName": "Translate Anchor",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Interaction",
+                    "actionName": "A",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Locomotion",
+                    "actionName": "Teleport Select",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Locomotion",
+                    "actionName": "Teleport Mode Activate",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Locomotion",
+                    "actionName": "Teleport Mode Cancel",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Locomotion",
+                    "actionName": "Turn",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI RightHand Locomotion",
+                    "actionName": "Move",
+                    "actionType": "Value",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI UI",
+                    "actionName": "Navigate",
+                    "actionType": "PassThrough",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI UI",
+                    "actionName": "Submit",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI UI",
+                    "actionName": "Cancel",
+                    "actionType": "Button",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI UI",
+                    "actionName": "Point",
+                    "actionType": "PassThrough",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI UI",
+                    "actionName": "Click",
+                    "actionType": "PassThrough",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI UI",
+                    "actionName": "ScrollWheel",
+                    "actionType": "PassThrough",
+                    "controlType": "Vector2",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI UI",
+                    "actionName": "MiddleClick",
+                    "actionType": "PassThrough",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                },
+                {
+                    "actionMap": "XRI UI",
+                    "actionName": "RightClick",
+                    "actionType": "PassThrough",
+                    "controlType": "Button",
+                    "resultPathBinding": "Default"
+                }
+            ]
+        }
+    ]
+}
