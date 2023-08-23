@@ -199,16 +199,16 @@ namespace Vortices
             {
                 InputBinding originalBinding = action.bindings[0];
 
-                originalBinding.overridePath = $"<{deviceName}>/{bindingPath}";
-                //action.ApplyBindingOverride(0, $"<{deviceName}>/{bindingPath}");
-                //TEST OVERRIDE AVERIGUA UNA FORMA DE CONECTAR BIEN ESTO, SIN ESTO, NO VAS A PODER CREAR ACCIONES CUSTOM COMO MOVER IMAGENES Y ETCS
+                action.ApplyBindingOverride(0, $"<{deviceName}>/{bindingPath}");
+      
+                //TEST OVERRIDE
                 action.started += Test;
             }
         }
 
         public void Test(InputAction.CallbackContext context)
         {
-            Debug.Log("La tecla fue presionada" + context.action.bindings[0].path);
+            Debug.Log("La tecla fue presionada" + context.action.bindings[0].overridePath + " activando: " + context.action.name);
         }
 
 
