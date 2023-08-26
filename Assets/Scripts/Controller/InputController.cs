@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.IO;
+using JetBrains.Annotations;
 
 namespace Vortices
 {
     public enum Mode
     {
-        VrController = 0,      
+        UiActions = 0,
+        VorticesActions = 1,
+        XRHead = 2,
+        XRLeftController = 3,
+        XRRightController = 4,
     }
 
     // This is a experience input controller, it lets the launcher controller know what inputs it can map to and will execute these bindings when opened    
@@ -23,76 +28,148 @@ namespace Vortices
         // Note that the "first execution" has to be made to generate this input file then uploaded as a release
         public List<InputActionAsset> inputActionAssets;
 
-        #region Data Operation
+        // Application Bindings
+        public InputActionReference elementsPushAction;
+        public InputActionReference elementsPullAction;
+        public InputActionReference moveElementsAction;
+
+        public InputActionReference selectElementAction;
+
+        #region Initialize
+
+        private void Start()
+        {
+            elementsPushAction.action.performed += HandleCustomInput;
+            elementsPullAction.action.performed += HandleCustomInput;
+            moveElementsAction.action.performed += HandleCustomInput;
+
+            selectElementAction.action.performed += HandleCustomInput;
+        }
+
+        private void OnDestroy()
+        {
+            elementsPushAction.action.performed -= HandleCustomInput;
+            elementsPullAction.action.performed -= HandleCustomInput;
+            moveElementsAction.action.performed -= HandleCustomInput;
+
+            selectElementAction.action.performed -= HandleCustomInput;
+        }
+
         public void Initialize()
         {
             // Create JSON
             filePath = Path.GetDirectoryName(Application.dataPath) + "/input_mapping.json";
 
             // Create file to communicate with launcher if there is none
-            SaveInputActions();
+            SaveInputBindings();
             // Load Bindings
-            LoadInputActions();
+            LoadInputBindings();
             // Override Bindings
             OverrideBindings();
         }
 
-        #endregion
-
-        #region Sending Input Action Data to Launcher
+        #region Sending Input Binding Data to Launcher
 
         private List<InputActionModeData> GenerateInputActionModeData()
         {
             // Generates one InputActionMode for each control mode implemented in the application
-            List<InputActionModeData> allInputModeData = new List<InputActionModeData>();
+            List<InputActionModeData> allInputActionModeData = new List<InputActionModeData>();
 
-            // VORTICES-2 has two modes
-            // First mode is VR Controller 
+            // VORTICES-2 will have different input groups, head, left controller, right controller, UI and Vortices
 
-            InputActionModeData vrControllerMode = new InputActionModeData();
-            vrControllerMode.modeName = Enum.GetName(typeof(Mode), Mode.VrController);
-            vrControllerMode.inputActions = GenerateInputActionData((int) Mode.VrController);
-            allInputModeData.Add(vrControllerMode);
+            InputActionModeData vorticesActions = new InputActionModeData();
+            vorticesActions.modeName = Enum.GetName(typeof(Mode), Mode.VorticesActions);
+            List<string> vorticesActionsMaps = new List<string>{ "Vortices Actions" };
+            vorticesActions.inputActions = GenerateInputActionDataFromAsset(0, vorticesActionsMaps);
+            allInputActionModeData.Add(vorticesActions);
 
-            // Insert second mode...
+            InputActionModeData uiActions = new InputActionModeData();
+            uiActions.modeName = Enum.GetName(typeof(Mode), Mode.UiActions);
+            List<string> uiActionsMaps = new List<string> { "XRI UI" };
+            uiActions.inputActions = GenerateInputActionDataFromAsset(0, uiActionsMaps);
+            allInputActionModeData.Add(uiActions);
 
-            return allInputModeData;
+            InputActionModeData XRHead = new InputActionModeData();
+            XRHead.modeName = Enum.GetName(typeof(Mode), Mode.XRHead);
+            List<string> XRHeadMaps = new List<string> { "XRI Head" };
+            XRHead.inputActions = GenerateInputActionDataFromAsset(0, XRHeadMaps);
+            allInputActionModeData.Add(XRHead);
+
+            InputActionModeData XRLeftController = new InputActionModeData();
+            XRLeftController.modeName = Enum.GetName(typeof(Mode), Mode.XRLeftController);
+            List<string> XRLeftControllerMaps = new List<string> { "XRI LeftHand", "XRI LeftHand Interaction", "XRI LeftHand Locomotion" };
+            XRLeftController.inputActions = GenerateInputActionDataFromAsset(0, XRLeftControllerMaps);
+            allInputActionModeData.Add(XRLeftController);
+
+            InputActionModeData XRRightController = new InputActionModeData();
+            XRRightController.modeName = Enum.GetName(typeof(Mode), Mode.XRRightController);
+            List<string> XRRightControllerMaps = new List<string> { "XRI RightHand", "XRI RightHand Interaction", "XRI RightHand Locomotion" };
+            XRRightController.inputActions = GenerateInputActionDataFromAsset(0, XRRightControllerMaps);
+            allInputActionModeData.Add(XRRightController);
+
+            return allInputActionModeData;
         }
 
-        private List<InputActionData> GenerateInputActionData(int assetId)
+        private List<InputActionData> GenerateInputActionDataFromAsset(int assetId, List<string> mapNames)
         {
             List<InputActionData> availableActions = new List<InputActionData>();
-            
-            List<InputAction> inputActions = GetAllInputActionFromAsset(inputActionAssets[assetId]);
 
-            foreach (InputAction inputAction in inputActions)
-            {
-                InputActionData input = new InputActionData();
+            // Get actions
+            List<InputAction> inputActions = GetAllActionsFromAsset(assetId, mapNames);
 
-                input.actionMap = inputAction.actionMap.name;
-                input.actionName = inputAction.name;
-                input.actionType = inputAction.type.ToString();
-                input.controlType = inputAction.expectedControlType;
-                input.resultPathBinding = "Default";
-
-                availableActions.Add(input);
-            }
+            // Transform actions into data caring about composites
+            availableActions = GetInputActionDataFromActions(inputActions);
 
             return availableActions;
         }
 
-        private List<InputAction> GetAllInputActionFromAsset(InputActionAsset asset)
+
+        private List<InputActionMap> GetMapsFromAsset(InputActionAsset asset)
         {
-            List<InputAction> inputActions = new List<InputAction>();
-            if(asset == null)
+            List<InputActionMap> inputActionMaps = new List<InputActionMap>();
+
+            if (asset == null)
             {
                 Debug.LogError("InputActionAsset is not assigned.");
                 return null;
             }
 
-            foreach (var map in asset.actionMaps)
+            foreach (InputActionMap map in asset.actionMaps)
             {
-                foreach (var action in map.actions)
+                inputActionMaps.Add(map);
+            }
+
+            return inputActionMaps;
+        }
+
+        private List<InputActionMap> GetMapsFromAsset(InputActionAsset asset, List<string> mapNames)
+        {
+            List<InputActionMap> inputActionMaps = new List<InputActionMap>();
+
+            if (asset == null)
+            {
+                Debug.LogError("InputActionAsset is not assigned.");
+                return null;
+            }
+
+            foreach (InputActionMap map in asset.actionMaps)
+            {
+                if (mapNames.Contains(map.name))
+                {
+                    inputActionMaps.Add(map);
+                }
+            }
+
+            return inputActionMaps;
+        }
+
+        private List<InputAction> GetAllActionsFromMaps(List<InputActionMap> maps)
+        {
+            List<InputAction> inputActions = new List<InputAction>();
+            
+            foreach (InputActionMap map in maps)
+            {
+                foreach (InputAction action in map.actions)
                 {
                     inputActions.Add(action);
                 }
@@ -101,32 +178,112 @@ namespace Vortices
             return inputActions;
         }
 
+        private List<InputAction> GetAllActionsFromAsset(int assetId, List<string> mapNames)
+        {
+            List<InputAction> inputActions = new List<InputAction>();
+            
+            List<InputActionMap> inputActionMaps = new List<InputActionMap>();
+            foreach (string names in mapNames)
+            {
+                inputActionMaps = GetMapsFromAsset(inputActionAssets[assetId], mapNames);
+            }
+
+            if (inputActionMaps.Count == 0)
+            {
+                Debug.Log("No map with names in asset selected with id: " + assetId);
+                return null;
+            }
+
+            inputActions = GetAllActionsFromMaps(inputActionMaps);
+
+            return inputActions;
+        }
+
+        private List<InputActionData> GetInputActionDataFromActions(List<InputAction> actions)
+        {
+            if (actions == null)
+            {
+                return null;
+            }
+
+            List<InputActionData> inputActionData = new List<InputActionData>();
+
+            foreach (InputAction action in actions)
+            {
+                InputActionData inputAction = new InputActionData();
+                inputAction.actionName = action.name;
+                inputAction.actionMap = action.actionMap.name;
+                inputAction.controlType = action.expectedControlType;
+
+                List<InputBindingData> bindingData = new List<InputBindingData>();
+                foreach (InputBinding originalbinding in action.bindings)
+                {
+                    InputBindingData newBinding = new InputBindingData();
+                    newBinding.bindingName = originalbinding.name;
+                    newBinding.isComposite = originalbinding.isComposite;
+                    newBinding.isPartOfComposite = originalbinding.isPartOfComposite;
+                    newBinding.path = "Default";
+
+                    bindingData.Add(newBinding);
+                }
+                inputAction.inputBindings = bindingData;
+
+                inputActionData.Add(inputAction);
+            }
+
+            return inputActionData;
+        }
+
         #endregion
 
         #region Recieving Input Action Data from Launcher
 
         private void OverrideBindings()
         {
-            if(inputActionModeData == null)
+            if (inputActionModeData == null)
             {
                 return;
             }
 
-            // VORTICES-2 has two modes
-            // First mode is VR Controller 
-            InputActionModeData vrControllerMode = GetModeInputActionData(Enum.GetName(typeof(Mode), (int)Mode.VrController));
-            List<InputAction> vrControllerInputActions = GetAllInputActionFromAsset(inputActionAssets[(int)Mode.VrController]);
-            // Apply bindings
-            OverrideModeBindings(vrControllerInputActions, vrControllerMode.inputActions);
+            // VORTICES-2 will have different input groups, head, left controller, right controller, UI and Vortices
 
-            // Insert second mode...
+            InputActionModeData vorticesActionsMode = GetModeInputActionData(Enum.GetName(typeof(Mode), (int)Mode.VorticesActions));
+            List<string> vorticesActionsMaps = new List<string> { "Vortices Actions" };
+            List<InputAction> vorticesActionsInputActions = GetAllActionsFromAsset(0, vorticesActionsMaps);
+            // Apply bindings
+            OverrideModeActions(vorticesActionsInputActions, vorticesActionsMode.inputActions);
+
+            InputActionModeData uiActionsMode = GetModeInputActionData(Enum.GetName(typeof(Mode), (int)Mode.UiActions));
+            List<string> uiActionsMaps = new List<string> { "XRI UI" };
+            List<InputAction> uiActionsInputActions = GetAllActionsFromAsset(0, uiActionsMaps);
+            // Apply bindings
+            OverrideModeActions(uiActionsInputActions, uiActionsMode.inputActions);
+
+            InputActionModeData XRHeadMode = GetModeInputActionData(Enum.GetName(typeof(Mode), (int)Mode.XRHead));
+            List<string> XRHeadMaps = new List<string> { "XRI Head" };
+            List<InputAction> XRHeadInputActions = GetAllActionsFromAsset(0, XRHeadMaps);
+            // Apply bindings
+            OverrideModeActions(XRHeadInputActions, XRHeadMode.inputActions);
+
+            InputActionModeData XRLeftControllerMode = GetModeInputActionData(Enum.GetName(typeof(Mode), (int)Mode.XRLeftController));
+            List<string> XRLeftControllerMaps = new List<string> { "XRI LeftHand", "XRI LeftHand Interaction", "XRI LeftHand Locomotion" };
+            List<InputAction> XRLeftControllerInputActions = GetAllActionsFromAsset(0, XRLeftControllerMaps);
+            // Apply bindings
+            OverrideModeActions(XRLeftControllerInputActions, XRLeftControllerMode.inputActions);
+
+            InputActionModeData XRRightControllerMode = GetModeInputActionData(Enum.GetName(typeof(Mode), (int)Mode.XRRightController));
+            List<string> XRRightControllerMaps = new List<string> { "XRI RightHand", "XRI RightHand Interaction", "XRI RightHand Locomotion" };
+            List<InputAction> XRRightControllerInputActions = GetAllActionsFromAsset(0, XRRightControllerMaps);
+            // Apply bindings
+            OverrideModeActions(XRRightControllerInputActions, XRRightControllerMode.inputActions);
+
         }
 
-        private InputActionModeData GetModeInputActionData (string modeName)
+        private InputActionModeData GetModeInputActionData(string modeName)
         {
-            foreach(InputActionModeData modeData in inputActionModeData) 
+            foreach (InputActionModeData modeData in inputActionModeData)
             {
-                if(modeData.modeName == modeName)
+                if (modeData.modeName == modeName)
                 {
                     return modeData;
                 }
@@ -135,36 +292,46 @@ namespace Vortices
             return null;
         }
 
-        private void OverrideModeBindings(List<InputAction> modeInputActions, List<InputActionData> overrideInputActions)
+        
+        private void OverrideModeActions(List<InputAction> modeInputActions, List<InputActionData> overrideInputActions)
         {
-            if(overrideInputActions == null)
+            if (overrideInputActions == null)
             {
                 return;
             }
 
-            foreach(InputActionData action in overrideInputActions)
+            foreach (InputActionData action in overrideInputActions)
             {
-                if(action.resultPathBinding == "Default")
+                foreach (InputBindingData binding in action.inputBindings)
                 {
-                    continue;
-                }
+                    if(binding.path == "Default")
+                    {
+                        continue;
+                    }
 
-                // Search for the original InputAction to override
-                InputAction inputAction = GetInputActionFromList(modeInputActions, action);
-                // Format the path in the overriding action
-                List<string> path = FormatBindingPath(action.resultPathBinding);
-                // Override original action
-                ChangeBindingPath(inputAction, path[0], path[1]);
+                    // If the path is changed this means override
+                    // Search the original input action
+                    InputAction originalInputAction = GetInputActionFromList(modeInputActions, action);
+                    // And with it, the original binding
+                    InputBinding originalInputBinding = GetInputBindingFromAction(originalInputAction, binding);
+                    int originalInputBindingIndex = GetBindingIndexFromAction(originalInputAction, binding);
+                    if (originalInputBinding.name == "fail")
+                    {
+                        continue;
+                    }
+                    // Then Override original action
+                    List<string> path = FormatBindingPath(binding.path);
+                    ChangeBindingPath(originalInputAction, originalInputBinding, originalInputBindingIndex, path[0], path[1]);
+                }
             }
         }
-
+        
         private InputAction GetInputActionFromList(List<InputAction> inputActions, InputActionData inputAction)
         {
             foreach (InputAction action in inputActions)
             {
                 if (action.actionMap.name == inputAction.actionMap &&
                     action.name == inputAction.actionName &&
-                    action.type.ToString() == inputAction.actionType &&
                     action.expectedControlType == inputAction.controlType)
                 {
                     return action;
@@ -172,6 +339,39 @@ namespace Vortices
             }
 
             return null;
+        }
+        
+        private InputBinding GetInputBindingFromAction(InputAction originalAction, InputBindingData binding)
+        {
+            foreach (InputBinding actionBinding in originalAction.bindings)
+            {
+                if (actionBinding.name == binding.bindingName &&
+                    actionBinding.isComposite == binding.isComposite &&
+                    actionBinding.isPartOfComposite == binding.isPartOfComposite)
+                {
+                    return actionBinding;
+                }
+            }
+
+            return new InputBinding(name = "fail");
+        }
+
+        private int GetBindingIndexFromAction(InputAction originalAction, InputBindingData binding)
+        {
+            int index = -1;
+            foreach (InputBinding actionBinding in originalAction.bindings)
+            {
+                index++;
+                if (actionBinding.name == binding.bindingName &&
+                    actionBinding.isComposite == binding.isComposite &&
+                    actionBinding.isPartOfComposite == binding.isPartOfComposite)
+                {
+                    return index;
+                }
+            }
+
+            return index;
+
         }
 
         private List<string> FormatBindingPath(string resultPathBinding)
@@ -193,22 +393,90 @@ namespace Vortices
             return result;
         }
 
-        private void ChangeBindingPath(InputAction action, string deviceName, string bindingPath)
+        private void ChangeBindingPath(InputAction action, InputBinding binding, int bindingIndex , string deviceName, string bindingPath)
         {
-            if(action.bindings.Count > 0)
-            {
-                InputBinding originalBinding = action.bindings[0];
+            // ApplyBindingOverride over with its binding index
+            action.ApplyBindingOverride(bindingIndex, $"<{deviceName}>/{bindingPath}");
+            Debug.Log("Successfully remapped to: " + action.name + " with " + $"<{deviceName}>/{bindingPath}");
+            action.performed += Test;
 
-                action.ApplyBindingOverride(0, $"<{deviceName}>/{bindingPath}");
-      
-                //TEST OVERRIDE
-                action.started += Test;
-            }
+            //TEST OVERRIDE
+            //action.started += Test;
         }
 
         public void Test(InputAction.CallbackContext context)
         {
-            Debug.Log("La tecla fue presionada" + context.action.bindings[0].overridePath + " activando: " + context.action.name);
+            Debug.Log("La tecla fue presionada" + " activando: " + context.action.name);
+        }
+        #endregion
+
+
+        #endregion
+
+        #region Custom Bindings
+
+        public void HandleCustomInput(InputAction.CallbackContext context)
+        {
+            // Circular base actions
+            if(context.action == elementsPullAction.action ||
+               context.action == elementsPushAction.action ||
+               context.action == moveElementsAction.action)
+            {
+                if (GameObject.FindObjectOfType<CircularSpawnBase>() == null)
+                {
+                    Debug.Log("Input received, there is no CircularSpawnBase to move");
+                    return;
+                }
+
+                CircularSpawnBase spawnBase = GameObject.FindObjectOfType<CircularSpawnBase>();
+
+                if (context.performed)
+                {
+                    if (context.action == elementsPushAction.action)
+                    {
+                        spawnBase.PerformAction("Push");
+                    }
+                    else if (context.action == elementsPullAction.action)
+                    {
+                        spawnBase.PerformAction("Pull");
+                    }
+                    else if (context.action == moveElementsAction.action)
+                    {
+                        if (context.ReadValue<Vector2>() == new Vector2(0, 1))
+                        {
+                            spawnBase.PerformAction("Up");
+                        }
+                        else if (context.ReadValue<Vector2>() == new Vector2(0, -1))
+                        {
+                            spawnBase.PerformAction("Down");
+                        }
+                        else if (context.ReadValue<Vector2>() == new Vector2(-1, 0))
+                        {
+                            spawnBase.PerformAction("Left");
+                        }
+                        else if (context.ReadValue<Vector2>() == new Vector2(1, 0))
+                        {
+                            spawnBase.PerformAction("Right");
+                        }
+                    }
+                }
+            }
+
+            if (context.action == selectElementAction.action)
+            {
+                if (GameObject.FindObjectOfType<HandController>() == null)
+                {
+                    Debug.Log("Input received, there is no HandController used to select an element");
+                    return;
+                }
+
+                HandController handController = GameObject.FindObjectOfType<HandController>();
+
+                if (context.performed)
+                {
+                    handController.SelectElement(context);
+                }
+            }
         }
 
 
@@ -216,20 +484,20 @@ namespace Vortices
 
         #region Persistence
 
-        private void SaveInputActions()
+        private void SaveInputBindings()
         {
             if (!File.Exists(filePath) || JsonChecker.IsJsonEmpty(filePath))
             {
-                InputActionBindingsData bindingsData = new InputActionBindingsData();
+                InputActionsData actionsData = new InputActionsData();
 
-                bindingsData.allInputActionModeData = GenerateInputActionModeData();
-                string json = JsonUtility.ToJson(bindingsData, true);
+                actionsData.allInputActionsModeData = GenerateInputActionModeData();
+                string json = JsonUtility.ToJson(actionsData, true);
 
                 File.WriteAllText(filePath, json);
             }
         }
 
-        private void LoadInputActions()
+        private void LoadInputBindings()
         {
             if (!File.Exists(filePath) || JsonChecker.IsJsonEmpty(filePath))
             {
@@ -240,7 +508,7 @@ namespace Vortices
 
             // Load all data to overwrite
 
-            inputActionModeData = JsonUtility.FromJson<InputActionBindingsData>(json).allInputActionModeData;
+            inputActionModeData = JsonUtility.FromJson<InputActionsData>(json).allInputActionsModeData;
         }
 
         #endregion
@@ -249,9 +517,9 @@ namespace Vortices
     #region Persistence Classes
 
     [Serializable]
-    public class InputActionBindingsData
+    public class InputActionsData
     {
-        public List<InputActionModeData> allInputActionModeData;
+        public List<InputActionModeData> allInputActionsModeData;
     }
 
     [Serializable]
@@ -264,11 +532,19 @@ namespace Vortices
     [Serializable]
     public class InputActionData
     {
-        public string actionMap;
         public string actionName;
-        public string actionType;
+        public string actionMap;
         public string controlType;
-        public string resultPathBinding;
+        public List<InputBindingData> inputBindings;
+    }
+
+    [Serializable]
+    public class InputBindingData
+    {
+        public string bindingName;
+        public bool isComposite;
+        public bool isPartOfComposite;
+        public string path;
     }
 
     #endregion

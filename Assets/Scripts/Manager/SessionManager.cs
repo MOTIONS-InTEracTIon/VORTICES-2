@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using System.Linq;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace Vortices
 { 
@@ -38,6 +41,22 @@ namespace Vortices
         // Coroutine
         public bool sessionLaunchRunning;
 
+        public GameObject currentlySelected;
+        public GameObject lastSelected;
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            lastSelected = null; // Reset lastSelected when a new scene is loaded
+        }
 
         private void Start()
         {
@@ -56,6 +75,78 @@ namespace Vortices
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
+
+
+        #region UI Handling
+
+        private void Update()
+        {
+            if (EventSystem.current.currentSelectedGameObject != null)
+            {
+                currentlySelected = EventSystem.current.currentSelectedGameObject;
+            }
+            else
+            {
+                currentlySelected = null;
+            }
+            if (EventSystem.current.currentSelectedGameObject == null || !EventSystem.current.currentSelectedGameObject.activeInHierarchy)
+            {
+                FindAndSetNextSelectable();
+            }
+            else
+            {
+                lastSelected = EventSystem.current.currentSelectedGameObject;
+            }
+        }
+
+        private void FindAndSetNextSelectable()
+        {
+            GameObject canvasObject = GameObject.Find("Canvas"); // Find the GameObject named "Canvas"
+
+            if (canvasObject == null)
+            {
+                Debug.LogError("No GameObject named 'Canvas' found in the scene.");
+                return;
+            }
+
+            Canvas canvasComponent = canvasObject.GetComponent<Canvas>(); // Get the Canvas component from the GameObject
+
+            if (canvasComponent == null)
+            {
+                Debug.LogError("No Canvas component found on the 'Canvas' GameObject.");
+                return;
+            }
+
+            Selectable[] selectables = canvasComponent.GetComponentsInChildren<Selectable>();
+
+            if (selectables.Length == 0)
+            {
+                return; // No selectables in the canvas
+            }
+
+            int startIndex = 0;
+            if (lastSelected != null)
+            {
+                int lastIndex = System.Array.FindIndex(selectables, selectable => selectable.gameObject == lastSelected);
+                if (lastIndex != -1)
+                {
+                    startIndex = (lastIndex + 1) % selectables.Length;
+                }
+            }
+
+            for (int i = 0; i < selectables.Length; i++)
+            {
+                int index = (startIndex + i) % selectables.Length;
+                if (selectables[index].gameObject.activeInHierarchy && selectables[index].interactable)
+                {
+                    EventSystem.current.SetSelectedGameObject(selectables[index].gameObject);
+                    lastSelected = selectables[index].gameObject;
+                    break;
+                }
+            }
+        }
+
+        #endregion
 
         #region Data Operations
         public void LaunchSession()

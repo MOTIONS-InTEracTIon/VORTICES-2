@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Vortices
@@ -81,7 +82,7 @@ namespace Vortices
         #region Input
 
         // Changed so it only spawns when pulling or pushing
-        protected override void PerformAction(string moveDir)
+        public override void PerformAction(string moveDir)
         {
             Vector3 center = frontGroup.transform.position;
             // This means the base has been pulled and will spawn inwards
@@ -214,6 +215,11 @@ namespace Vortices
 
                 lastPullPushForward = false;
             }
+        }
+
+        private void HandleCustomInput(InputAction.CallbackContext context)
+        {
+
         }
 
         #endregion

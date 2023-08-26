@@ -164,7 +164,7 @@ namespace Vortices
 
 
         // Different bases do different things according to the actual dragDir (Element movement)
-        protected abstract void PerformAction(string moveDir);
+        public abstract void PerformAction(string moveDir);
 
         private IEnumerator CoroutineCoordinator()
         {

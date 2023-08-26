@@ -32,7 +32,7 @@ public class HandController : MonoBehaviour
     #region Controller Actions
 
     // Select Actions
-    private void SelectElement(InputAction.CallbackContext context)
+    public void SelectElement(InputAction.CallbackContext context)
     {
         if(selectElement != null)
         {

@@ -357,8 +357,8 @@ MonoBehaviour:
     type: 3}
   browserControls: {fileID: 1631975301991177020}
   upperControls: {fileID: 6657519981047526345}
-  webUrl: {fileID: 7724214630969663380}
   goBack: {fileID: 7302418606297901868}
+  webUrl: {fileID: 7724214630969663380}
   goForward: {fileID: 2061918520366267354}
   headInteractor: {fileID: 1169225940106020372}
   categorySelectorUI: {fileID: 0}
@@ -574,6 +574,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -40
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301245733787015234, guid: 8837c05b8979b6341ab73f131aaa78f2,
+        type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1408494596531377959, guid: 8837c05b8979b6341ab73f131aaa78f2,
         type: 3}
