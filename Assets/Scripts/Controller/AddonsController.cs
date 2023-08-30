@@ -228,7 +228,7 @@ public class AddonsController : MonoBehaviour
         string json = File.ReadAllText(filePath);
 
         // Load all data to overwrite
-        allAddonsData = JsonConvert.DeserializeObject<AddonsData>(json).addonsData.addons;
+        allAddonsData = JsonConvert.DeserializeObject<AddonData>(json).addons;
     }
 
     #endregion
