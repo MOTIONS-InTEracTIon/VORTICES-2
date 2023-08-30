@@ -12085,7 +12085,7 @@ MonoBehaviour:
   m_PlayHapticsOnSelectCanceled: 0
   m_HapticSelectCancelIntensity: 0
   m_HapticSelectCancelDuration: 0
-  m_PlayHapticsOnHoverEntered: 1
+  m_PlayHapticsOnHoverEntered: 0
   m_HapticHoverEnterIntensity: 0.655
   m_HapticHoverEnterDuration: 0.5
   m_PlayHapticsOnHoverExited: 0
@@ -24025,6 +24025,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadeScreen: {fileID: 904779003}
+  sceneName: 
 --- !u!4 &1121188318
 Transform:
   m_ObjectHideFlags: 0
@@ -47619,7 +47620,7 @@ MonoBehaviour:
   m_PlayHapticsOnSelectCanceled: 0
   m_HapticSelectCancelIntensity: 0
   m_HapticSelectCancelDuration: 0
-  m_PlayHapticsOnHoverEntered: 1
+  m_PlayHapticsOnHoverEntered: 0
   m_HapticHoverEnterIntensity: 0.655
   m_HapticHoverEnterDuration: 0.5
   m_PlayHapticsOnHoverExited: 0

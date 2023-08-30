@@ -11,6 +11,9 @@ namespace Vortices
 { 
     public class SessionController : MonoBehaviour
     {
+        // Prefabs
+        [SerializeField] private GameObject environmenTogglePrefab;
+
         // Other references
         [SerializeField] private MainMenuPanel mainMenuPanel;
         [SerializeField] private GameObject scrollviewContent;
@@ -21,6 +24,8 @@ namespace Vortices
         [SerializeField] private Button continueButton;
         [SerializeField] private TextMeshProUGUI alertText;
         [SerializeField] private SessionManager sessionManager;
+        [SerializeField] private GameObject mainMenuOptionsContent;
+        [SerializeField] public GameObject environmentScrollviewContent;
 
         // Data
         public List<string> sessions;
@@ -56,10 +61,9 @@ namespace Vortices
             userIdInputField.inputfield.text = "";
             userIdInputField.placeholder.enabled = true;
             selectedEnvironment = "";
-            foreach(Toggle toggle in environmentToggles)
+            if (mainMenuPanel.optionScreenUiComponents.Count == 5)
             {
-                toggle.isOn = false;
-                toggle.interactable = true;
+                LoadEnvironments();
             }
             // When initialized will try to load sessions, will create a new session list otherwise
             LoadSessions();
@@ -268,20 +272,37 @@ namespace Vortices
         }
 
         // Environment Configuration
+        // Loading of environments using addons and asset bundles
+        public void LoadEnvironments()
+        {
+            AddonsController.instance.LoadAddonObjects();
+            // Load prefab to configuration menu
+            for (int i = 0; i < AddonsController.instance.environmentObjects.Count; i++)
+            {
+                // Set up the transition of Main Menu
+                mainMenuPanel.optionScreenUiComponents.Add(Instantiate(AddonsController.instance.environmentObjects[i].panel, mainMenuOptionsContent.transform));
+                // Add a Toggle to select it
+                UIEnvironment environmentToggle = Instantiate(environmenTogglePrefab, environmentScrollviewContent.transform).GetComponentInChildren<UIEnvironment>();
+                environmentToggle.Initialize(i, this, AddonsController.instance.environmentObjects[i]);
+            }
 
-        public void SetEnvironment(Toggle environmentToggle)
+        }
+        public void SetEnvironment(Toggle environmentToggle, int environmentId)
         {
             string environmentName = environmentToggle.transform.Find("Environment Name").GetComponent<TextMeshProUGUI>().text;
 
             // Add other environments when created
-            if (environmentName == "Circular")
+            if (environmentName == "Circular Environment")
             {
-                selectedEnvironment = environmentName;
+                selectedEnvironment = "Circular";
+                AddonsController.instance.SetEnvironment(0);
             }
-            else if (environmentName == "Museum")
+            else if (environmentName == "Museum Environment")
             {
-                selectedEnvironment = environmentName;
+                selectedEnvironment = "Museum";
+                AddonsController.instance.SetEnvironment(1);
             }
+            mainMenuPanel.currentEnvironmentId = environmentId;
         }
 
         // All Configuration

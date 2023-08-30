@@ -13,10 +13,8 @@ namespace Vortices
         Main = 0,
         Session = 1,
         CategorySelection = 2,
-        CircularPanel = 3,
-        MuseumPanel = 4,
-        Options = 5,
-        About = 6
+        Options = 3,
+        About = 4
     }
 
     public class MainMenuPanel : MonoBehaviour
@@ -31,6 +29,9 @@ namespace Vortices
         // Other
         Color normalColor = new Color(0.2956568f, 0.3553756f, 0.4150943f, 1.0f);
         Color disabledColor = Color.black;
+
+        // Settings
+        public int currentEnvironmentId;
 
         // Coroutine
         private bool isChangePanelRunning;
@@ -71,14 +72,7 @@ namespace Vortices
         // Changes to panel based on environment selection
         public void ChangePanelEnvironment()
         {
-            if(sessionManager.environmentName == "Circular")
-            {
-                ChangeVisibleComponent((int)MainMenuId.CircularPanel);
-            }
-            else if (sessionManager.environmentName == "Museum")
-            {
-                ChangeVisibleComponent((int)MainMenuId.MuseumPanel);
-            }
+            ChangeVisibleComponent(5 + currentEnvironmentId);
         }
 
         public void ChangePanelToggle(Toggle toggle)
@@ -108,21 +102,15 @@ namespace Vortices
                 panelToggle.interactable = false;
             }
 
-            bool circularStatus = optionScreenUiComponents[(int)MainMenuId.CircularPanel].activeInHierarchy;
-            bool museumStatus = optionScreenUiComponents[(int)MainMenuId.MuseumPanel].activeInHierarchy;
-
-            // If a configuration panel was running, it has to be resetted
-            if (circularStatus || museumStatus)
+            if(optionScreenUiComponents.Count > 5)
             {
-                if (circularStatus)
+                bool environmentStatus = optionScreenUiComponents[5 + currentEnvironmentId].activeInHierarchy;
+
+                // If a configuration panel was running, it has to be resetted
+                if (environmentStatus)
                 {
-                    CircularPanel circularPanel = optionScreenUiComponents[(int)MainMenuId.CircularPanel].GetComponent<CircularPanel>();
-                    circularPanel.RestartPanel();
-                }
-                else if (museumStatus)
-                {
-                    MuseumPanel museumPanel = optionScreenUiComponents[(int)MainMenuId.MuseumPanel].GetComponent<MuseumPanel>();
-                    museumPanel.RestartPanel();
+                    SpawnPanel environmentPanel = optionScreenUiComponents[5 + currentEnvironmentId].GetComponent<SpawnPanel>();
+                    environmentPanel.RestartPanel();
                 }
             }
 

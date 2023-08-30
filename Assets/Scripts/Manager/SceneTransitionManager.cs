@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Vuplex.WebView;
 using UnityEditor;
+using UnityEngine.InputSystem.XInput;
 
 namespace Vortices
 {
@@ -10,12 +11,26 @@ namespace Vortices
     {
         public FadeScreen fadeScreen;
         private float blackScreenDuration = 2.0f;
-        public int sceneTarget { get; set; }
+        public string sceneName;
+
+        public bool returnToMain;
+
+        public static SceneTransitionManager instance;
 
         private void Start()
         {
+            // Instance initializing
+            if (instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+
             #if UNITY_EDITOR
-                UnityEditor.EditorApplication.quitting += OnQuitting;
+            UnityEditor.EditorApplication.quitting += OnQuitting;
             #endif
         }
 
@@ -26,11 +41,8 @@ namespace Vortices
 
         public IEnumerator GoToSceneRoutine()
         {
+            fadeScreen = GameObject.FindObjectOfType<FadeScreen>();
             fadeScreen.FadeOut();
-
-            //Launch new scene
-            AsyncOperation operation = SceneManager.LoadSceneAsync(sceneTarget);
-            operation.allowSceneActivation = false;
 
             float timer = 0;
             while(timer <= fadeScreen.fadeDuration)
@@ -38,6 +50,22 @@ namespace Vortices
                 timer += Time.deltaTime;
                 yield return null;
             }
+            //Launch new scene
+            string sceneName = "";
+            EnvironmentObject currentEnvironment = AddonsController.instance.currentEnvironmentObject;
+            if (!returnToMain)
+            {
+                AddonsController.instance.LoadEnvironmentScene();
+                sceneName = currentEnvironment.environmentName;
+
+            }
+            else
+            {
+                sceneName = "Main Menu";
+            }
+            AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            operation.allowSceneActivation = false;
+
             timer = 0;
             while(timer <= blackScreenDuration && !operation.isDone)
             {
@@ -46,7 +74,14 @@ namespace Vortices
             }
 
             operation.allowSceneActivation = true;
+            if (sceneName != "Main Menu")
+            {
+                currentEnvironment.sceneBundle.Unload(false);
+            }
+
         }
+
+
 
         public IEnumerator FadeScreenOut()
         {
@@ -63,6 +98,7 @@ namespace Vortices
         private void OnQuitting()
         {
             /*StartCoroutine(ClearWebData());*/
+            AddonsController.instance.ClearEnvironment();
         }
 
         /*private IEnumerator ClearWebData()

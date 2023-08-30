@@ -37,16 +37,7 @@ namespace Vortices
 
         #region Initialize
 
-        private void Start()
-        {
-            elementsPushAction.action.performed += HandleCustomInput;
-            elementsPullAction.action.performed += HandleCustomInput;
-            moveElementsAction.action.performed += HandleCustomInput;
-
-            selectElementAction.action.performed += HandleCustomInput;
-        }
-
-        private void OnDestroy()
+        private void OnDisable()
         {
             elementsPushAction.action.performed -= HandleCustomInput;
             elementsPullAction.action.performed -= HandleCustomInput;
@@ -60,12 +51,25 @@ namespace Vortices
             // Create JSON
             filePath = Path.GetDirectoryName(Application.dataPath) + "/input_mapping.json";
 
+            RestartInputs();
             // Create file to communicate with launcher if there is none
             SaveInputBindings();
             // Load Bindings
             LoadInputBindings();
             // Override Bindings
             OverrideBindings();
+        }
+        public void RestartInputs()
+        {
+            elementsPushAction.action.performed += HandleCustomInput;
+            elementsPullAction.action.performed += HandleCustomInput;
+            moveElementsAction.action.performed += HandleCustomInput;
+
+            selectElementAction.action.performed += HandleCustomInput;
+            elementsPullAction.action.Enable();
+            elementsPushAction.action.Enable();
+            moveElementsAction.action.Enable();
+            selectElementAction.action.Enable();
         }
 
         #region Sending Input Binding Data to Launcher
@@ -464,13 +468,13 @@ namespace Vortices
 
             if (context.action == selectElementAction.action)
             {
-                if (GameObject.FindObjectOfType<HandController>() == null)
+                if (GameObject.Find("RightHand Controller").GetComponent<HandController>() == null)
                 {
                     Debug.Log("Input received, there is no HandController used to select an element");
                     return;
                 }
 
-                HandController handController = GameObject.FindObjectOfType<HandController>();
+                HandController handController = GameObject.Find("RightHand Controller").GetComponent<HandController>();
 
                 if (context.performed)
                 {

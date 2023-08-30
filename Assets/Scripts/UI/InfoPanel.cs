@@ -22,6 +22,7 @@ namespace Vortices
         {
             sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
             spawnController = GameObject.FindObjectOfType<SpawnController>(true);
+            SessionManager.instance.inputController.RestartInputs();
             StartCoroutine(WaitForInit());
         }
 
@@ -45,6 +46,7 @@ namespace Vortices
             sessionManager.loggingController.LogSessionStatus("Stop");
             StartCoroutine(spawnController.StopSession());
         }
+
     }
 }
 

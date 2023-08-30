@@ -41,6 +41,7 @@ namespace Vortices
         {
             if (!asSortingBase)
             {
+                righthandTools = GameObject.FindObjectOfType<RighthandTools>(true);
                 righthandTools.Initialize();
             }
 
@@ -199,9 +200,10 @@ namespace Vortices
 
         public IEnumerator StopSession()
         {
+            sessionManager = GameObject.Find("SessionManager").GetComponent<SessionManager>();
             if (!sessionManager.sessionLaunchRunning)
             {
-                if (placementBase != null)
+                /*if (placementBase != null)
                 {
                     // Fork for every environment with destroyable elements 
                     if (sessionManager.displayMode == "Circular")
@@ -209,9 +211,9 @@ namespace Vortices
                         CircularSpawnBase circularSpawnBase = placementBase.GetComponent<CircularSpawnBase>();
                         yield return StartCoroutine(circularSpawnBase.DestroyBase());
                     }
-                }
+                }*/
 
-                StartCoroutine(sessionManager.StopSessionCoroutine());
+                yield return StartCoroutine(sessionManager.StopSessionCoroutine());
             }
         }
         #endregion

@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 namespace Vortices
 { 
@@ -33,9 +34,10 @@ namespace Vortices
         [SerializeField] public CategoryController categoryController;
         [SerializeField] public ElementCategoryController elementCategoryController;
         [SerializeField] public SpawnController spawnController;
+        [SerializeField] public AddonsController addonsController;
         private CategorySelector categorySelector;
         [SerializeField] public LoggingController loggingController;
-        private InputController inputController;
+        public InputController inputController;
         public RighthandTools righthandTools;
 
         // Coroutine
@@ -70,6 +72,8 @@ namespace Vortices
             elementCategoryController = GameObject.FindObjectOfType<ElementCategoryController>(true);
             inputController = GameObject.FindObjectOfType<InputController>(true);
 
+            inputController.Initialize();
+            addonsController.Initialize();
             inputController.Initialize();
 
             instance = this;
@@ -162,15 +166,7 @@ namespace Vortices
             sessionLaunchRunning = true;
             // Switch to environment scene
             actualTransitionManager = GameObject.Find("TransitionManager").GetComponent<SceneTransitionManager>();
-            if (environmentName == "Circular")
-            {
-                actualTransitionManager.sceneTarget = 1;
-            }
-            else if (environmentName == "Museum")
-            {
-                actualTransitionManager.sceneTarget = 2;
-            }
-
+            actualTransitionManager.returnToMain = false;
             yield return StartCoroutine(actualTransitionManager.GoToSceneRoutine());
 
             yield return new WaitForSeconds(initializeTime);
@@ -187,16 +183,20 @@ namespace Vortices
             loggingController.Initialize();
             spawnController.Initialize();
 
+            inputController.RestartInputs();
+            
+
             sessionLaunchRunning = false;
         }
 
         public IEnumerator StopSessionCoroutine()
         {
             sessionLaunchRunning = true;
-
+            actualTransitionManager = GameObject.Find("TransitionManager").GetComponent<SceneTransitionManager>();
             Fade toolsFader = righthandTools.GetComponent<Fade>();
             yield return StartCoroutine(toolsFader.FadeOutCoroutine());
 
+            actualTransitionManager.returnToMain = true;
             yield return StartCoroutine(actualTransitionManager.GoToSceneRoutine());
 
             yield return new WaitForSeconds(initializeTime);
