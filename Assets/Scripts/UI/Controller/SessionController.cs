@@ -13,6 +13,7 @@ namespace Vortices
     {
         // Prefabs
         [SerializeField] private GameObject environmenTogglePrefab;
+        [SerializeField] private GameObject UISessionPrefab;
 
         // Other references
         [SerializeField] private MainMenuPanel mainMenuPanel;
@@ -20,7 +21,6 @@ namespace Vortices
         [SerializeField] private TextInputField sessionAddInputField;
         [SerializeField] private TextInputField userIdInputField;
         [SerializeField] private List<Toggle> environmentToggles;
-        [SerializeField] private GameObject UISessionPrefab;
         [SerializeField] private Button continueButton;
         [SerializeField] private TextMeshProUGUI alertText;
         [SerializeField] private SessionManager sessionManager;

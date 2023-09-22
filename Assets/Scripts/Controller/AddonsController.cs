@@ -79,7 +79,8 @@ public class AddonsController : MonoBehaviour
         foreach (string folderName in folderNames)
         {
             string addonFolderPath = addonsPath + "/" + folderName;
-            if(folderName == "Environment")
+            int id = 0;
+            if (folderName == "Environment")
             {
                 // Add environment addon for files with the same starting part, for environment it should be two files
                 List<List<string>> environmentAddonGroups = FileUtilities.GetGroupedFilenamesInDirectory(addonFolderPath, ".bundle");
@@ -90,6 +91,9 @@ public class AddonsController : MonoBehaviour
                     Addon environmentAddon = new Addon();
                     environmentAddon.addonFileNames = new List<string>();
                     environmentAddon.addonType = "Environment";
+                    environmentAddon.addonId = id++;
+
+                    long totalAddonSize = 0;
                     // Panel
                     string bundlePath = Path.Combine(addonFolderPath, environmentAddonGroup[0]);
                     AssetBundle panelBundle = AssetBundle.LoadFromFile(bundlePath);
@@ -98,11 +102,13 @@ public class AddonsController : MonoBehaviour
                     {
                         panelBundle.Unload(false);
                     }
+                    totalAddonSize += SizeFormatter.GetFileSize(bundlePath);
                     // Scene
                     bundlePath = Path.Combine(addonFolderPath, environmentAddonGroup[1]);
                     AssetBundle sceneBundle = AssetBundle.LoadFromFile(bundlePath);
                     environmentAddon.addonFileNames.Add(Path.GetFileName(environmentAddonGroup[1]));
                     environmentAddon.enabled = false;
+                    totalAddonSize += SizeFormatter.GetFileSize(bundlePath);
                     // Name
                     string[] parts = sceneBundle.GetAllScenePaths()[0].Split('/');
                     string assetNameWithExtension = parts[parts.Length - 1];
@@ -113,6 +119,7 @@ public class AddonsController : MonoBehaviour
                     }
 
                     environmentAddon.addonName = assetNameWithoutExtension;
+                    environmentAddon.addonSize = SizeFormatter.FormatSize(totalAddonSize);
 
                     addonsData.addonsData.addons.Add(environmentAddon);
                 }
@@ -251,8 +258,10 @@ public class AddonData
 [Serializable]
 public class Addon
 {
+    public int addonId;
     public string addonName;
     public string addonType;
+    public string addonSize;
     public bool enabled;
     public List<string> addonFileNames;
 }
