@@ -55,7 +55,10 @@ namespace Vortices
 
         private void OnDisable()
         {
-            sessionManager.elementCategoryController.elementGameObjects.Remove(this);
+            if (sessionManager.elementCategoryController.elementGameObjects.Contains(this))
+            {
+                sessionManager.elementCategoryController.elementGameObjects.Remove(this);
+            }
         }
 
         public void Initialize(string browsingMode, string displayMode, string url, CanvasWebViewPrefab canvas)
@@ -251,7 +254,10 @@ namespace Vortices
                 else 
                 {
                     // Return element when hiding
-                    GameObject.Find("RightHand Controller").GetComponent<HandController>().selectElement = null;
+                    if (GameObject.Find("RightHand Controller").GetComponent<HandController>().selectElement != null)
+                    {
+                        GameObject.Find("RightHand Controller").GetComponent<HandController>().selectElement = null;
+                    }
 
                     if (!selected)
                     {

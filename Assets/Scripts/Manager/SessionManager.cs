@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+using static System.Net.Mime.MediaTypeNames;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace Vortices
 { 
@@ -164,6 +166,14 @@ namespace Vortices
         public IEnumerator LaunchSessionCoroutine(string sessionName, int userId, string environmentName)
         {
             sessionLaunchRunning = true;
+
+            GameObject keyboard = GameObject.Find("Keyboard Canvas");
+            if (keyboard != null)
+            {
+                keyboard.GetComponent<HandKeyboard>().RemoveInputField();
+            }
+
+
             // Switch to environment scene
             actualTransitionManager = GameObject.Find("TransitionManager").GetComponent<SceneTransitionManager>();
             actualTransitionManager.returnToMain = false;

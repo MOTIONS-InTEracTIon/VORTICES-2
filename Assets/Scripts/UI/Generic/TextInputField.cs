@@ -16,6 +16,13 @@ namespace Vortices
         {
             placeholderText = placeholder.text;
             text.text = "";
+
+            // If there is a virtual keyboard, it will subscribe to it
+            GameObject keyboard = GameObject.Find("Keyboard Canvas");
+            if (keyboard != null)
+            {
+                inputfield.onSelect.AddListener(delegate { keyboard.GetComponent<HandKeyboard>().SetInputField(inputfield); });
+            }
         }
 
         public string GetData()
