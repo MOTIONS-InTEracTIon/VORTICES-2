@@ -1,1 +1,28 @@
-{"addonsData":{"addons":[{"addonId":0,"addonName":"Circular Environment","addonType":"Environment","addonSize":"27,68 MB","enabled":false,"addonFileNames":["circularenvironment_panel.bundle","circularenvironment_scene.bundle"]},{"addonId":1,"addonName":"Museum Environment","addonType":"Environment","addonSize":"833,57 MB","enabled":false,"addonFileNames":["museumenvironment_panel.bundle","museumenvironment_scene.bundle"]}]}}
+{
+    "addonsData": {
+        "addons": [
+            {
+                "addonId": 0,
+                "addonName": "Circular Environment",
+                "addonType": "Environment",
+                "addonSize": "27,68 MB",
+                "enabled": true,
+                "addonFileNames": [
+                    "circularenvironment_panel.bundle",
+                    "circularenvironment_scene.bundle"
+                ]
+            },
+            {
+                "addonId": 1,
+                "addonName": "Museum Environment",
+                "addonType": "Environment",
+                "addonSize": "833,57 MB",
+                "enabled": true,
+                "addonFileNames": [
+                    "museumenvironment_panel.bundle",
+                    "museumenvironment_scene.bundle"
+                ]
+            }
+        ]
+    }
+}

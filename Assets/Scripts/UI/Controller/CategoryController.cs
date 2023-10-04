@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,13 +35,14 @@ namespace Vortices
             categoriesList = new List<string>();
             selectedCategoriesList = new List<string>();
 
-            categorySelector = GameObject.FindObjectOfType<CategorySelector>(true);
+            //categorySelector = GameObject.FindObjectOfType<CategorySelector>(true);
 
             this.sessionName = sessionManager.sessionName;
             this.userId = sessionManager.userId;
 
+
             LoadAllSessionCategories();
-            categorySelector.Initialize();
+            //categorySelector.Initialize();
         }
 
         #region Data Operations
@@ -158,8 +159,10 @@ namespace Vortices
                     SessionCategory newSessionCategory = new SessionCategory();
                     newSessionCategory.sessionName = this.sessionName;
                     newSessionCategory.userId = this.userId;
-                    newSessionCategory.categoriesList = new List<string>();
-                    newSessionCategory.selectedCategoriesList = new List<string>();
+
+                    // WRITE THE DEMO CATEGORIES IN HERE
+                    newSessionCategory.categoriesList = new List<string> { "Escritor", "Músico", "Pintor", "Actor" };
+                    newSessionCategory.selectedCategoriesList = newSessionCategory.categoriesList;
 
                     allSessionCategory.Add(newSessionCategory);
                     SaveAllSessionCategories();

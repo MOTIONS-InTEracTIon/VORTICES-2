@@ -6,17 +6,18 @@ using System.Linq;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
-using static System.Net.Mime.MediaTypeNames;
-using static UnityEngine.Rendering.DebugUI;
+using System.IO;
 
 namespace Vortices
-{ 
+{
     public class SessionManager : MonoBehaviour
     {
 
         // Static instance
         public static SessionManager instance;
+
+        // Data
+        public int demoId;
 
         // Settings
         public string sessionName;
@@ -60,6 +61,13 @@ namespace Vortices
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             lastSelected = null; // Reset lastSelected when a new scene is loaded
+
+            if (GameObject.Find("Scenario 1 Button") != null)
+            {
+                GameObject.Find("Scenario 1 Button").GetComponent<Button>().onClick.AddListener(delegate { StartScenario(1); });
+                GameObject.Find("Scenario 2 Button").GetComponent<Button>().onClick.AddListener(delegate { StartScenario(2); });
+                GameObject.Find("Scenario 3 Button").GetComponent<Button>().onClick.AddListener(delegate { StartScenario(3); });
+            }
         }
 
         private void Start()
@@ -76,7 +84,6 @@ namespace Vortices
 
             inputController.Initialize();
             addonsController.Initialize();
-            inputController.Initialize();
 
             instance = this;
             DontDestroyOnLoad(gameObject);
@@ -194,7 +201,7 @@ namespace Vortices
             spawnController.Initialize();
 
             inputController.RestartInputs();
-            
+
 
             sessionLaunchRunning = false;
         }
@@ -209,12 +216,85 @@ namespace Vortices
             actualTransitionManager.returnToMain = true;
             yield return StartCoroutine(actualTransitionManager.GoToSceneRoutine());
 
-            yield return new WaitForSeconds(initializeTime);
-
-            categorySelector = GameObject.FindObjectOfType<CategorySelector>(true);
-
             sessionLaunchRunning = false;
         }
+        #endregion
+
+        #region Demo Data Overrides
+        public void StartScenario(int scenarioNumber)
+        {
+
+            switch (scenarioNumber)
+            {
+                case 1:
+                    InjectScenarioData(1, "Circular");
+                    break;
+                case 2:
+                    InjectScenarioData(2, "Circular");
+                    break;
+                case 3:
+                    InjectScenarioData(3, "Museum");
+                    break;
+            }
+            demoId++;
+        }
+
+        private void InjectScenarioData(int variant, string environmentName)
+        {
+            // Inject needed data
+            // Session Data
+            AddonsController.instance.LoadAddonObjects();
+            // Select Environment
+            if (environmentName == "Circular")
+            {
+                AddonsController.instance.SetEnvironment(0);
+                this.environmentName = environmentName;
+            }
+            else if (environmentName == "Museum")
+            {
+                AddonsController.instance.SetEnvironment(1);
+                this.environmentName = environmentName;
+            }
+
+            sessionName = "Demo Array";
+            userId = demoId;
+
+            // Category Data (The persistence will auto create the demo categories)
+            categoryController.Initialize();
+
+            // Environment Data
+            switch (variant)
+            {
+                case 1:
+                    displayMode = "Plane";
+                    volumetric = true;
+                    dimension = new Vector3Int(3, 4, 5);
+                    break;
+                case 2:
+                    displayMode = "Radial";
+                    volumetric = true;
+                    dimension = new Vector3Int(8, 3, 5);
+                    break;
+                case 3:
+                    displayMode = "Museum";
+                    break;
+            }
+            browsingMode = "Local";
+
+            // Element Path Data
+            string folderName = "images";
+            string streamingAssetsPath = Application.streamingAssetsPath;
+
+            string folderPath = Path.Combine(streamingAssetsPath, folderName);
+            if (Directory.Exists(folderPath))
+            {
+                elementPaths = Directory.GetFiles(folderPath).ToList();
+            }
+
+            // Start Session
+            LaunchSession();
+        }
+
 
         #endregion
     }
