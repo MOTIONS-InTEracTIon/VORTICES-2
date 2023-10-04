@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System.Linq;
 using TMPro;
 using UnityEngine.XR.Interaction.Toolkit;
+using System;
 
 namespace Vortices
 {
@@ -64,6 +65,9 @@ namespace Vortices
 
         // Auxiliary References
         private SessionManager sessionManager;
+
+        // Event
+        public static EventHandler<EventArgs> onCategorized;
 
 
         private void Update()
@@ -504,6 +508,8 @@ namespace Vortices
                 sessionManager.elementCategoryController.UpdateElementCategoriesList(actualSelectedElement.url, elementCategory);
                 // Update Sorting counters
                 AddUISortingCategories();
+                // Send event
+                onCategorized?.Invoke(this, EventArgs.Empty);
             }
         }
 

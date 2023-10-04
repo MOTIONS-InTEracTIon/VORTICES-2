@@ -140,7 +140,7 @@ public class AddonsController : MonoBehaviour
     {
         foreach (EnvironmentObject environmentObject in environmentObjects)
         {
-            environmentObject.sceneBundle.Unload(false);
+            environmentObject.sceneBundle.Unload(true);
         }
     }
 

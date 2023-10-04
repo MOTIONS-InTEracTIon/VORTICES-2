@@ -53,6 +53,9 @@ namespace Vortices
         // Auxiliary references
         private SessionManager sessionManager;
 
+        // Events
+        public static EventHandler<EventArgs> onSelected;
+
         private void OnDisable()
         {
             if (sessionManager.elementCategoryController.elementGameObjects.Contains(this))
@@ -311,6 +314,7 @@ namespace Vortices
             Renderer selectionBoxRenderer = headInteractor.GetComponent<Renderer>();
             selectionBoxRenderer.material.color = Color.green;
             sessionManager.loggingController.LogSelection(url, true);
+            onSelected?.Invoke(this, EventArgs.Empty);
 
             righthandTools.UpdateCategorizeSubMenu(this);
 

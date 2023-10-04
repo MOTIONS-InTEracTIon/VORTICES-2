@@ -12,6 +12,9 @@ namespace Vortices
 {
     public class SessionManager : MonoBehaviour
     {
+        // Prefabs
+        [SerializeField] private GameObject tutorialCircularPanelPrefab;
+        [SerializeField] private GameObject tutorialMuseumPanelPrefab;
 
         // Static instance
         public static SessionManager instance;
@@ -114,6 +117,11 @@ namespace Vortices
 
         private void FindAndSetNextSelectable()
         {
+            if (GameObject.Find("Canvas") == null)
+            {
+                return;
+            }
+
             GameObject canvasObject = GameObject.Find("Canvas"); // Find the GameObject named "Canvas"
 
             if (canvasObject == null)
@@ -202,6 +210,18 @@ namespace Vortices
 
             inputController.RestartInputs();
 
+            GameObject panel = tutorialCircularPanelPrefab.gameObject;
+            if(displayMode == "Museum")
+            {
+                panel = Instantiate(tutorialMuseumPanelPrefab);
+            }
+            else
+            {
+                panel = Instantiate(tutorialCircularPanelPrefab);
+            }
+
+            panel.GetComponent<TutorialPanel>().Initialize(Camera.main.gameObject);
+
 
             sessionLaunchRunning = false;
         }
@@ -236,7 +256,7 @@ namespace Vortices
                     InjectScenarioData(3, "Museum");
                     break;
             }
-            demoId++;
+            userId++;
         }
 
         private void InjectScenarioData(int variant, string environmentName)
@@ -257,7 +277,34 @@ namespace Vortices
             }
 
             sessionName = "Demo Array";
-            userId = demoId;
+
+            // Add next id
+            string dataPath = Application.dataPath;
+            string results = "Results";
+            string resultsPath = Path.Combine(dataPath, results);
+            resultsPath = Path.Combine(resultsPath, sessionName);
+            int largestNumericValue = 0;
+            if(Directory.Exists(resultsPath))
+            {
+                string[] subdirectories = Directory.GetDirectories(resultsPath);
+                foreach (string subdirectory in subdirectories)
+                {
+                    string folder = Path.GetFileName(subdirectory);
+
+                    if (int.TryParse(folder, out int numericValue))
+                    {
+                        if (numericValue > largestNumericValue)
+                        {
+                            largestNumericValue = numericValue;
+                        }
+                    }
+                }
+                userId = largestNumericValue++;
+            }
+            else
+            {
+                userId = 0;
+            }
 
             // Category Data (The persistence will auto create the demo categories)
             categoryController.Initialize();
@@ -268,7 +315,7 @@ namespace Vortices
                 case 1:
                     displayMode = "Plane";
                     volumetric = true;
-                    dimension = new Vector3Int(3, 4, 5);
+                    dimension = new Vector3Int(4, 3, 5);
                     break;
                 case 2:
                     displayMode = "Radial";

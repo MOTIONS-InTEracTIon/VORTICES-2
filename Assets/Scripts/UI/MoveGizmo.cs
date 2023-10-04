@@ -21,6 +21,9 @@ public class MoveGizmo : MonoBehaviour
     // Setting
     private bool triggeredGizmo;
 
+    // Event
+    public static event EventHandler<EventArgs> onElementsMoved;
+
 
     private void OnEnable()
     {
@@ -155,6 +158,7 @@ public class MoveGizmo : MonoBehaviour
             // Start the moving order
             spawnBase.moveElementDirection = moveDir;
             Debug.Log("There was a moving order with the direction: " + moveDir + " sent to the spawnbase: " + spawnBase.gameObject.name);
+            onElementsMoved?.Invoke(this, EventArgs.Empty);
 
             triggeredGizmo = true;
         }
