@@ -40,6 +40,8 @@ namespace Vortices
         private CategorySelector categorySelector;
         [SerializeField] public LoggingController loggingController;
         public InputController inputController;
+        [SerializeField] public LocalizationController localizationController;
+        [SerializeField] public ErrorController errorController;
         public RighthandTools righthandTools;
 
         // Coroutine
@@ -74,9 +76,10 @@ namespace Vortices
             elementCategoryController = GameObject.FindObjectOfType<ElementCategoryController>(true);
             inputController = GameObject.FindObjectOfType<InputController>(true);
 
+            errorController.Initialize();
             inputController.Initialize();
             addonsController.Initialize();
-            inputController.Initialize();
+            localizationController.Initialize();
 
             instance = this;
             DontDestroyOnLoad(gameObject);

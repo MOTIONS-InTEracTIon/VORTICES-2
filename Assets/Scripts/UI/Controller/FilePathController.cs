@@ -15,7 +15,7 @@ namespace Vortices
         [SerializeField] private List<TextMeshProUGUI> dataCounters;
 
         // Filter
-        private bool hasH264Codec = false;
+        private bool hasH264Codec = true;
         private List<string> supportedExtensions;
         private List<string> filePathsRaw;
 
@@ -71,20 +71,20 @@ namespace Vortices
             string selection;
             if (filePaths.Count > 1 || filePaths.Count == 0)
             {
-                selection = filePaths.Count + " files selected from ";
+                selection = filePaths.Count + LocalizationController.instance.FetchString("baseStrings", "fileSelectMultiple");
             }
             else
             {
-                selection = filePaths.Count + " file selected from ";
+                selection = filePaths.Count + LocalizationController.instance.FetchString("baseStrings", "fileSelectSingle");
             }
 
             if (numberOfFolders > 1)
             {
-                selection += numberOfFolders + " folders.";
+                selection += numberOfFolders + LocalizationController.instance.FetchString("baseStrings", "fileFolderMultiple");
             }
             else
             {
-                selection += "1 folder.";
+                selection += LocalizationController.instance.FetchString("baseStrings", "fileFolderSingle");
             }
 
             selectionText.text = selection;

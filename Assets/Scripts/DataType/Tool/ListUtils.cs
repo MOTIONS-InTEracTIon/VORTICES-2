@@ -25,5 +25,15 @@ public static class ListUtils
         return a - b * Mathf.Floor(a / b);
     }
 
+    public static void InsertAtOrFill<T>(List<T> list, int index, T value)
+    {
+        while (list.Count <= index)
+        {
+            list.Add(default(T)); // Fill with default values
+        }
+
+        list[index] = value;
+    }
+
 
 }
